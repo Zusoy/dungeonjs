@@ -1,0 +1,20 @@
+import { AllOptionalProperties } from '../properties/default.js';
+import { Component } from './utils.js';
+import { CustomContainerProperties } from '../components/index.js';
+import { ThreeEventMap } from '../events.js';
+export declare class CustomContainer<T = {}, EM extends ThreeEventMap = ThreeEventMap> extends Component<T> {
+    private mergedProperties?;
+    private readonly styleSignal;
+    private readonly propertiesSignal;
+    private readonly defaultPropertiesSignal;
+    private readonly parentContextSignal;
+    private readonly unsubscribe;
+    private readonly material;
+    constructor(properties?: CustomContainerProperties<EM>, defaultProperties?: AllOptionalProperties);
+    getComputedProperty<K extends keyof CustomContainerProperties<EM>>(key: K): CustomContainerProperties<EM>[K] | undefined;
+    getStyle(): undefined | Readonly<CustomContainerProperties<EM>>;
+    setStyle(style: CustomContainerProperties<EM> | undefined, replace?: boolean): void;
+    setProperties(properties: CustomContainerProperties<EM> | undefined): void;
+    setDefaultProperties(properties: AllOptionalProperties): void;
+    destroy(): void;
+}

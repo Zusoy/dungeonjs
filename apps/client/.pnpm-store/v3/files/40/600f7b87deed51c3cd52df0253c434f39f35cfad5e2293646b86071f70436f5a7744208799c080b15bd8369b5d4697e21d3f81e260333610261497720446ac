@@ -1,0 +1,20 @@
+import { AllOptionalProperties } from '../properties/default.js';
+import { Component } from './utils.js';
+import { InputProperties, createInput } from '../components/input.js';
+import { ThreeEventMap } from '../events.js';
+export declare class Input<T = {}, Em extends ThreeEventMap = ThreeEventMap> extends Component<T> {
+    private mergedProperties?;
+    private readonly styleSignal;
+    private readonly propertiesSignal;
+    private readonly defaultPropertiesSignal;
+    private readonly parentContextSignal;
+    private readonly unsubscribe;
+    internals: ReturnType<typeof createInput>;
+    constructor(properties?: InputProperties<Em>, defaultProperties?: AllOptionalProperties);
+    getComputedProperty<K extends keyof InputProperties<Em>>(key: K): InputProperties<Em>[K] | undefined;
+    getStyle(): undefined | Readonly<InputProperties>;
+    setStyle(style: InputProperties<Em> | undefined, replace?: boolean): void;
+    setProperties(properties: InputProperties<Em> | undefined): void;
+    setDefaultProperties(properties: AllOptionalProperties): void;
+    destroy(): void;
+}

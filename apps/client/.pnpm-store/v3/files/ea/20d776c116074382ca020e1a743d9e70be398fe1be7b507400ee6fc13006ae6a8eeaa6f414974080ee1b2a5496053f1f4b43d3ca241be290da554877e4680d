@@ -1,0 +1,14 @@
+import { Image } from './image.js';
+import { ImageProperties, VideoProperties } from '../components/index.js';
+import { AllOptionalProperties } from '../properties/index.js';
+import { ThreeEventMap } from '../events.js';
+export declare class Video<T = {}, EM extends ThreeEventMap = ThreeEventMap> extends Image<T> {
+    element: HTMLVideoElement;
+    private readonly texture;
+    private readonly aspectRatio;
+    private readonly updateAspectRatio;
+    private unsubscribeInvalidate;
+    constructor(props: VideoProperties<EM>, defaultProperties?: AllOptionalProperties);
+    setProperties(props: VideoProperties<EM> & ImageProperties<EM>): void;
+    destroy(): void;
+}

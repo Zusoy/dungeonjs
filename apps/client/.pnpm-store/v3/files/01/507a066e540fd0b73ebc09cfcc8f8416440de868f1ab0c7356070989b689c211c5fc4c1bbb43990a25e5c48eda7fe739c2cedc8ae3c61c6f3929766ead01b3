@@ -1,0 +1,70 @@
+import { FlexNode, FlexNodeState, YogaProperties } from '../flex/index.js';
+import { ScrollbarProperties } from '../scroll.js';
+import { WithAllAliases } from '../properties/alias.js';
+import { PanelProperties } from '../panel/instanced-panel.js';
+import { TransformProperties } from '../transform.js';
+import { AllOptionalProperties, WithClasses, WithReactive } from '../properties/index.js';
+import { ZIndexProperties } from '../order.js';
+import { ReadonlySignal, Signal } from '@preact/signals-core';
+import { UpdateMatrixWorldProperties, VisibilityProperties, WithConditionals } from './utils.js';
+import { Initializers } from '../utils.js';
+import { Listeners } from '../listeners.js';
+import { Object3DRef, ParentContext } from '../context.js';
+import { PanelGroupProperties } from '../panel/instanced-panel-group.js';
+import { EventHandlers, ThreeEventMap } from '../events.js';
+import { Vector2Tuple } from 'three';
+import { CaretProperties } from '../caret.js';
+import { SelectionProperties } from '../selection.js';
+import { WithFocus } from '../focus.js';
+import { FontFamilies, InstancedText, InstancedTextProperties } from '../text/index.js';
+import { PointerEventsProperties } from '../panel/index.js';
+export type InheritableInputProperties = WithClasses<WithFocus<WithConditionals<WithAllAliases<WithReactive<YogaProperties & PanelProperties & ZIndexProperties & TransformProperties & ScrollbarProperties & CaretProperties & SelectionProperties & PanelGroupProperties & InstancedTextProperties & DisabledProperties & VisibilityProperties & UpdateMatrixWorldProperties & PointerEventsProperties>>>>>;
+export type DisabledProperties = {
+    disabled?: boolean;
+};
+export declare const canvasInputProps: {
+    onPointerDown: (e: {
+        nativeEvent: any;
+        preventDefault: () => void;
+    }) => void;
+};
+export type InputType = 'text' | 'password';
+export type InputProperties<EM extends ThreeEventMap = ThreeEventMap> = InheritableInputProperties & Listeners & {
+    onValueChange?: (value: string) => void;
+} & WithReactive<{
+    type?: InputType;
+    value?: string;
+    tabIndex?: number;
+    disabled?: boolean;
+}> & {
+    multiline?: boolean;
+    defaultValue?: string;
+} & EventHandlers<EM>;
+export declare function createInput<EM extends ThreeEventMap = ThreeEventMap>(parentCtx: ParentContext, fontFamilies: Signal<FontFamilies | undefined>, style: Signal<InputProperties<EM> | undefined>, properties: Signal<InputProperties<EM> | undefined>, defaultProperties: Signal<AllOptionalProperties | undefined>, object: Object3DRef): {
+    size: Signal<Vector2Tuple | undefined>;
+    relativeCenter: Signal<Vector2Tuple | undefined>;
+    borderInset: Signal<import("../internals.js").Inset | undefined>;
+    overflow: Signal<import("yoga-layout/load").Overflow>;
+    displayed: Signal<boolean>;
+    scrollable: Signal<[boolean, boolean]>;
+    paddingInset: Signal<import("../internals.js").Inset | undefined>;
+    maxScrollPosition: Signal<[(number | undefined)?, (number | undefined)?]>;
+} & {
+    globalMatrix: Signal<import("three").Matrix4 | undefined>;
+    isClipped: Signal<boolean>;
+    isVisible: ReadonlySignal<boolean>;
+    mergedProperties: ReadonlySignal<import("../internals.js").MergedProperties>;
+    valueSignal: ReadonlySignal<string>;
+    focus: (start?: number, end?: number, direction?: "forward" | "backward" | "none") => void;
+    blur: () => void;
+    root: import("../context.js").RootContext;
+    element: Signal<HTMLInputElement | HTMLTextAreaElement | undefined>;
+    node: Signal<FlexNode | undefined>;
+    interactionPanel: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap>;
+    handlers: ReadonlySignal<EventHandlers>;
+    initializers: Initializers;
+};
+export declare function computedSelectionHandlers(type: Signal<InputType>, text: ReadonlySignal<string>, flexState: FlexNodeState, instancedTextRef: {
+    current?: InstancedText;
+}, focus: (start?: number, end?: number, direction?: 'forward' | 'backward' | 'none') => void, disabled: Signal<boolean>): ReadonlySignal<EventHandlers | undefined>;
+export declare function createHtmlInputElement(value: Signal<string>, selectionRange: Signal<Vector2Tuple | undefined>, onChange: (value: string) => void, multiline: boolean, type: Signal<InputType>, disabled: Signal<boolean>, tabIndex: Signal<number>, initializers: Initializers): Signal<HTMLInputElement | HTMLTextAreaElement | undefined>;

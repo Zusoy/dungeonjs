@@ -1,0 +1,12 @@
+import { ReactNode, RefAttributes } from 'react';
+import { R3FEventMap } from './utils.js';
+import { RootProperties as BaseRootProperties, WithReactive } from '@pmndrs/uikit/internals';
+import { ComponentInternals } from './ref.js';
+export type RootProperties = BaseRootProperties<R3FEventMap> & WithReactive<{
+    pixelSize?: number;
+}> & {
+    children?: ReactNode;
+    name?: string;
+};
+export type RootRef = ComponentInternals<BaseRootProperties<R3FEventMap>>;
+export declare const Root: (props: RootProperties & RefAttributes<RootRef>) => ReactNode;

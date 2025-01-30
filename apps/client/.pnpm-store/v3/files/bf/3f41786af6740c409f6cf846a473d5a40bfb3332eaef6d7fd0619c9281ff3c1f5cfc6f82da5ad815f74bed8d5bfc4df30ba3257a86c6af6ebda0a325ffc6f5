@@ -1,0 +1,10 @@
+import { ReactNode, RefAttributes } from 'react';
+import { R3FEventMap } from './utils.js';
+import { ComponentInternals } from './ref.js';
+import { ContentProperties as BaseContentProperties } from '../../uikit/dist/components/content.js';
+export type ContentProperties = {
+    name?: string;
+    children?: ReactNode;
+} & BaseContentProperties<R3FEventMap>;
+export type ContentRef = ComponentInternals<BaseContentProperties<R3FEventMap>>;
+export declare const Content: (props: ContentProperties & RefAttributes<ContentRef>) => ReactNode;

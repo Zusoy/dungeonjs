@@ -1,0 +1,50 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useFrame, useStore, useThree } from '@react-three/fiber';
+import { forwardRef, useEffect, useMemo, useRef } from 'react';
+import { ParentProvider } from './context.js';
+import { AddHandlers, usePropertySignals } from './utils.js';
+import { DEFAULT_PIXEL_SIZE, createRoot, initialize, readReactive, reversePainterSortStable, unsubscribeSubscriptions, } from '@pmndrs/uikit/internals';
+import { useComponentInternals } from './ref.js';
+import { computed, signal } from '@preact/signals-core';
+import { DefaultProperties } from './default.js';
+export const Root = forwardRef((properties, ref) => {
+    const renderer = useThree((state) => state.gl);
+    renderer.setTransparentSort(reversePainterSortStable);
+    const store = useStore();
+    const outerRef = useRef(null);
+    const innerRef = useRef(null);
+    const pixelSizeSignal = useMemo(() => signal(undefined), []);
+    pixelSizeSignal.value = properties.pixelSize;
+    const propertySignals = usePropertySignals(properties);
+    const onFrameSet = useMemo(() => new Set(), []);
+    const whileOnFrameRef = useRef(false);
+    const invalidate = useThree((s) => s.invalidate);
+    const internals = useMemo(() => createRoot(computed(() => readReactive(pixelSizeSignal.value) ?? DEFAULT_PIXEL_SIZE), propertySignals.style, propertySignals.properties, propertySignals.default, outerRef, innerRef, () => store.getState().camera, renderer, onFrameSet, () => {
+        if (whileOnFrameRef.current) {
+            //request render unnecassary -> already rendering
+            return;
+        }
+        //not rendering -> requesting a new frame
+        invalidate();
+    }, 
+    //requestFrame = invalidate, because invalidate always causes another frame
+    invalidate), 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [invalidate]);
+    internals.interactionPanel.name = properties.name ?? '';
+    useEffect(() => {
+        const subscriptions = [];
+        initialize(internals.initializers, subscriptions);
+        return () => unsubscribeSubscriptions(subscriptions);
+    }, [internals]);
+    useFrame((_, delta) => {
+        whileOnFrameRef.current = true;
+        for (const onFrame of onFrameSet) {
+            //delta must be provided in milliseconds, therefore multiply by 1000
+            onFrame(delta * 1000);
+        }
+        whileOnFrameRef.current = false;
+    });
+    useComponentInternals(ref, internals.root.pixelSize, propertySignals.style, internals, internals.interactionPanel);
+    return (_jsxs(AddHandlers, { handlers: internals.handlers, ref: outerRef, children: [_jsx("primitive", { object: internals.interactionPanel }), _jsx("object3D", { matrixAutoUpdate: false, ref: innerRef, children: _jsx(DefaultProperties, { ...internals.defaultProperties, children: _jsx(ParentProvider, { value: internals, children: properties.children }) }) })] }));
+});

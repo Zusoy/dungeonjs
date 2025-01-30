@@ -1,0 +1,19 @@
+import { Signal } from '@preact/signals-core';
+import { EventHandlers, ThreeEvent } from '@react-three/fiber/dist/declarations/src/core/events';
+import { ReactNode } from 'react';
+import { Object3D } from 'three';
+import { AllOptionalProperties } from '@pmndrs/uikit/internals';
+export type R3FEventMap = {
+    mouse: ThreeEvent<MouseEvent>;
+    wheel: ThreeEvent<WheelEvent>;
+    pointer: ThreeEvent<PointerEvent>;
+};
+export declare const AddHandlers: import("react").ForwardRefExoticComponent<{
+    handlers: Signal<EventHandlers>;
+    children?: ReactNode;
+} & import("react").RefAttributes<Object3D<import("three").Object3DEventMap>>>;
+export declare function usePropertySignals<T>(properties: T): {
+    style: Signal<T | undefined>;
+    properties: Signal<T | undefined>;
+    default: Signal<AllOptionalProperties | undefined>;
+};

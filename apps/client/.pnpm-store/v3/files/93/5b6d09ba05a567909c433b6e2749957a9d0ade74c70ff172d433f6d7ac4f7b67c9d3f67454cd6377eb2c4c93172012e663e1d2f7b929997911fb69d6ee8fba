@@ -1,0 +1,31 @@
+import { Camera, WebGLRenderer } from 'three';
+import { Signal } from '@preact/signals-core';
+import { AllOptionalProperties, WithReactive } from '../properties/index.js';
+import { createRoot, RootProperties } from '../components/root.js';
+import { Parent } from './utils.js';
+import { FontFamilies } from '../text/index.js';
+import { ThreeEventMap } from '../events.js';
+export declare class Root<T = {}, EM extends ThreeEventMap = ThreeEventMap> extends Parent<T> {
+    private mergedProperties?;
+    protected readonly styleSignal: Signal<RootProperties<EM> | undefined>;
+    private readonly propertiesSignal;
+    private readonly defaultPropertiesSignal;
+    private readonly unsubscribe;
+    private readonly onFrameSet;
+    private readonly fontFamiliesSignal;
+    private readonly pixelSizeSignal;
+    internals: ReturnType<typeof createRoot>;
+    constructor(camera: Signal<Camera | undefined> | (() => Camera) | Camera, renderer: WebGLRenderer, properties?: RootProperties<EM> & WithReactive<{
+        pixelSize?: number;
+    }>, defaultProperties?: AllOptionalProperties, fontFamilies?: FontFamilies, requestRender?: () => void, requestFrame?: () => void);
+    update(delta: number): void;
+    setFontFamilies(fontFamilies: FontFamilies | undefined): void;
+    getComputedProperty<K extends keyof RootProperties<EM>>(key: K): RootProperties<EM>[K] | undefined;
+    getStyle(): undefined | Readonly<RootProperties<EM>>;
+    setStyle(style: RootProperties<EM> | undefined, replace?: boolean): void;
+    setProperties(properties: (RootProperties<EM> & WithReactive<{
+        pixelSize?: number;
+    }>) | undefined): void;
+    setDefaultProperties(properties: AllOptionalProperties): void;
+    destroy(): void;
+}

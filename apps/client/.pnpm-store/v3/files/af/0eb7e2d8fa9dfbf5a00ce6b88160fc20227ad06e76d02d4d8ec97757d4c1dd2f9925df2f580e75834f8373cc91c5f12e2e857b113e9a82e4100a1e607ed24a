@@ -1,0 +1,21 @@
+import type { ParentContext } from '@pmndrs/uikit/internals';
+declare const ParentContext: import("react").Context<Readonly<{
+    node: import("@preact/signals-core").Signal<import("@pmndrs/uikit/internals").FlexNode | undefined>;
+    anyAncestorScrollable: import("@preact/signals-core").Signal<readonly [boolean, boolean]>;
+    ancestorsHaveListeners: import("@preact/signals-core").Signal<boolean>;
+    clippingRect: import("@preact/signals-core").Signal<import("@pmndrs/uikit/internals").ClippingRect | undefined>;
+    childrenMatrix: import("@preact/signals-core").Signal<import("three").Matrix4 | undefined>;
+    orderInfo: import("@preact/signals-core").Signal<import("@pmndrs/uikit/internals").OrderInfo | undefined>;
+    root: import("@pmndrs/uikit/internals").RootContext;
+}> | undefined>;
+export declare function useParent(): ParentContext;
+export declare const ParentProvider: import("react").Provider<Readonly<{
+    node: import("@preact/signals-core").Signal<import("@pmndrs/uikit/internals").FlexNode | undefined>;
+    anyAncestorScrollable: import("@preact/signals-core").Signal<readonly [boolean, boolean]>;
+    ancestorsHaveListeners: import("@preact/signals-core").Signal<boolean>;
+    clippingRect: import("@preact/signals-core").Signal<import("@pmndrs/uikit/internals").ClippingRect | undefined>;
+    childrenMatrix: import("@preact/signals-core").Signal<import("three").Matrix4 | undefined>;
+    orderInfo: import("@preact/signals-core").Signal<import("@pmndrs/uikit/internals").OrderInfo | undefined>;
+    root: import("@pmndrs/uikit/internals").RootContext;
+}> | undefined>;
+export {};

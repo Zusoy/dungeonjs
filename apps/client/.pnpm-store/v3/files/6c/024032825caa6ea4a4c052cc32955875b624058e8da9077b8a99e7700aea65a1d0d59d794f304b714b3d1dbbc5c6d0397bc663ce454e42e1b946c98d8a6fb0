@@ -1,0 +1,20 @@
+import { ConversionColorMap, ConversionComponentMap as ConversionComponentMapWihoutRenderAsComponent, ConversionNode } from '@pmndrs/uikit/internals';
+import { ComponentType, ReactNode, RefObject } from 'react';
+import { ComponentInternals } from '../../ref.js';
+export type ConversionComponentMap = ConversionComponentMapWihoutRenderAsComponent & Record<string, {
+    renderAsImpl: ComponentType<any>;
+}>;
+export type CustomHook = (element: ConversionNode | undefined, ref: RefObject<ComponentInternals | null>, properties: Record<string, unknown>) => Record<string, unknown>;
+export declare function PreviewHtml({ children, colorMap, customHook, }: {
+    children: string;
+    colorMap?: ConversionColorMap;
+    customHook?: CustomHook;
+    wrapperComponent?: ComponentType<{}>;
+}): import("react/jsx-runtime").JSX.Element;
+export declare function PreviewParsedHtml({ classes, element, colorMap, componentMap, customHook, }: {
+    element: ConversionNode;
+    classes: Map<string, any>;
+    colorMap?: ConversionColorMap;
+    componentMap?: ConversionComponentMap;
+    customHook?: CustomHook;
+}): ReactNode;

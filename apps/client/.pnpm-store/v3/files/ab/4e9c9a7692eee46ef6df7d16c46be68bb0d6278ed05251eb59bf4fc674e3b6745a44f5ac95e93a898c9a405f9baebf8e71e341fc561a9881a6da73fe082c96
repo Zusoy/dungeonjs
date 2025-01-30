@@ -1,0 +1,20 @@
+import { AllOptionalProperties } from '../properties/default.js';
+import { Parent } from './utils.js';
+import { SvgProperties, createSvg } from '../components/svg.js';
+import { ThreeEventMap } from '../events.js';
+export declare class Svg<T = {}, EM extends ThreeEventMap = ThreeEventMap> extends Parent<T> {
+    private mergedProperties?;
+    private readonly styleSignal;
+    private readonly propertiesSignal;
+    private readonly defaultPropertiesSignal;
+    private readonly parentContextSignal;
+    private readonly unsubscribe;
+    internals: ReturnType<typeof createSvg>;
+    constructor(properties?: SvgProperties<EM>, defaultProperties?: AllOptionalProperties);
+    getComputedProperty<K extends keyof SvgProperties<EM>>(key: K): SvgProperties<EM>[K] | undefined;
+    getStyle(): undefined | Readonly<SvgProperties<EM>>;
+    setStyle(style: SvgProperties<EM> | undefined, replace?: boolean): void;
+    setProperties(properties: SvgProperties<EM> | undefined): void;
+    setDefaultProperties(properties: AllOptionalProperties): void;
+    destroy(): void;
+}

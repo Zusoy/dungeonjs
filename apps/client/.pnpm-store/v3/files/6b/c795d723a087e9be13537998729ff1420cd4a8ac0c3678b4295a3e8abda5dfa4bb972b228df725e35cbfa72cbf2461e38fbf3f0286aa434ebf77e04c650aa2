@@ -1,0 +1,25 @@
+import { Object3D, Object3DEventMap } from 'three';
+import { AllOptionalProperties } from '../properties/default.js';
+import { Component } from './utils.js';
+import { ContentProperties, createContent } from '../components/index.js';
+import { ThreeEventMap } from '../events.js';
+export declare class Content<T = {}, EM extends ThreeEventMap = ThreeEventMap> extends Component<T> {
+    private mergedProperties?;
+    private readonly contentContainer;
+    private readonly styleSignal;
+    private readonly propertiesSignal;
+    private readonly defaultPropertiesSignal;
+    private readonly contentSubscriptions;
+    private readonly parentContextSignal;
+    private readonly unsubscribe;
+    internals: ReturnType<typeof createContent>;
+    constructor(properties?: ContentProperties<EM>, defaultProperties?: AllOptionalProperties);
+    add(...objects: Object3D<Object3DEventMap>[]): this;
+    remove(...objects: Array<Object3D>): this;
+    getComputedProperty<K extends keyof ContentProperties<EM>>(key: K): ContentProperties<EM>[K] | undefined;
+    getStyle(): undefined | Readonly<ContentProperties<EM>>;
+    setStyle(style: ContentProperties<EM> | undefined, replace?: boolean): void;
+    setProperties(properties: ContentProperties<EM> | undefined): void;
+    setDefaultProperties(properties: AllOptionalProperties): void;
+    destroy(): void;
+}

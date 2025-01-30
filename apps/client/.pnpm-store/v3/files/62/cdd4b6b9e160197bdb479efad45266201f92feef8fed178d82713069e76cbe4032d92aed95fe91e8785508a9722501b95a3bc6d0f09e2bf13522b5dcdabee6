@@ -1,0 +1,13 @@
+import { ReactNode, RefAttributes } from 'react';
+import { VideoProperties as BaseVideoProperties, ImageProperties } from '@pmndrs/uikit';
+import { ComponentInternals } from './ref.js';
+import { R3FEventMap } from './utils.js';
+export declare function useVideoElement(): HTMLVideoElement;
+export type VideoInternals = ComponentInternals<Omit<ImageProperties<R3FEventMap>, 'src'>> & {
+    element: HTMLVideoElement;
+};
+export type VideoRef = VideoInternals;
+export type VideoProperties = BaseVideoProperties<R3FEventMap> & {
+    children?: ReactNode;
+};
+export declare const Video: (props: VideoProperties & RefAttributes<VideoRef>) => ReactNode;

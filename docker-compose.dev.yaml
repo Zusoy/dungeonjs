@@ -1,0 +1,31 @@
+---
+version: '3.8'
+
+services:
+  client:
+    stdin_open: true
+    command: 'npm run dev'
+    tty: true
+    build:
+      context: apps/client
+      target: dev
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    network_mode: bridge
+    volumes:
+      - ./apps/client:/usr/src/app
+
+  socket:
+    build:
+      context: apps/socket
+      target: dev
+    env_file:
+      - .env
+    ports:
+      - 8080:8080
+    network_mode: bridge
+    tty: true
+    volumes:
+      - ./apps/socket:/usr/src/app

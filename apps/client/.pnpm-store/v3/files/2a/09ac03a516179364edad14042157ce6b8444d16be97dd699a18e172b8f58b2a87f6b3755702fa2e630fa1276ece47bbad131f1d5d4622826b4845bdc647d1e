@@ -1,0 +1,36 @@
+import { YogaProperties } from '../flex/node.js';
+import { ScrollbarProperties } from '../scroll.js';
+import { WithAllAliases } from '../properties/alias.js';
+import { PanelProperties } from '../panel/instanced-panel.js';
+import { TransformProperties } from '../transform.js';
+import { AllOptionalProperties, WithClasses, WithReactive } from '../properties/default.js';
+import { ZIndexProperties } from '../order.js';
+import { Signal } from '@preact/signals-core';
+import { VisibilityProperties, WithConditionals } from './utils.js';
+import { Initializers } from '../utils.js';
+import { Listeners } from '../listeners.js';
+import { Object3DRef, ParentContext } from '../context.js';
+import { PanelGroupProperties } from '../panel/instanced-panel-group.js';
+import { PointerEventsProperties } from '../panel/index.js';
+import { FontFamilies, InstancedTextProperties } from '../text/index.js';
+import { EventHandlers, ThreeEventMap, UpdateMatrixWorldProperties } from '../internals.js';
+export type InheritableTextProperties = WithClasses<WithConditionals<WithAllAliases<WithReactive<YogaProperties & PanelProperties & ZIndexProperties & TransformProperties & ScrollbarProperties & PanelGroupProperties & InstancedTextProperties & VisibilityProperties & UpdateMatrixWorldProperties & PointerEventsProperties>>>>;
+export type TextProperties<Em extends ThreeEventMap = ThreeEventMap> = InheritableTextProperties & Listeners & EventHandlers<Em>;
+export declare function createText<EM extends ThreeEventMap = ThreeEventMap>(parentCtx: ParentContext, textSignal: Signal<string | Signal<string> | Array<string | Signal<string>>>, fontFamilies: Signal<FontFamilies | undefined> | undefined, style: Signal<TextProperties<EM> | undefined>, properties: Signal<TextProperties<EM> | undefined>, defaultProperties: Signal<AllOptionalProperties | undefined>, object: Object3DRef): {
+    size: Signal<import("three").Vector2Tuple | undefined>;
+    relativeCenter: Signal<import("three").Vector2Tuple | undefined>;
+    borderInset: Signal<import("../internals.js").Inset | undefined>;
+    overflow: Signal<import("yoga-layout/load").Overflow>;
+    displayed: Signal<boolean>;
+    scrollable: Signal<[boolean, boolean]>;
+    paddingInset: Signal<import("../internals.js").Inset | undefined>;
+    maxScrollPosition: Signal<[(number | undefined)?, (number | undefined)?]>;
+} & {
+    globalMatrix: Signal<import("three").Matrix4 | undefined>;
+    isClipped: Signal<boolean>;
+    isVisible: import("@preact/signals-core").ReadonlySignal<boolean>;
+    mergedProperties: import("@preact/signals-core").ReadonlySignal<import("../internals.js").MergedProperties>;
+    interactionPanel: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap>;
+    handlers: import("@preact/signals-core").ReadonlySignal<EventHandlers>;
+    initializers: Initializers;
+};

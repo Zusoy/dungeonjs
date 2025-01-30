@@ -1,0 +1,13 @@
+import { ReactNode, RefAttributes } from 'react';
+import { Material } from 'three';
+import { R3FEventMap } from './utils.js';
+import { CustomContainerProperties as BaseCustomContainerProperties } from '@pmndrs/uikit/internals';
+import { ComponentInternals } from './ref.js';
+export type CustomContainerProperties = {
+    name?: string;
+    children?: ReactNode;
+    customDepthMaterial?: Material;
+    customDistanceMaterial?: Material;
+} & BaseCustomContainerProperties<R3FEventMap>;
+export type CustomContainerRef = ComponentInternals<BaseCustomContainerProperties<R3FEventMap>>;
+export declare const CustomContainer: (props: CustomContainerProperties & RefAttributes<CustomContainerRef>) => ReactNode;

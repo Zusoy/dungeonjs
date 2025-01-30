@@ -1,0 +1,65 @@
+import { Mesh, MeshBasicMaterial } from 'three';
+import { createParentContextSignal, setupParentContextSignal, bindHandlers, Component } from './utils.js';
+import { effect, signal, untracked } from '@preact/signals-core';
+import { initialize, unsubscribeSubscriptions } from '../utils.js';
+import { createCustomContainer } from '../components/index.js';
+import { panelGeometry } from '../panel/index.js';
+export class CustomContainer extends Component {
+    mergedProperties;
+    styleSignal = signal(undefined);
+    propertiesSignal;
+    defaultPropertiesSignal;
+    parentContextSignal = createParentContextSignal();
+    unsubscribe;
+    material = new MeshBasicMaterial();
+    constructor(properties, defaultProperties) {
+        super();
+        this.matrixAutoUpdate = false;
+        setupParentContextSignal(this.parentContextSignal, this);
+        this.propertiesSignal = signal(properties);
+        this.defaultPropertiesSignal = signal(defaultProperties);
+        const mesh = new Mesh(panelGeometry, this.material);
+        super.add(mesh);
+        this.unsubscribe = effect(() => {
+            const parentContext = this.parentContextSignal.value?.value;
+            if (parentContext == null) {
+                return;
+            }
+            const internals = createCustomContainer(parentContext, this.styleSignal, this.propertiesSignal, this.defaultPropertiesSignal, {
+                current: this,
+            }, {
+                current: mesh,
+            });
+            this.mergedProperties = internals.mergedProperties;
+            //setup events
+            //TODO make the container the mesh
+            const subscriptions = [];
+            initialize(internals.initializers, subscriptions);
+            bindHandlers(internals.handlers, this, subscriptions);
+            return () => {
+                this.remove(mesh);
+                unsubscribeSubscriptions(subscriptions);
+            };
+        });
+    }
+    getComputedProperty(key) {
+        return untracked(() => this.mergedProperties?.value.read(key, undefined));
+    }
+    getStyle() {
+        return this.styleSignal.peek();
+    }
+    setStyle(style, replace) {
+        this.styleSignal.value = replace ? style : { ...this.styleSignal.value, ...style };
+    }
+    setProperties(properties) {
+        this.propertiesSignal.value = properties;
+    }
+    setDefaultProperties(properties) {
+        this.defaultPropertiesSignal.value = properties;
+    }
+    destroy() {
+        this.parent?.remove(this);
+        this.unsubscribe();
+        this.material.dispose();
+    }
+}

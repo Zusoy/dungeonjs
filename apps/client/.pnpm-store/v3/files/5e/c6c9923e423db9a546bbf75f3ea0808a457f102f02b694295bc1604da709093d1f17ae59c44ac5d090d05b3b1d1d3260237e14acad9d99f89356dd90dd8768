@@ -1,0 +1,10 @@
+import { ImageProperties as BaseImageProperties } from '@pmndrs/uikit/internals';
+import { ReactNode, RefAttributes } from 'react';
+import { R3FEventMap } from './utils.js';
+import { ComponentInternals } from './ref.js';
+export type ImageProperties = BaseImageProperties<R3FEventMap> & {
+    children?: ReactNode;
+    name?: string;
+};
+export type ImageRef = ComponentInternals<BaseImageProperties<R3FEventMap>>;
+export declare const Image: (props: ImageProperties & RefAttributes<ImageRef>) => ReactNode;

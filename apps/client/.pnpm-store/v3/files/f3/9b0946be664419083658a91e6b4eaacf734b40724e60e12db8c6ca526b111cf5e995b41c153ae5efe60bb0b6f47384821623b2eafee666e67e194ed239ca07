@@ -1,0 +1,266 @@
+import { Signal, computed, effect } from '@preact/signals-core';
+import { BufferGeometry, Color, Material, Mesh, Object3D } from 'three';
+import { addActiveHandlers } from '../active.js';
+import { addHoverHandlers } from '../hover.js';
+import { readReactive } from '../utils.js';
+import { FlexNode } from '../flex/index.js';
+import { MergedProperties, computedInheritableProperty, } from '../properties/index.js';
+export function disposeGroup(object) {
+    object?.traverse((mesh) => {
+        if (!(mesh instanceof Mesh)) {
+            return;
+        }
+        if (mesh.material instanceof Material) {
+            mesh.material.dispose();
+        }
+        if (mesh.geometry instanceof BufferGeometry) {
+            mesh.geometry.dispose();
+        }
+    });
+}
+export function computedGlobalMatrix(parentMatrix, localMatrix) {
+    return computed(() => {
+        const local = localMatrix.value;
+        const parent = parentMatrix.value;
+        if (local == null || parent == null) {
+            return undefined;
+        }
+        return parent.clone().multiply(local);
+    });
+}
+export function computedIsVisible(flexState, isClipped, mergedProperties) {
+    return computed(() => flexState.displayed.value &&
+        (isClipped == null || !isClipped?.value) &&
+        mergedProperties.value.read('visibility', 'visible') === 'visible');
+}
+export function loadResourceWithParams(target, fn, cleanup, initializers, param, ...additionals) {
+    initializers.push((subscriptions) => {
+        if (!(param instanceof Signal)) {
+            let canceled = false;
+            fn(param, ...additionals).then((value) => (canceled ? undefined : (target.value = value)));
+            subscriptions.push(() => (canceled = true));
+            return subscriptions;
+        }
+        subscriptions.push(effect(() => {
+            let canceled = false;
+            fn(param.value, ...additionals)
+                .then((value) => (canceled ? undefined : (target.value = value)))
+                .catch(console.error);
+            return () => (canceled = true);
+        }));
+        if (cleanup != null) {
+            subscriptions.push(() => {
+                const { value } = target;
+                if (value == null) {
+                    return;
+                }
+                cleanup(value);
+            });
+        }
+        return subscriptions;
+    });
+}
+export function createNode(target, state, parentContext, mergedProperties, object, objectVisibleDefault, initializers) {
+    initializers.push((subscriptions) => {
+        const node = new FlexNode(state, mergedProperties, parentContext.root.requestCalculateLayout, object, objectVisibleDefault, subscriptions);
+        if (target != null) {
+            target.value = node;
+        }
+        subscriptions.push(effect(() => {
+            const parentNode = parentContext.node.value;
+            if (parentNode == null) {
+                return;
+            }
+            parentNode.addChild(node);
+            return () => parentNode.removeChild(node);
+        }));
+        return subscriptions;
+    });
+}
+const signalMap = new Map();
+export const keepAspectRatioPropertyTransformer = {
+    keepAspectRatio: (value, target) => {
+        let signal = signalMap.get(value);
+        if (signal == null) {
+            //if keep aspect ratio is "false" => we write "null" => which overrides the previous properties and returns null
+            signalMap.set(value, (signal = computed(() => (readReactive(value) === false ? null : undefined))));
+        }
+        target.add('aspectRatio', signal);
+    },
+};
+const eventHandlerKeys = [
+    'onClick',
+    'onContextMenu',
+    'onDoubleClick',
+    'onPointerCancel',
+    'onPointerDown',
+    'onPointerEnter',
+    'onPointerLeave',
+    'onPointerMove',
+    'onPointerOut',
+    'onPointerOver',
+    'onPointerUp',
+    'onWheel',
+];
+export function computedHandlers(style, propertiesSignal, defaultProperties, hoveredSignal, activeSignal, dynamicHandlers, defaultCursor) {
+    return computed(() => {
+        const handlers = {};
+        const properties = propertiesSignal.value;
+        if (properties != null) {
+            for (const key of eventHandlerKeys) {
+                const handler = properties[key];
+                if (handler != null) {
+                    handlers[key] = handler;
+                }
+            }
+        }
+        addHandlers(handlers, dynamicHandlers?.value);
+        addHoverHandlers(handlers, style.value, propertiesSignal.value, defaultProperties.value, hoveredSignal, defaultCursor);
+        addActiveHandlers(handlers, style.value, propertiesSignal.value, defaultProperties.value, activeSignal);
+        return handlers;
+    });
+}
+export function computeAncestorsHaveListeners(parentContext, handlers) {
+    return computed(() => (parentContext?.ancestorsHaveListeners.value ?? false) || Object.keys(handlers.value).length > 0);
+}
+export function addHandlers(target, handlers) {
+    for (const key in handlers) {
+        addHandler(key, target, handlers[key]);
+    }
+}
+export function addHandler(key, target, handler) {
+    if (handler == null) {
+        return;
+    }
+    const existingHandler = target[key];
+    if (existingHandler == null) {
+        target[key] = handler;
+        return;
+    }
+    target[key] = ((e) => {
+        existingHandler(e);
+        if ('stopped' in e && e.stopped) {
+            return;
+        }
+        handler(e);
+    });
+}
+export function computedMergedProperties(style, properties, defaultProperties, postTransformers, preTransformers, onInit) {
+    return computed(() => {
+        const merged = new MergedProperties(preTransformers);
+        onInit?.(merged);
+        merged.addAll(style.value, properties.value, defaultProperties.value, postTransformers);
+        return merged;
+    });
+}
+const colorHelper = new Color();
+/**
+ * @requires that each mesh inside the group has its default color stored inside object.userData.color
+ */
+export function applyAppearancePropertiesToGroup(propertiesSignal, group, initializers) {
+    initializers.push(() => effect(() => {
+        const properties = propertiesSignal.value;
+        const color = properties.read('color', undefined);
+        let c;
+        if (Array.isArray(color)) {
+            c = colorHelper.setRGB(...color);
+        }
+        else if (color != null) {
+            c = colorHelper.set(color);
+        }
+        const opacity = properties.read('opacity', 1);
+        const depthTest = properties.read('depthTest', true);
+        const depthWrite = properties.read('depthWrite', false);
+        const renderOrder = properties.read('renderOrder', 0);
+        readReactive(group)?.traverse((mesh) => {
+            if (!(mesh instanceof Mesh)) {
+                return;
+            }
+            mesh.renderOrder = renderOrder;
+            const material = mesh.material;
+            material.color.copy(c ?? mesh.userData.color);
+            material.opacity = opacity;
+            material.depthTest = depthTest;
+            material.depthWrite = depthWrite;
+        });
+    }));
+}
+export function computeMatrixWorld(target, localMatrix, rootObjectMatrixWorld, globalMatrixSignal) {
+    const globalMatrix = globalMatrixSignal.peek();
+    if (globalMatrix == null) {
+        return false;
+    }
+    target.multiplyMatrices(rootObjectMatrixWorld, globalMatrix);
+    if (localMatrix != null) {
+        target.multiply(localMatrix);
+    }
+    return true;
+}
+export function setupMatrixWorldUpdate(updateMatrixWorld, updateChildrenMatrixWorld, objectRef, rootContext, globalMatrixSignal, initializers, useOwnMatrix) {
+    initializers.push(() => effect(() => {
+        if (updateMatrixWorld != true && !updateMatrixWorld.value) {
+            return;
+        }
+        const fn = () => {
+            const object = objectRef instanceof Object3D ? objectRef : objectRef.current;
+            const rootObject = rootContext.object.current;
+            if (object == null || rootObject == null) {
+                return;
+            }
+            computeMatrixWorld(object.matrixWorld, useOwnMatrix ? object.matrix : undefined, rootObject.matrixWorld, globalMatrixSignal);
+            if (!updateChildrenMatrixWorld) {
+                return;
+            }
+            const length = object.children.length;
+            for (let i = 0; i < length; i++) {
+                object.children[i].updateMatrixWorld(true);
+            }
+        };
+        rootContext.onUpdateMatrixWorldSet.add(fn);
+        return () => rootContext.onUpdateMatrixWorldSet.delete(fn);
+    }));
+}
+export function computeDefaultProperties(propertiesSignal) {
+    return {
+        pointerEvents: computedInheritableProperty(propertiesSignal, 'pointerEvents', undefined),
+        pointerEventsOrder: computedInheritableProperty(propertiesSignal, 'pointerEventsOrder', undefined),
+        pointerEventsType: computedInheritableProperty(propertiesSignal, 'pointerEventsType', undefined),
+        renderOrder: computedInheritableProperty(propertiesSignal, 'renderOrder', 0),
+        depthTest: computedInheritableProperty(propertiesSignal, 'depthTest', true),
+        depthWrite: computedInheritableProperty(propertiesSignal, 'depthWrite', false),
+    };
+}
+export function setupPointerEvents(propertiesSignal, ancestorsHaveListeners, rootContext, targetRef, initializers, canHaveNonUikitChildren) {
+    initializers.push(() => {
+        const target = targetRef instanceof Object3D ? targetRef : targetRef.current;
+        if (target == null) {
+            return () => { };
+        }
+        const properties = propertiesSignal.value;
+        target.defaultPointerEvents = 'auto';
+        return effect(() => {
+            target.ancestorsHaveListeners = ancestorsHaveListeners.value;
+            target.pointerEvents = properties.read('pointerEvents', undefined);
+            target.pointerEventsOrder = properties.read('pointerEventsOrder', undefined);
+            target.pointerEventsType = properties.read('pointerEventsType', undefined);
+        });
+    }, () => effect(() => {
+        if (!canHaveNonUikitChildren &&
+            propertiesSignal.value.read('pointerEvents', undefined) === 'none') {
+            return;
+        }
+        const descendants = rootContext.interactableDescendants;
+        const target = targetRef instanceof Object3D ? targetRef : targetRef.current;
+        if (descendants == null || target == null) {
+            return;
+        }
+        descendants.push(target);
+        return () => {
+            const index = descendants.indexOf(target);
+            if (index === -1) {
+                return;
+            }
+            descendants.splice(index, 1);
+        };
+    }));
+}

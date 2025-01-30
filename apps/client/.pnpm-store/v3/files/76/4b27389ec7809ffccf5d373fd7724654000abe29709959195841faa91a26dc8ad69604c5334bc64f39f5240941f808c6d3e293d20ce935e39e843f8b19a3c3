@@ -1,0 +1,11 @@
+import { ReactNode, RefAttributes } from 'react';
+import { FullscreenProperties as BaseFullscreenProperties } from '@pmndrs/uikit/internals';
+import { ComponentInternals } from './ref.js';
+import { R3FEventMap } from './utils.js';
+export type FullscreenProperties = BaseFullscreenProperties<R3FEventMap> & {
+    children?: ReactNode;
+    attachCamera?: boolean;
+    distanceToCamera?: number;
+};
+export type FullscreenRef = ComponentInternals<BaseFullscreenProperties<R3FEventMap>>;
+export declare const Fullscreen: (props: FullscreenProperties & RefAttributes<FullscreenRef>) => ReactNode;

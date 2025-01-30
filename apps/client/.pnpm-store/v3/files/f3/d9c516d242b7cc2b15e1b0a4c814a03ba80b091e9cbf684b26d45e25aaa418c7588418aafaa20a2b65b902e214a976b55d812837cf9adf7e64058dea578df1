@@ -1,0 +1,65 @@
+import { ReadonlySignal, Signal } from '@preact/signals-core';
+import { Inset, createContainer, createImage, createRoot, createSvg, createText, createIcon, createCustomContainer, ContainerProperties, MergedProperties } from '@pmndrs/uikit/internals';
+import { ForwardedRef, RefObject } from 'react';
+import { Vector2Tuple, Mesh, Matrix4 } from 'three';
+export type ComponentInternals<T = ContainerProperties> = {
+    globalMatrix: ReadonlySignal<Matrix4 | undefined>;
+    /**
+     * the size of one pixel
+     */
+    pixelSize: ReadonlySignal<number>;
+    /**
+     *  the outer width/height of the element
+     */
+    size: ReadonlySignal<Vector2Tuple | undefined>;
+    /**
+     * the offset between from the element's center to its parent's center
+     */
+    center: ReadonlySignal<Vector2Tuple | undefined>;
+    /**
+     * a tuple containing the border sizes on all 4 sides `[top, right, bottom, left]`
+     */
+    borderInset: ReadonlySignal<Inset | undefined>;
+    /**
+     *  a tuple containing the padding sizes on all 4 sides `[top, right, bottom, left]`
+     */
+    paddingInset: ReadonlySignal<Inset | undefined>;
+    /**
+     * the x/y scroll position of the children when the element is scrollable
+     */
+    scrollPosition?: Signal<Vector2Tuple | undefined>;
+    /**
+     * the maximum x/y scroll position, based on the size of the children
+     */
+    maxScrollPosition?: ReadonlySignal<Partial<Vector2Tuple>>;
+    /**
+     * the mesh added to the scene graph to capture events
+     */
+    interactionPanel: Mesh;
+    /**
+     * exploses whether the element is fully clipped by some ancestor
+     */
+    isClipped?: ReadonlySignal<boolean>;
+    /**
+     * exploses whether the element is not fully clipped, has a size greater then 0, is not set to invisible, or display unequal to "none" by itself and all ancestors
+     */
+    isVisible: ReadonlySignal<boolean>;
+    /**
+     * set the styles of the element (the provided styles have a higher precedence then the element's properties)
+     */
+    setStyle(style: T | undefined, replace?: boolean): void;
+    /**
+     * get the object last written to `setStyle`
+     */
+    getStyle(): Readonly<T> | undefined;
+    /**
+     * read the current value for any property (combines default properties, direct properties, and styles)
+     * @param key the name of the property
+     */
+    getComputedProperty<K extends keyof T>(key: K): T[K] | undefined;
+};
+export declare function useComponentInternals<T, O = {}>(ref: ForwardedRef<ComponentInternals<T> & O>, pixelSize: Signal<number>, styleSignal: Signal<T | undefined>, internals: ReturnType<typeof createContainer | typeof createImage | typeof createRoot | typeof createSvg | typeof createText | typeof createIcon | typeof createCustomContainer> & {
+    isClipped?: Signal<boolean>;
+    scrollPosition?: Signal<Vector2Tuple>;
+    mergedProperties: Signal<MergedProperties>;
+}, interactionPanel: Mesh | RefObject<Mesh | null>, additional?: O): void;

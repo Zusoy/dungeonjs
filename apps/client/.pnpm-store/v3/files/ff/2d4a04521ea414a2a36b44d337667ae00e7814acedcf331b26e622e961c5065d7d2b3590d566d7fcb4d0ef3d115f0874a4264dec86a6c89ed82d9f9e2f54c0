@@ -1,0 +1,9 @@
+import type { Signal } from '@preact/signals-core';
+import { Camera } from 'three';
+import type { RootProperties } from './root.js';
+import { ThreeEventMap } from '../events.js';
+export type FullscreenProperties<EM extends ThreeEventMap = ThreeEventMap> = Omit<RootProperties<EM>, 'sizeX' | 'sizeY' | 'pixelSize' | 'anchorX' | 'anchorY'>;
+/**
+ * must be called when camera.fov, camera.top, camera.bottom, camera.right, camera.left, camera.zoom, camera.aspect changes
+ */
+export declare function updateSizeFullscreen(sizeX: Signal<number>, sizeY: Signal<number>, pixelSize: Signal<number>, distanceToCamera: number, camera: Camera, screenHeight: number): void;

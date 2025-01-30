@@ -1,0 +1,49 @@
+{
+  "name": "@pmndrs/uikit",
+  "type": "module",
+  "description": "Build performant 3D user interfaces with Three.js and yoga.",
+  "version": "0.8.7",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/pmndrs/uikit",
+  "author": "Bela Bohlender",
+  "keywords": [
+    "uikit",
+    "three.js",
+    "userinterface",
+    "flexbox",
+    "yoga",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:pmndrs/uikit.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./internals": "./dist/internals.js"
+  },
+  "peerDependencies": {
+    "three": ">=0.160"
+  },
+  "dependencies": {
+    "@preact/signals-core": "^1.5.1",
+    "inline-style-parser": "^0.2.3",
+    "node-html-parser": "^6.1.13",
+    "tw-to-css": "^0.0.12",
+    "yoga-layout": "^3.2.1",
+    "@pmndrs/msdfonts": "^0.8.7"
+  },
+  "scripts": {
+    "test": "mocha ./tests/*.spec.ts",
+    "build": "node --loader ts-node/esm scripts/extract-core-component-properties.ts && tsc -p ./tsconfig.build.json",
+    "generate": "node --loader ts-node/esm scripts/flex-generate-setter.ts",
+    "check:prettier": "prettier --check src scripts tests",
+    "check:eslint": "eslint 'src/**/*.{tsx,ts}'",
+    "fix:prettier": "prettier --write src scripts tests",
+    "fix:eslint": "eslint 'src/**/*.{tsx,ts}' --fix"
+  }
+}

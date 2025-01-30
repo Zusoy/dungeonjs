@@ -1,0 +1,14 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import { Image } from './image.js';
+import { useLoader } from '@react-three/fiber';
+import { SRGBColorSpace, TextureLoader } from 'three';
+/**
+ * be aware that this component does not dispose the loaded texture
+ */
+export const SuspendingImage = forwardRef(({ src, ...props }, ref) => {
+    const texture = useLoader(TextureLoader, src);
+    texture.colorSpace = SRGBColorSpace;
+    texture.matrixAutoUpdate = false;
+    return _jsx(Image, { ref: ref, src: texture, ...props });
+});

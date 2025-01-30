@@ -1,0 +1,22 @@
+import { Signal } from '@preact/signals-core';
+import { Matrix4 } from 'three';
+import { FlexNodeState } from './flex/node.js';
+import { Initializers, alignmentXMap, alignmentYMap } from './utils.js';
+import { MergedProperties } from './properties/merged.js';
+import { Object3DRef, RootContext } from './context.js';
+export type Percentage = `${number}%`;
+export type TransformProperties = {
+    transformTranslateX?: Percentage | number;
+    transformTranslateY?: Percentage | number;
+    transformTranslateZ?: number;
+    transformRotateX?: number;
+    transformRotateY?: number;
+    transformRotateZ?: number;
+    transformScaleX?: Percentage | number;
+    transformScaleY?: Percentage | number;
+    transformScaleZ?: Percentage | number;
+    transformOriginX?: keyof typeof alignmentXMap;
+    transformOriginY?: keyof typeof alignmentYMap;
+};
+export declare function computedTransformMatrix(propertiesSignal: Signal<MergedProperties>, { relativeCenter, size }: FlexNodeState, pixelSizeSignal: Signal<number>): Signal<Matrix4 | undefined>;
+export declare function applyTransform(root: Pick<RootContext, 'requestRender'>, object: Object3DRef, transformMatrix: Signal<Matrix4 | undefined>, initializers: Initializers): void;

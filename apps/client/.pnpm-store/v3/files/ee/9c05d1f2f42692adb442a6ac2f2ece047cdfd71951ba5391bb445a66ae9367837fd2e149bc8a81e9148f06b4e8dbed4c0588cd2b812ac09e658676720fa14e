@@ -1,0 +1,63 @@
+import { InstancedBufferAttribute } from 'three';
+import { MaterialClass } from './panel-material.js';
+import { InstancedPanel } from './instanced-panel.js';
+import { OrderInfo, WithCameraDistance } from '../order.js';
+import { Signal } from '@preact/signals-core';
+import { MergedProperties } from '../properties/merged.js';
+import { Object3DRef, RootContext } from '../context.js';
+import { Initializers } from '../utils.js';
+export type ShadowProperties = {
+    receiveShadow?: boolean;
+    castShadow?: boolean;
+};
+export type RenderProperties = {
+    depthWrite?: boolean;
+    depthTest?: boolean;
+    renderOrder?: number;
+};
+export type PanelGroupProperties = {
+    panelMaterialClass?: MaterialClass;
+} & ShadowProperties & RenderProperties;
+export declare function computedPanelGroupDependencies(propertiesSignal: Signal<MergedProperties>): import("@preact/signals-core").ReadonlySignal<Required<PanelGroupProperties>>;
+export declare const defaultPanelDependencies: Required<PanelGroupProperties>;
+export declare class PanelGroupManager {
+    private pixelSize;
+    private root;
+    private object;
+    private map;
+    constructor(pixelSize: Signal<number>, root: WithCameraDistance & Pick<RootContext, 'onFrameSet' | 'requestRender'>, object: Object3DRef, initializers: Initializers);
+    private traverse;
+    getGroup(majorIndex: number, properties?: Required<PanelGroupProperties>): InstancedPanelGroup;
+}
+export declare class InstancedPanelGroup {
+    private readonly object;
+    readonly pixelSize: Signal<number>;
+    readonly root: WithCameraDistance & Pick<RootContext, 'requestRender'>;
+    private readonly orderInfo;
+    private readonly panelGroupProperties;
+    private mesh?;
+    instanceMatrix: InstancedBufferAttribute;
+    instanceData: InstancedBufferAttribute;
+    instanceClipping: InstancedBufferAttribute;
+    private readonly instanceMaterial;
+    private buckets;
+    private elementCount;
+    private bufferElementSize;
+    instanceDataOnUpdate: InstancedBufferAttribute['addUpdateRange'];
+    private nextUpdateTime;
+    private nextUpdateTimeoutRef;
+    private activateElement;
+    private setElementIndex;
+    private bufferCopyWithin;
+    private clearBufferAt;
+    constructor(object: Object3DRef, pixelSize: Signal<number>, root: WithCameraDistance & Pick<RootContext, 'requestRender'>, orderInfo: OrderInfo, panelGroupProperties: Required<PanelGroupProperties>);
+    private updateCount;
+    private requestUpdate;
+    private requestUpdateNextFrame;
+    insert(bucketIndex: number, panel: InstancedPanel): void;
+    delete(bucketIndex: number, elementIndex: number | undefined, panel: InstancedPanel): void;
+    onFrame(): void;
+    private update;
+    private resize;
+    destroy(): void;
+}

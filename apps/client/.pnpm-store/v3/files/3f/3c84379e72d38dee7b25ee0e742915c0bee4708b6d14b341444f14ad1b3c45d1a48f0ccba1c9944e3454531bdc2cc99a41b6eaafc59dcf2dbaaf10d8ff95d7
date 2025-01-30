@@ -1,0 +1,40 @@
+import { Signal } from '@preact/signals-core';
+import { Subscriptions } from '../utils.js';
+import { EventHandlers } from '../events.js';
+import { Object3D, Object3DEventMap } from 'three';
+import { ParentContext } from '../context.js';
+import { FontFamilies } from '../text/index.js';
+export declare function createParentContextSignal(): Signal<Signal<(Readonly<{
+    node: Signal<import("../internals.js").FlexNode | undefined>;
+    anyAncestorScrollable: Signal<readonly [boolean, boolean]>;
+    ancestorsHaveListeners: Signal<boolean>;
+    clippingRect: Signal<import("../clipping.js").ClippingRect | undefined>;
+    childrenMatrix: Signal<import("three").Matrix4 | undefined>;
+    orderInfo: Signal<import("../order.js").OrderInfo | undefined>;
+    root: import("../context.js").RootContext;
+}> & {
+    fontFamiliesSignal: Signal<FontFamilies | undefined>;
+}) | undefined> | undefined>;
+export declare function setupParentContextSignal(parentContextSignal: ReturnType<typeof createParentContextSignal>, container: Object3D): void;
+export declare class Component<T = {}> extends Object3D<EventMap & {
+    childadded: {};
+    childremoved: {};
+} & T> {
+}
+export declare class Parent<T = {}> extends Component<T> {
+    readonly contextSignal: Signal<(ParentContext & {
+        fontFamiliesSignal: Signal<FontFamilies | undefined>;
+    }) | undefined>;
+    protected readonly childrenContainer: Object3D<{
+        childadded: {};
+        childremoved: {};
+    } & Object3DEventMap>;
+    constructor();
+    add(...objects: Array<Object3D>): this;
+    addAt(object: Component, index: number): this;
+    remove(...objects: Array<Object3D>): this;
+}
+export declare function bindHandlers(handlers: Signal<EventHandlers>, container: Object3D<EventMap>, subscriptions: Subscriptions): void;
+export type EventMap = Object3DEventMap & {
+    [Key in keyof EventHandlers as Lowercase<Key extends `on${infer K}` ? K : never>]-?: Parameters<Exclude<EventHandlers[Key], undefined>>[0];
+};
