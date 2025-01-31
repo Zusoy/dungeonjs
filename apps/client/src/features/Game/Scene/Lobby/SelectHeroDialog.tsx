@@ -10,6 +10,17 @@ type Props = {
 const SelectHeroDialog = React.forwardRef<HTMLDialogElement, Props>(({ onClose }, ref) => {
   const id = React.useId()
   const dispatch = useDispatch()
+  const [selectedHero, setSelectedHero] = React.useState<Hero>(Hero.Barbarian)
+
+  const onChange: React.ChangeEventHandler<HTMLSelectElement> = e => {
+    const hero = (e.currentTarget.value as Hero)
+
+    if (!Object.values(Hero).includes(hero)) {
+      return
+    }
+
+    setSelectedHero(hero)
+  }
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = e => {
     e.preventDefault()
@@ -27,9 +38,9 @@ const SelectHeroDialog = React.forwardRef<HTMLDialogElement, Props>(({ onClose }
   return (
     <dialog ref={ref} id={id} className='modal'>
       <div className='modal-box'>
-        <h3 className='font-bold text-lg'>Select Hero</h3>
-        <form className='flex flex-col gap-4' onSubmit={onSubmit}>
-          <select className='select select-primary w-full max-w-xs' name='hero'>
+        <h3 className='font-bold text-lg mb-4 text-center'>Select Hero</h3>
+        <form className='flex flex-col gap-4 justify-center items-center' onSubmit={onSubmit}>
+          <select className='select select-primary w-full max-w-xs' name='hero' onChange={onChange} value={selectedHero.toString()}>
             <option value='knight'>Knight</option>
             <option value='mage'>Mage</option>
             <option value='barbarian'>Barbarian</option>
