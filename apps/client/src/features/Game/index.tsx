@@ -9,7 +9,7 @@ const Game: React.FC = () => {
   const waitingForPlayers = useSelector(selectInLobby)
 
   return (
-    <div style={{ width: window.innerWidth, height: window.innerHeight }}>
+    <div style={{ width: window.innerWidth, height: window.innerHeight }} className='overflow-hidden absolute top-0'>
       <React.Suspense fallback={<Loading />}>
         {waitingForPlayers
           ? <LobbyScene />

@@ -24,9 +24,9 @@ const Hub: React.FC = () => {
   }
 
   return (
-    <div className='flex flex-col w-full min-h-screen items-center bg-slate-500'>
+    <div className='flex flex-col w-full min-h-screen items-center bg-base-100'>
       <div className='flex flex-row gap-2 items-center p-10'>
-        <button type='button' className='btn btn-success btn-lg' onClick={openCreateRoomDialog}>New room</button>
+        <button type='button' className='btn btn-success btn-lg' onClick={openCreateRoomDialog}>New game</button>
       </div>
       <ListRooms />
       <CreateRoom ref={createRoomDialog} />

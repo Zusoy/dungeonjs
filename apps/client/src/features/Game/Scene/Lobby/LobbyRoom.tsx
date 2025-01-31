@@ -1,28 +1,15 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useGLTF } from '@react-three/drei'
+import { Instance, Instances, useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { VectorTuple } from 'services/socket'
 
 type GLTFResult = GLTF & {
   nodes: {
     floor_tile_large: THREE.Mesh
-    floor_tile_large001: THREE.Mesh
-    floor_tile_large002: THREE.Mesh
-    floor_tile_large003: THREE.Mesh
     chair001: THREE.Mesh
-    chair002: THREE.Mesh
-    chair003: THREE.Mesh
-    chair004: THREE.Mesh
     table_long_tablecloth: THREE.Mesh
     wall: THREE.Mesh
-    wall001: THREE.Mesh
-    floor_tile_large004: THREE.Mesh
-    floor_tile_large005: THREE.Mesh
-    floor_tile_large006: THREE.Mesh
-    wall002: THREE.Mesh
-    wall003: THREE.Mesh
-    floor_tile_large007: THREE.Mesh
     banner_patternA_blue: THREE.Mesh
     banner_patternA_green: THREE.Mesh
     banner_patternA_blue001: THREE.Mesh
@@ -51,108 +38,30 @@ const LobbyRoom: React.FC<JSX.IntrinsicElements['group']> = props => {
 
   return (
     <group {...props} dispose={null} rotation={rotation}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large.geometry}
-        material={materials.texture}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large001.geometry}
-        material={materials.texture}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large002.geometry}
-        material={materials.texture}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large003.geometry}
-        material={materials.texture}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.chair001.geometry}
-        material={materials['texture.002']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.chair002.geometry}
-        material={materials['texture.002']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.chair003.geometry}
-        material={materials['texture.002']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.chair004.geometry}
-        material={materials['texture.002']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.table_long_tablecloth.geometry}
-        material={materials['texture.008']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.wall.geometry}
-        material={materials['texture.009']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.wall001.geometry}
-        material={materials['texture.009']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large004.geometry}
-        material={materials.texture}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large005.geometry}
-        material={materials.texture}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large006.geometry}
-        material={materials.texture}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.wall002.geometry}
-        material={materials['texture.009']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.wall003.geometry}
-        material={materials['texture.009']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.floor_tile_large007.geometry}
-        material={materials.texture}
-      />
+      <Instances limit={10} geometry={nodes.floor_tile_large.geometry} material={materials.texture}>
+        <Instance position={[-4, 0, 0]} castShadow receiveShadow />
+        <Instance position={[0, 0, 0]} castShadow receiveShadow />
+        <Instance position={[0, 0, 0]} castShadow receiveShadow />
+        <Instance position={[4, 0, 0]} castShadow receiveShadow />
+        <Instance position={[8, 0, 0]} castShadow receiveShadow />
+        <Instance position={[-4, 0, 4]} castShadow receiveShadow />
+        <Instance position={[0, 0, 4]} castShadow receiveShadow />
+        <Instance position={[0, 0, 4]} castShadow receiveShadow />
+        <Instance position={[4, 0, 4]} castShadow receiveShadow />
+        <Instance position={[8, 0, 4]} castShadow receiveShadow />
+      </Instances>
+      <Instances limit={4} geometry={nodes.chair001.geometry} material={materials['texture.002']}>
+        <Instance position={[0, 0, 0]} castShadow receiveShadow />
+        <Instance position={[1, 0, 0]} castShadow receiveShadow />
+        <Instance position={[2, 0, 0]} castShadow receiveShadow />
+        <Instance position={[3, 0, 0]} castShadow receiveShadow />
+      </Instances>
+      <Instances limit={4} geometry={nodes.wall.geometry} material={materials['texture.009']}>
+        <Instance position={[-4, 0, 0]} castShadow receiveShadow />
+        <Instance position={[0, 0, 0]} castShadow receiveShadow />
+        <Instance position={[4, 0, 0]} castShadow receiveShadow />
+        <Instance position={[8, 0, 0]} castShadow receiveShadow />
+      </Instances>
       <mesh
         castShadow
         receiveShadow
@@ -170,18 +79,6 @@ const LobbyRoom: React.FC<JSX.IntrinsicElements['group']> = props => {
         receiveShadow
         geometry={nodes.banner_patternA_blue001.geometry}
         material={materials['texture.012']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.coin_stack_small.geometry}
-        material={materials['texture.014']}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.bottle_B_green.geometry}
-        material={materials['texture.015']}
       />
     </group>
   )

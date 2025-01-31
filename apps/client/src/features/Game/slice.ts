@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
 import { Hero, UserPayload } from 'services/socket'
+import { left } from 'features/Rooms/slice'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -38,6 +39,13 @@ const slice = createSlice({
       ...state,
       status: GameStatus.Error
     })
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(left, state => ({
+        ...state,
+        players: []
+      }))
   }
 })
 
@@ -52,6 +60,9 @@ export const selectInLobby: Selector<boolean> = state =>
 
 export const selectPlayers: Selector<UserPayload[]> = state =>
   state.game.players
+
+export const selectIsHost: Selector<boolean> = state =>
+  state.game.players.find(p => p.id === state.auth.id)?.host || false
 
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
