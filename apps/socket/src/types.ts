@@ -6,19 +6,23 @@ export type AppServer = Server<ClientToServer, ServerToClients, InterServer>
 export type AppSocket = Socket<ClientToServer, ServerToClients, InterServer>
 
 export type CreateRoomPayload = {
-  roomId: string
+  readonly roomId: string
 }
 
 export type JoinRoomPayload = {
-  roomId: string
+  readonly roomId: string
 }
 
 export type LeaveRoomPayload = {
-  roomId: string
+  readonly roomId: string
 }
 
 export type ChangeHeroPayload = {
-  hero: Hero
+  readonly hero: Hero
+}
+
+export type StartGamePayload = {
+  readonly roomId: string
 }
 
 export type LeftRoomReason = 'user_left'|'room_deleted'

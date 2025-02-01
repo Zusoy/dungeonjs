@@ -1,9 +1,9 @@
 import { all, call, fork, put, take, takeLatest } from 'redux-saga/effects'
-import { connect, connected, error, type ConnectPayload } from 'features/Authentication/slice'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { connect, connected, error, type ConnectPayload } from 'features/Authentication/slice'
 import { createWebsocketConnection } from 'services/socket'
 import { subscribeCreateRoom, subscribeJoinRoom, subscribeLeaveRoom } from 'features/Rooms/effects'
-import { subscribeChangeHero } from 'features/Game/effects'
+import { subscribeChangeHero, subscribeStartGame } from 'features/Game/effects'
 import roomChannel from 'features/Rooms/channel'
 import lobbyChannel from 'features/Game/Scene/Lobby/channel'
 
@@ -33,7 +33,8 @@ export function* connectAndSubscribeWebsocketEffect(action: PayloadAction<Connec
       fork(subscribeCreateRoom, socket),
       fork(subscribeJoinRoom, socket),
       fork(subscribeLeaveRoom, socket),
-      fork(subscribeChangeHero, socket)
+      fork(subscribeChangeHero, socket),
+      fork(subscribeStartGame, socket)
     ])
   } catch {
     yield put(error())

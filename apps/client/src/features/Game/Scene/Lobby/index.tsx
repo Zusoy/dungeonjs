@@ -4,7 +4,7 @@ import ValidationDialog from 'widgets/Dialog/ValidationDialog'
 import SelectHeroDialog from 'features/Game/Scene/Lobby/SelectHeroDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import { leave, selectCurrentRoomId } from 'features/Rooms/slice'
-import { selectIsHost } from 'features/Game/slice'
+import { selectIsHost, startGame } from 'features/Game/slice'
 
 const Lobby: React.FC = () => {
   const dispatch = useDispatch()
@@ -18,6 +18,14 @@ const Lobby: React.FC = () => {
       ? 'Are you sure to leave ? This will delete your game and kick all current players.'
       : 'Are you sure to leave the game ?'
   }, [isHost])
+
+  const launchGame = React.useCallback(() => {
+    if (!isHost || !currentRoomId) {
+      return
+    }
+
+    dispatch(startGame({ roomId: currentRoomId }))
+  }, [isHost, currentRoomId, dispatch])
 
   const leaveRoom = React.useCallback(() => {
     if (!currentRoomId) {
@@ -39,6 +47,10 @@ const Lobby: React.FC = () => {
           >
             Leave
           </button>
+          {isHost
+            ? <button type='button' className='btn join-item btn-md btn-success' onClick={launchGame}>Start</button>
+            : null
+          }
           <button
             type='button'
             className='btn join-item btn-md btn-primary'

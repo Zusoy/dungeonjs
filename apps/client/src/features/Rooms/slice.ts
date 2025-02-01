@@ -14,15 +14,15 @@ export const initialState: State = {
 }
 
 export type CreateRoomPayload = {
-  roomId: string
+  readonly roomId: string
 }
 
 export type JoinRoomPayload = {
-  roomId: string
+  readonly roomId: string
 }
 
 export type LeaveRoomPayload = {
-  roomId: string
+  readonly roomId: string
 }
 
 const slice = createSlice({

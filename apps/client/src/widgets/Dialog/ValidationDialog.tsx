@@ -30,7 +30,7 @@ const ValidationDialog = React.forwardRef<HTMLDialogElement, DialogProps>(({ tit
         <p className='py-4'>{description}</p>
         <div className='w-full flex flex-row gap-2 items-center justify-end'>
           <form method='dialog'>
-            <button className='btn btn-error btn-md'>
+            <button className='btn btn-error btn-md btn-outline'>
               {cancelLabel ?? 'Cancel'}
             </button>
           </form>

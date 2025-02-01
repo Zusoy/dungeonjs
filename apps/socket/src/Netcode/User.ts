@@ -1,4 +1,5 @@
 import { AppSocket } from 'types'
+import INetcodeItem from 'Netcode/INetcodeItem'
 
 export type VectorTuple = [x: number, y: number, z: number]
 export type Hero = 'rogue'|'knight'|'mage'|'barbarian'
@@ -13,7 +14,7 @@ export type UserPayload = {
   readonly host?: boolean
 }
 
-export default class User {
+export default class User implements INetcodeItem {
   static fromSocket(socket: AppSocket, color: string, hero: Hero): User {
     const username = socket.handshake.query.username?.toString() || ''
 
@@ -35,6 +36,10 @@ export default class User {
     public position: VectorTuple,
     public rotation: VectorTuple
   ) {
+  }
+
+  public getId(): string {
+    return this.id
   }
 
   public getPayload(): UserPayload {

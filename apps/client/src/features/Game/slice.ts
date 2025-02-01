@@ -21,7 +21,11 @@ export const initialState: State = {
 }
 
 export type ChangeHeroPayload = {
-  hero: Hero
+  readonly hero: Hero
+}
+
+export type StartGamePayload = {
+  readonly roomId: string
 }
 
 const slice = createSlice({
@@ -35,15 +39,25 @@ const slice = createSlice({
     changeHero: (state, _action: PayloadAction<ChangeHeroPayload>) => ({
       ...state
     }),
+    startGame: (state, _action: PayloadAction<StartGamePayload>) => ({
+      ...state,
+      status: GameStatus.Starting
+    }),
+    started: state => ({
+      ...state,
+      status: GameStatus.Started
+    }),
     error: state => ({
       ...state,
-      status: GameStatus.Error
+      status: GameStatus.Error,
+      players: []
     })
   },
   extraReducers: builder => {
     builder
       .addCase(left, state => ({
         ...state,
+        status: GameStatus.Lobby,
         players: []
       }))
   }
@@ -52,11 +66,19 @@ const slice = createSlice({
 export const {
   receivedPlayers,
   changeHero,
+  startGame,
+  started,
   error
 } = slice.actions
 
 export const selectInLobby: Selector<boolean> = state =>
   state.game.status === GameStatus.Lobby
+
+export const selectIsStarting: Selector<boolean> = state =>
+  state.game.status === GameStatus.Starting
+
+export const selectIsStarted: Selector<boolean> = state =>
+  state.game.status === GameStatus.Started
 
 export const selectPlayers: Selector<UserPayload[]> = state =>
   state.game.players
@@ -67,6 +89,8 @@ export const selectIsHost: Selector<boolean> = state =>
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
   ReturnType<typeof changeHero> |
+  ReturnType<typeof startGame> |
+  ReturnType<typeof started> |
   ReturnType<typeof error>
 
 export default slice

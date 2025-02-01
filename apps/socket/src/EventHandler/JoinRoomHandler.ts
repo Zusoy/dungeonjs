@@ -4,13 +4,14 @@ import { JoinRoomPayload, AppSocket } from 'types'
 export default class JoinRoomHandler extends AbstractEventHandler<'joinRoom'> {
   supports(event: "joinRoom", payload: [payload: JoinRoomPayload], _socket: AppSocket): boolean {
     const [joinPayload] = payload
-    return event === 'joinRoom' &&
-      Array.from(this.rooms).map(({ roomId }) => roomId).includes(joinPayload.roomId)
+
+    return event === 'joinRoom'
+      && !!this.rooms.find(joinPayload.roomId)
   }
 
   handle(_event: "joinRoom", payload: [payload: JoinRoomPayload], socket: AppSocket): void {
     const [joinPayload] = payload
-    const room = Array.from(this.rooms).find(({ roomId }) => roomId === joinPayload.roomId)
+    const room = this.rooms.find(joinPayload.roomId)
 
     if (!room) {
       return
@@ -23,7 +24,7 @@ export default class JoinRoomHandler extends AbstractEventHandler<'joinRoom'> {
       .then(sockets => {
         const roomUsers = sockets
           .map(({ id }) => id)
-          .map(id => Array.from(this.users).find(user => user.id === id) || null)
+          .map(id => this.users.find(id))
           .filter(u => !!u)
           .map(u => u.getRoomPayload(u.id === room.createdById))
 

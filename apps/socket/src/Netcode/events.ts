@@ -4,7 +4,8 @@ import type {
   JoinRoomPayload,
   LeaveRoomPayload,
   LeftRoomReason,
-  ChangeHeroPayload
+  ChangeHeroPayload,
+  StartGamePayload
 } from 'types'
 
 export interface ClientToServer {
@@ -13,6 +14,7 @@ export interface ClientToServer {
   joinRoom: (payload: JoinRoomPayload) => void
   leaveRoom: (payload: LeaveRoomPayload) => void
   changeHero: (payload: ChangeHeroPayload) => void
+  startGame: (payload: StartGamePayload) => void
 }
 
 export const clientToServerEvents: (keyof ClientToServer)[] = [
@@ -20,7 +22,8 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
   'createRoom',
   'joinRoom',
   'leaveRoom',
-  'changeHero'
+  'changeHero',
+  'startGame'
 ]
 
 export interface ServerToClients {
@@ -29,6 +32,7 @@ export interface ServerToClients {
   players: (players: Iterable<UserPayload>) => void
   joinedRoom: (room: string) => void
   leftRoom: (reason: LeftRoomReason) => void
+  gameStarted: (roomId: string) => void
 }
 
 export interface InterServer {
