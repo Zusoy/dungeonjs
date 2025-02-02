@@ -3,6 +3,7 @@ import { Selector } from 'app/store'
 import { Hero, UserPayload } from 'services/socket'
 import { left } from 'features/Rooms/slice'
 import { Nullable } from 'utils'
+import { Direction, ITile, TileType } from 'features/Game/Tile/type'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -13,12 +14,16 @@ export enum GameStatus {
 
 export type State = {
   players: UserPayload[],
+  tiles: ITile[],
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
 }
 
 export const initialState: State = {
   players: [],
+  tiles: [
+    { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
+  ],
   playerTurn: null,
   status: GameStatus.Lobby
 }
@@ -96,6 +101,9 @@ export const selectIsHost: Selector<boolean> = state =>
 
 export const selectIsPlayerTurn: Selector<boolean> = state =>
   state.game.playerTurn === state.auth.id
+
+export const selectTiles: Selector<ITile[]> = state =>
+  state.game.tiles
 
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |

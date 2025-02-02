@@ -1,21 +1,30 @@
 import React from 'react'
-import StartTile from 'features/Game/Tile/Room/Start'
+import Tile from 'features/Game/Tile'
 import HeroCharacter from 'features/Game/Character/Hero'
 import { Canvas } from '@react-three/fiber'
 import { CameraControls, Environment, Stats } from '@react-three/drei'
 import { useSelector } from 'react-redux'
-import { selectPlayers } from 'features/Game/slice'
+import { selectPlayers, selectTiles } from 'features/Game/slice'
 
 const Scene: React.FC = () => {
   const camera = React.useRef<CameraControls>(null!)
   const players = useSelector(selectPlayers)
+  const tiles = useSelector(selectTiles)
 
   return (
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>
       <Stats />
-      <StartTile position={[0, 0, 0]} rotation={[0, 0, 0]} />
       <Environment preset='city' />
       <CameraControls maxDistance={30} minDistance={20} ref={camera} />
+      {tiles.map(
+        tile =>
+          <Tile
+            key={tile.id}
+            type={tile.type}
+            directions={tile.directions}
+            position={[tile.coords[0] * 8, 0, tile.coords[1] * 8]}
+          />
+      )}
       {players.map(
         player =>
           <HeroCharacter

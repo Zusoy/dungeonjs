@@ -16,22 +16,22 @@ type GLTFResult = GLTF & {
   }
 }
 
-const Straight: React.FC<JSX.IntrinsicElements['group']> = props => {
+const Corridor: React.FC<JSX.IntrinsicElements['group']> = props => {
   const { nodes, materials } = useGLTF('/arts/dungeon/Corridors/01.gltf') as unknown as GLTFResult
 
   return (
     <group {...props} dispose={null}>
-      <Instances limit={2} geometry={nodes.floor_tile_large.geometry} material={materials.texture}>
+      <Instances count={2} geometry={nodes.floor_tile_large.geometry} material={materials.texture}>
         <Instance position={[0, 0, 0]} castShadow receiveShadow />
         <Instance position={[-4, 0, 0]} castShadow receiveShadow />
       </Instances>
-      <Instances limit={4} geometry={nodes.wall.geometry} material={materials['texture.001']}>
+      <Instances count={4} geometry={nodes.wall.geometry} material={materials['texture.001']}>
         <Instance position={[0, 0, 0]} castShadow receiveShadow />
         <Instance position={[-4, 0, 0]} castShadow receiveShadow />
         <Instance position={[0, 0, 4]} castShadow receiveShadow />
         <Instance position={[-4, 0, 4]} castShadow receiveShadow />
       </Instances>
-      <Instances limit={4} geometry={nodes.pillar.geometry} material={materials['texture.002']}>
+      <Instances count={4} geometry={nodes.pillar.geometry} material={materials['texture.002']}>
         <Instance position={[0, 0, 0]} castShadow receiveShadow />
         <Instance position={[8, 0, 0]} castShadow receiveShadow />
         <Instance position={[0, 0, 4]} castShadow receiveShadow />
@@ -43,4 +43,4 @@ const Straight: React.FC<JSX.IntrinsicElements['group']> = props => {
 
 useGLTF.preload('/arts/dungeon/Corridors/01.gltf')
 
-export default Straight
+export default Corridor

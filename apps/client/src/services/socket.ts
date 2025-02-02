@@ -5,6 +5,7 @@ import { ChangeHeroPayload, StartGamePayload } from 'features/Game/slice'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
 export type VectorTuple = [x: number, y: number, z: number]
+export type Coords = [x: number, y: number]
 
 export enum Hero {
   Rogue = 'rogue',

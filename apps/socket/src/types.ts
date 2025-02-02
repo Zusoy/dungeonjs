@@ -40,6 +40,7 @@ export enum TileType {
 }
 
 export interface ITile {
+  readonly id: string
   readonly type: TileType
   readonly coords: Coords
   readonly position: VectorTuple
@@ -51,6 +52,7 @@ export class CorridorTile implements ITile {
   public readonly type = TileType.Corridor
 
   constructor(
+    public readonly id: string,
     public readonly coords: Coords,
     public readonly position: VectorTuple,
     public readonly rotation: VectorTuple,
@@ -62,6 +64,7 @@ export class RoomTile implements ITile {
   public readonly type = TileType.Room
 
   constructor(
+    public readonly id: string,
     public readonly coords: Coords,
     public readonly position: VectorTuple,
     public readonly rotation: VectorTuple,

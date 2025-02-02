@@ -1,0 +1,26 @@
+import React from 'react'
+import ModularRoom from 'features/Game/Tile/ModularRoom'
+import Corridor from 'features/Game/Tile/Corridor'
+import { TileType } from 'features/Game/Tile/type'
+import { VectorTuple } from 'services/socket'
+
+type Props = JSX.IntrinsicElements['group'] & {
+  readonly type: TileType
+  readonly directions: VectorTuple[]
+}
+
+const Tile: React.FC<Props> = props => {
+  if (props.type === TileType.Room) {
+    return (
+      <ModularRoom {...props} />
+    )
+  }
+
+  if (props.type === TileType.Corridor) {
+    return (
+      <Corridor {...props} />
+    )
+  }
+}
+
+export default Tile
