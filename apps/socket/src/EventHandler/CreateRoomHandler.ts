@@ -9,7 +9,7 @@ export default class CreateRoomHandler extends AbstractEventHandler<'createRoom'
 
   handle(_event: "createRoom", payload: [payload: CreateRoomPayload], socket: AppSocket): void {
     const [createPayload] = payload
-    const user = Array.from(this.users).find(({ id }) => id === socket.id)
+    const user = this.users.find(socket.id)
 
     if (!user) {
       return

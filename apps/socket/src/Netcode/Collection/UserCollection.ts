@@ -16,6 +16,10 @@ export default class UserCollection implements ICollection<User> {
     this.users = this.users.map((user, i) => i === index ? item : user)
   }
 
+  find(id: string): User | null {
+    return this.users.find(user => user.id === id) || null
+  }
+
   *[Symbol.iterator](): IterableIterator<User> {
     for (const user of this.users) {
       yield user

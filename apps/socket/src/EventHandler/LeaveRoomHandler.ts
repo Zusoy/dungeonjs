@@ -4,12 +4,14 @@ import { LeaveRoomPayload, AppSocket } from 'types'
 export default class LeaveRoomHandler extends AbstractEventHandler<'leaveRoom'> {
   supports(event: 'leaveRoom', payload: [payload: LeaveRoomPayload], socket: AppSocket): boolean {
     const [leavePayload] = payload
-    return event === 'leaveRoom' && socket.rooms.has(leavePayload.roomId)
+
+    return event === 'leaveRoom'
+      && socket.rooms.has(leavePayload.roomId)
   }
 
   handle(_event: 'leaveRoom', payload: [payload: LeaveRoomPayload], socket: AppSocket): void {
     const [leavePayload] = payload
-    const room = Array.from(this.rooms).find(({ roomId }) => leavePayload.roomId === roomId)
+    const room = this.rooms.find(leavePayload.roomId)
 
     if (!socket.rooms.has(leavePayload.roomId) || !room) {
       return
@@ -29,11 +31,9 @@ export default class LeaveRoomHandler extends AbstractEventHandler<'leaveRoom'> 
 
     this.server.in(leavePayload.roomId).fetchSockets()
       .then(sockets => {
-        const users = Array.from(this.users)
-
         const roomUsers = sockets
           .map(({ id }) => id)
-          .map(id => users.find(user => user.id === id))
+          .map(id => this.users.find(id))
           .filter(u => !!u)
           .map(u => u.getRoomPayload(u.id === room.createdById))
 

@@ -68,6 +68,9 @@ export const {
 } = slice.actions
 
 export const selectIsConnected: Selector<boolean> = state =>
-  state.auth.status === AuthStatus.Connected
+  state.auth.status === AuthStatus.Connected && state.auth.id !== null
+
+export const selectId: Selector<State['id']> = state =>
+  state.auth.id
 
 export default slice

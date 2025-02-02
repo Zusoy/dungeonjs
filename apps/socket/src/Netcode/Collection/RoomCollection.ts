@@ -16,6 +16,10 @@ export default class RoomCollection implements ICollection<Room> {
     this.rooms = this.rooms.map((room, i) => i === index ? item : room)
   }
 
+  find(id: string): Room | null {
+    return this.rooms.find(({ roomId }) => roomId === id) || null
+  }
+
   *[Symbol.iterator](): IterableIterator<Room> {
     for (const room of this.rooms) {
       yield room

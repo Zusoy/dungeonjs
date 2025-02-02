@@ -1,10 +1,11 @@
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
 import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
-import { ChangeHeroPayload } from 'features/Game/slice'
+import { ChangeHeroPayload, StartGamePayload } from 'features/Game/slice'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
 export type VectorTuple = [x: number, y: number, z: number]
+export type Coords = [x: number, y: number]
 
 export enum Hero {
   Rogue = 'rogue',
@@ -29,6 +30,8 @@ export interface ServerToClients {
   players: (players: Iterable<UserPayload>) => void
   joinedRoom: (room: string) => void
   leftRoom: (reason: LeftRoomReason) => void
+  gameStarted: (roomId: string) => void
+  playerTurn: (playerId: UserPayload['id']) => void
 }
 
 export interface ClientToServer {
@@ -37,6 +40,7 @@ export interface ClientToServer {
   joinRoom: (payload: JoinRoomPayload) => void
   leaveRoom: (payload: LeaveRoomPayload) => void
   changeHero: (payload: ChangeHeroPayload) => void
+  startGame: (payload: StartGamePayload) => void
 }
 
 export type AppSocket = Socket<ServerToClients, ClientToServer>
@@ -46,7 +50,7 @@ export type SocketChannel<T extends NotUndefined> = (socket: AppSocket) => Event
 
 export const createWebsocketConnection = (username: string): Promise<AppSocket> => {
   return new Promise((resolve, reject) => {
-    const socket: AppSocket = io('http://127.0.0.1:8080', {
+    const socket: AppSocket = io('http://192.168.1.13:8080', {
       transports: ['websocket'],
       autoConnect: false,
       query: {

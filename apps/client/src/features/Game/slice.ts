@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
 import { Hero, UserPayload } from 'services/socket'
 import { left } from 'features/Rooms/slice'
+import { Nullable } from 'utils'
+import { Direction, ITile, TileType } from 'features/Game/Tile/type'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -11,17 +13,27 @@ export enum GameStatus {
 }
 
 export type State = {
-  players: UserPayload[]
+  players: UserPayload[],
+  tiles: ITile[],
+  playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
 }
 
 export const initialState: State = {
   players: [],
+  tiles: [
+    { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
+  ],
+  playerTurn: null,
   status: GameStatus.Lobby
 }
 
 export type ChangeHeroPayload = {
-  hero: Hero
+  readonly hero: Hero
+}
+
+export type StartGamePayload = {
+  readonly roomId: string
 }
 
 const slice = createSlice({
@@ -32,18 +44,32 @@ const slice = createSlice({
       ...state,
       players: action.payload
     }),
+    playerTurn: (state, action: PayloadAction<UserPayload['id']>) => ({
+      ...state,
+      playerTurn: action.payload
+    }),
     changeHero: (state, _action: PayloadAction<ChangeHeroPayload>) => ({
       ...state
     }),
+    startGame: (state, _action: PayloadAction<StartGamePayload>) => ({
+      ...state,
+      status: GameStatus.Starting
+    }),
+    started: state => ({
+      ...state,
+      status: GameStatus.Started
+    }),
     error: state => ({
       ...state,
-      status: GameStatus.Error
+      status: GameStatus.Error,
+      players: []
     })
   },
   extraReducers: builder => {
     builder
       .addCase(left, state => ({
         ...state,
+        status: GameStatus.Lobby,
         players: []
       }))
   }
@@ -52,11 +78,20 @@ const slice = createSlice({
 export const {
   receivedPlayers,
   changeHero,
+  startGame,
+  playerTurn,
+  started,
   error
 } = slice.actions
 
 export const selectInLobby: Selector<boolean> = state =>
   state.game.status === GameStatus.Lobby
+
+export const selectIsStarting: Selector<boolean> = state =>
+  state.game.status === GameStatus.Starting
+
+export const selectIsStarted: Selector<boolean> = state =>
+  state.game.status === GameStatus.Started
 
 export const selectPlayers: Selector<UserPayload[]> = state =>
   state.game.players
@@ -64,9 +99,20 @@ export const selectPlayers: Selector<UserPayload[]> = state =>
 export const selectIsHost: Selector<boolean> = state =>
   state.game.players.find(p => p.id === state.auth.id)?.host || false
 
+export const selectIsPlayerTurn: Selector<boolean> = state =>
+  state.game.playerTurn === state.auth.id
+
+export const selectTiles: Selector<ITile[]> = state =>
+  state.game.tiles
+
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
   ReturnType<typeof changeHero> |
+  ReturnType<typeof startGame> |
+  ReturnType<typeof started> |
   ReturnType<typeof error>
+
+export type GameActions =
+  ReturnType<typeof playerTurn>
 
 export default slice
