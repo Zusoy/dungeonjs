@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
-import { Hero, UserPayload } from 'services/socket'
+import { Coords, Hero, UserPayload, VectorTuple } from 'services/socket'
 import { left } from 'features/Rooms/slice'
 import { Nullable } from 'utils'
 import { Direction, ITile, TileType } from 'features/Game/Tile/type'
@@ -14,6 +14,7 @@ export enum GameStatus {
 
 export type State = {
   players: UserPayload[],
+  coords: Coords,
   tiles: ITile[],
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
@@ -21,6 +22,7 @@ export type State = {
 
 export const initialState: State = {
   players: [],
+  coords: [0, 0],
   tiles: [
     { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
   ],
@@ -34,6 +36,12 @@ export type ChangeHeroPayload = {
 
 export type StartGamePayload = {
   readonly roomId: string
+}
+
+export type MoveToCoordsPayload = {
+  readonly coords: Coords
+  readonly fromDirection: VectorTuple
+  readonly uncharted: boolean
 }
 
 const slice = createSlice({
@@ -59,6 +67,9 @@ const slice = createSlice({
       ...state,
       status: GameStatus.Started
     }),
+    moveToCoords: (state, _action: PayloadAction<MoveToCoordsPayload>) => ({
+      ...state,
+    }),
     error: state => ({
       ...state,
       status: GameStatus.Error,
@@ -81,6 +92,7 @@ export const {
   startGame,
   playerTurn,
   started,
+  moveToCoords,
   error
 } = slice.actions
 
@@ -113,6 +125,7 @@ export type LobbyActions =
   ReturnType<typeof error>
 
 export type GameActions =
-  ReturnType<typeof playerTurn>
+  ReturnType<typeof playerTurn> |
+  ReturnType<typeof moveToCoords>
 
 export default slice

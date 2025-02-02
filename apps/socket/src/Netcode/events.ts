@@ -6,7 +6,7 @@ import type {
   LeftRoomReason,
   ChangeHeroPayload,
   StartGamePayload,
-  MoveToDirectionPayload
+  MoveToCoordsPayload
 } from 'types'
 
 export interface ClientToServer {
@@ -16,7 +16,7 @@ export interface ClientToServer {
   leaveRoom: (payload: LeaveRoomPayload) => void
   changeHero: (payload: ChangeHeroPayload) => void
   startGame: (payload: StartGamePayload) => void
-  moveToDirection: (payload: MoveToDirectionPayload) => void
+  moveToCoords: (payload: MoveToCoordsPayload) => void
 }
 
 export const clientToServerEvents: (keyof ClientToServer)[] = [
@@ -26,7 +26,7 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
   'leaveRoom',
   'changeHero',
   'startGame',
-  'moveToDirection'
+  'moveToCoords'
 ]
 
 export interface ServerToClients {

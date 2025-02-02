@@ -10,6 +10,7 @@ import JoinRoomHandler from 'EventHandler/JoinRoomHandler'
 import LeaveRoomHandler from 'EventHandler/LeaveRoomHandler'
 import ChangeHeroHandler from 'EventHandler/ChangeHeroHandler'
 import StartGameHandler from 'EventHandler/StartGameHandler'
+import MoveToCoordsHandler from 'EventHandler/MoveToCoordsHandler'
 
 const httpServer = createServer((_, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -28,7 +29,8 @@ const subscriber = new EventSubscriber([
   new JoinRoomHandler(io, users, rooms),
   new LeaveRoomHandler(io, users, rooms),
   new ChangeHeroHandler(io, users, rooms),
-  new StartGameHandler(io, users, rooms)
+  new StartGameHandler(io, users, rooms),
+  new MoveToCoordsHandler(io, users, rooms)
 ])
 
 io.on('connect', socket => {

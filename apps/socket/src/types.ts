@@ -25,14 +25,15 @@ export type StartGamePayload = {
   readonly roomId: string
 }
 
-export type MoveToDirectionPayload = {
-  readonly direction: VectorTuple
-  readonly neighborsTiles: ITile[]
+export type Coords = [x: number, y: number]
+
+export type MoveToCoordsPayload = {
+  readonly coords: Coords
+  readonly fromDirection: VectorTuple
+  readonly uncharted: boolean
 }
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
-
-export type Coords = [x: number, y: number]
 
 export enum TileType {
   Corridor = 'corridor',
@@ -43,8 +44,6 @@ export interface ITile {
   readonly id: string
   readonly type: TileType
   readonly coords: Coords
-  readonly position: VectorTuple
-  readonly rotation: VectorTuple
   readonly directions: VectorTuple[]
 }
 
@@ -54,8 +53,6 @@ export class CorridorTile implements ITile {
   constructor(
     public readonly id: string,
     public readonly coords: Coords,
-    public readonly position: VectorTuple,
-    public readonly rotation: VectorTuple,
     public readonly directions: VectorTuple[]
   ) {}
 }
@@ -66,8 +63,6 @@ export class RoomTile implements ITile {
   constructor(
     public readonly id: string,
     public readonly coords: Coords,
-    public readonly position: VectorTuple,
-    public readonly rotation: VectorTuple,
     public readonly directions: VectorTuple[]
   ) {}
 }
