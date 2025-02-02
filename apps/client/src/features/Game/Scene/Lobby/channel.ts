@@ -17,6 +17,7 @@ const lobbyChannel: SocketChannel<LobbyActions> = (socket: AppSocket) => {
 
     return () => {
       socket.off('players', onPlayersListener)
+      socket.off('gameStarted', onGameStartedListener)
     }
   })
 }

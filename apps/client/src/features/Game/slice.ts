@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
 import { Hero, UserPayload } from 'services/socket'
 import { left } from 'features/Rooms/slice'
+import { Nullable } from 'utils'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -11,12 +12,14 @@ export enum GameStatus {
 }
 
 export type State = {
-  players: UserPayload[]
+  players: UserPayload[],
+  playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
 }
 
 export const initialState: State = {
   players: [],
+  playerTurn: null,
   status: GameStatus.Lobby
 }
 
@@ -35,6 +38,10 @@ const slice = createSlice({
     receivedPlayers: (state, action: PayloadAction<UserPayload[]>) => ({
       ...state,
       players: action.payload
+    }),
+    playerTurn: (state, action: PayloadAction<UserPayload['id']>) => ({
+      ...state,
+      playerTurn: action.payload
     }),
     changeHero: (state, _action: PayloadAction<ChangeHeroPayload>) => ({
       ...state
@@ -67,6 +74,7 @@ export const {
   receivedPlayers,
   changeHero,
   startGame,
+  playerTurn,
   started,
   error
 } = slice.actions
@@ -86,11 +94,17 @@ export const selectPlayers: Selector<UserPayload[]> = state =>
 export const selectIsHost: Selector<boolean> = state =>
   state.game.players.find(p => p.id === state.auth.id)?.host || false
 
+export const selectIsPlayerTurn: Selector<boolean> = state =>
+  state.game.playerTurn === state.auth.id
+
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
   ReturnType<typeof changeHero> |
   ReturnType<typeof startGame> |
   ReturnType<typeof started> |
   ReturnType<typeof error>
+
+export type GameActions =
+  ReturnType<typeof playerTurn>
 
 export default slice

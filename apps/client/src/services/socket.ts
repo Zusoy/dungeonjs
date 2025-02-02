@@ -30,6 +30,7 @@ export interface ServerToClients {
   joinedRoom: (room: string) => void
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
+  playerTurn: (playerId: UserPayload['id']) => void
 }
 
 export interface ClientToServer {

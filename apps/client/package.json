@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^9.121.4",
     "@react-three/fiber": "^8.17.12",
+    "@react-three/postprocessing": "^2.19.1",
     "@react-three/uikit": "^0.8.7",
     "@reduxjs/toolkit": "^2.5.1",
     "@tailwindcss/vite": "^4.0.0",

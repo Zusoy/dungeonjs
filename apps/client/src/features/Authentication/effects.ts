@@ -6,6 +6,7 @@ import { subscribeCreateRoom, subscribeJoinRoom, subscribeLeaveRoom } from 'feat
 import { subscribeChangeHero, subscribeStartGame } from 'features/Game/effects'
 import roomChannel from 'features/Rooms/channel'
 import lobbyChannel from 'features/Game/Scene/Lobby/channel'
+import gameChannel from 'features/Game/Scene/Game/channel'
 
 export function* connectAndSubscribeWebsocketEffect(action: PayloadAction<ConnectPayload>): Generator {
   try {
@@ -14,6 +15,7 @@ export function* connectAndSubscribeWebsocketEffect(action: PayloadAction<Connec
 
     const rooms = yield call(roomChannel, socket)
     const lobby = yield call(lobbyChannel, socket)
+    const game = yield call(gameChannel, socket)
 
     yield fork(function* (): Generator {
       while (true) {
@@ -26,6 +28,13 @@ export function* connectAndSubscribeWebsocketEffect(action: PayloadAction<Connec
       while (true) {
         const lobbyAction = yield take(lobby)
         yield put(lobbyAction)
+      }
+    })
+
+    yield fork(function* (): Generator {
+      while (true) {
+        const gameAction = yield take(game)
+        yield put(gameAction)
       }
     })
 
