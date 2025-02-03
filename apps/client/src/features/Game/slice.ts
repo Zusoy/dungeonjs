@@ -117,6 +117,9 @@ export const selectIsHost: Selector<boolean> = state =>
 export const selectIsPlayerTurn: Selector<boolean> = state =>
   state.game.playerTurn === state.auth.id
 
+export const selectPlayerTurn: Selector<State['playerTurn']> = state =>
+  state.game.playerTurn
+
 export const selectTiles: Selector<ITile[]> = state =>
   state.game.tiles
 

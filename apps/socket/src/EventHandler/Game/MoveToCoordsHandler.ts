@@ -1,5 +1,6 @@
 import AbstractEventHandler from 'AbstractEventHandler'
-import { MoveToCoordsPayload, AppSocket, TileType, Direction } from 'types'
+import { VectorTuple } from 'Netcode/User'
+import { MoveToCoordsPayload, AppSocket, TileType, Direction, ITile } from 'types'
 
 export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoords'> {
   supports(event: 'moveToCoords', _payload: [payload: MoveToCoordsPayload], _socket: AppSocket): boolean {
@@ -9,7 +10,6 @@ export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoo
   handle(_event: 'moveToCoords', payload: [payload: MoveToCoordsPayload], socket: AppSocket): void {
     const [movePayload] = payload
     const roomId = Array.from(socket.rooms).find(room => !!this.rooms.find(room))
-    const origin = Direction.opposite(movePayload.fromDirection)
     const user = this.users.find(socket.id)
     const userIndex = Array.from(this.users).findIndex(user => user.id === socket.id)
 
@@ -24,12 +24,23 @@ export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoo
     }
 
     if (movePayload.uncharted) {
-      this.server.in(room.roomId).emit('discoverTile', {
+      const origin = Direction.opposite(movePayload.fromDirection)
+      const randomDirections: VectorTuple[] = Array
+        .from({ length: Math.floor(Math.random() * 3) + 1 })
+        .map(() => Direction.random())
+
+      const directions = [origin, ...randomDirections]
+        .filter((dir, index, arr) => index === arr.findIndex(d => d[0] === dir[0] && d[1] === dir[1] && d[2] === dir[2]))
+
+      const tile: ITile = {
         id: Date.now().toString(),
         type: TileType.Room,
-        directions: [origin],
+        directions,
         coords: movePayload.coords
-      })
+      }
+
+      this.server.in(room.roomId).emit('discoverTile', tile)
+      console.log('Discover tile', tile)
     }
 
     user.position = [

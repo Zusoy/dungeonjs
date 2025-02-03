@@ -74,7 +74,10 @@ const MoveControls: React.FC = () => {
             2,
             1
           ]}
-          onClick={() => dispatchMove(direction)}
+          onClick={e => {
+            e.stopPropagation()
+            dispatchMove(direction)
+          }}
         />
     )}
     </>

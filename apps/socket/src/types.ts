@@ -59,6 +59,11 @@ export class Direction {
 
     return [0, 0, 0]
   }
+
+  public static random(): VectorTuple {
+    const index = Math.floor(Math.random() * Direction.All.length)
+    return Direction.All[index]
+  }
 }
 
 export type MoveToCoordsPayload = {
