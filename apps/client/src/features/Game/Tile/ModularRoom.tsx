@@ -29,18 +29,13 @@ type Props = JSX.IntrinsicElements['group'] & {
 const ModularRoom: React.FC<Props> = props => {
   const { nodes, materials } = useGLTF('/arts/dungeon/Tiles/modular_room.gltf') as unknown as GLTFResult
 
-  const hasLeftDoorway = React.useMemo<boolean>(() => props.directions.includes(Direction.Left), [props.directions])
-  const hasRightDoorway = React.useMemo<boolean>(() => props.directions.includes(Direction.Right), [props.directions])
-  const hasUpDoorway = React.useMemo<boolean>(() => props.directions.includes(Direction.Up), [props.directions])
-  const hasDownDoorway = React.useMemo<boolean>(() => props.directions.includes(Direction.Down), [props.directions])
+  const hasLeftDoorway = React.useMemo<boolean>(() => Direction.has(props.directions, Direction.Left), [props.directions])
+  const hasRightDoorway = React.useMemo<boolean>(() => Direction.has(props.directions, Direction.Right), [props.directions])
+  const hasUpDoorway = React.useMemo<boolean>(() => Direction.has(props.directions, Direction.Up), [props.directions])
+  const hasDownDoorway = React.useMemo<boolean>(() => Direction.has(props.directions, Direction.Down), [props.directions])
 
   const doorwaysCount = React.useMemo(() => props.directions.length, [props.directions])
   const wallsCount = React.useMemo(() => 4 - props.directions.length, [props.directions])
-
-  console.log('left', hasLeftDoorway)
-  console.log('right', hasRightDoorway)
-  console.log('up', hasUpDoorway)
-  console.log('down', hasDownDoorway)
 
   return (
     <group {...props} dispose={null}>

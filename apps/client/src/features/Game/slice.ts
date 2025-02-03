@@ -14,7 +14,6 @@ export enum GameStatus {
 
 export type State = {
   players: UserPayload[],
-  coords: Coords,
   tiles: ITile[],
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
@@ -22,7 +21,6 @@ export type State = {
 
 export const initialState: State = {
   players: [],
-  coords: [0, 0],
   tiles: [
     { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
   ],
@@ -68,7 +66,7 @@ const slice = createSlice({
       status: GameStatus.Started
     }),
     moveToCoords: (state, _action: PayloadAction<MoveToCoordsPayload>) => ({
-      ...state,
+      ...state
     }),
     discoverTile: (state, action: PayloadAction<ITile>) => ({
       ...state,
@@ -122,11 +120,8 @@ export const selectIsPlayerTurn: Selector<boolean> = state =>
 export const selectTiles: Selector<ITile[]> = state =>
   state.game.tiles
 
-export const selectCurrentTile: Selector<ITile> = state =>
-  state.game.tiles.find(tile => {
-    const [x, y] = tile.coords
-    return x === state.game.coords[0] && y === state.game.coords[1]
-  })!
+export const selectCurrentPlayer: Selector<UserPayload> = state =>
+  state.game.players.find(p => p.id === state.auth.id)!
 
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |

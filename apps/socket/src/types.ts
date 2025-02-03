@@ -38,7 +38,7 @@ export class Direction {
     Direction.Down
   ]
 
-  public static getReverse(direction: VectorTuple): VectorTuple {
+  public static opposite(direction: VectorTuple): VectorTuple {
     const [x, _y, z] = direction
 
     if (x === -1) {

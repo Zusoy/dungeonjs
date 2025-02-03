@@ -3,6 +3,7 @@ import Tile from 'features/Game/Tile'
 import HeroCharacter from 'features/Game/Character/Hero'
 import MoveControls from 'features/Game/Scene/Game/MoveControls'
 import { Canvas } from '@react-three/fiber'
+import { Vector3 } from 'three'
 import { CameraControls, Environment, Stats } from '@react-three/drei'
 import { useSelector } from 'react-redux'
 import { selectPlayers, selectTiles } from 'features/Game/slice'
@@ -33,7 +34,7 @@ const Scene: React.FC = () => {
             hero={player.hero}
             username={player.username}
             color={player.color}
-            position={player.position}
+            position={new Vector3(player.position[0], player.position[1], player.position[2])}
             rotation={player.rotation}
           />
       )}

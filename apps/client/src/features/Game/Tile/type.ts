@@ -43,6 +43,12 @@ export class Direction {
     Direction.Up,
     Direction.Down
   ]
+
+  public static has(directions: VectorTuple[], direction: VectorTuple): boolean {
+    return !!directions.find(
+      dir => dir[0] === direction[0] && dir[1] === direction[1] && dir[2] === direction[2]
+    )
+  }
 }
 
 export type Tiles =

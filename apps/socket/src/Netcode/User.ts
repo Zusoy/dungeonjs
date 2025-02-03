@@ -1,4 +1,4 @@
-import { AppSocket } from 'types'
+import { AppSocket, Coords } from 'types'
 import INetcodeItem from 'Netcode/INetcodeItem'
 
 export type VectorTuple = [x: number, y: number, z: number]
@@ -11,6 +11,7 @@ export type UserPayload = {
   readonly hero: Hero
   readonly position: VectorTuple
   readonly rotation: VectorTuple
+  readonly coords: Coords
   readonly host?: boolean
 }
 
@@ -24,7 +25,8 @@ export default class User implements INetcodeItem {
       color,
       hero,
       [0, 0, 0],
-      [0, 0, 0]
+      [0, 0, 0],
+      [0, 0]
     )
   }
 
@@ -34,7 +36,8 @@ export default class User implements INetcodeItem {
     public readonly color: string,
     public hero: Hero,
     public position: VectorTuple,
-    public rotation: VectorTuple
+    public rotation: VectorTuple,
+    public coords: Coords
   ) {
   }
 
@@ -49,7 +52,8 @@ export default class User implements INetcodeItem {
       color: this.color,
       hero: this.hero,
       position: this.position,
-      rotation: this.rotation
+      rotation: this.rotation,
+      coords: this.coords
     })
   }
 
@@ -61,6 +65,7 @@ export default class User implements INetcodeItem {
       hero: this.hero,
       position: this.position,
       rotation: this.rotation,
+      coords: this.coords,
       host
     })
   }

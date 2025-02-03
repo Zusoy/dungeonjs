@@ -22,6 +22,7 @@ export type UserPayload = {
   readonly hero: Hero
   readonly position: VectorTuple
   readonly rotation: VectorTuple
+  readonly coords: Coords
   readonly host?: boolean
 }
 

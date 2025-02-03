@@ -1,40 +1,63 @@
 import React from 'react'
-import { moveToCoords, selectCurrentTile, selectIsPlayerTurn } from 'features/Game/slice'
+import { moveToCoords, selectCurrentPlayer, selectIsPlayerTurn, selectTiles } from 'features/Game/slice'
 import { useDispatch, useSelector } from 'react-redux'
 import { Vector3 } from 'three'
 import { Coords, VectorTuple } from 'services/socket'
+import { ITile } from 'features/Game/Tile/type'
+import { Nullable } from 'utils'
 
 const MoveControls: React.FC = () => {
   const dispatch = useDispatch()
   const playerTurn = useSelector(selectIsPlayerTurn)
-  const currentTile = useSelector(selectCurrentTile)
-  const [controlsEnabled, enableControls] = React.useState<boolean>(true)
+  const currentPlayer = useSelector(selectCurrentPlayer)
+  const tiles = useSelector(selectTiles)
+  const [controlsEnabled, toggleControls] = React.useState<boolean>(true)
 
-  const dispatchMove = React.useCallback((direction: VectorTuple) => {
-    if (!controlsEnabled) {
+  React.useEffect(() => {
+    if (controlsEnabled) {
       return
     }
 
-    enableControls(false)
+    const toggleControlsTimeout = setTimeout(() => {
+      toggleControls(true)
+    }, 4500)
+
+    return () => {
+      clearTimeout(toggleControlsTimeout)
+    }
+  }, [controlsEnabled])
+
+  const currentTile = React.useMemo<Nullable<ITile>>(() => {
+    return tiles.find(tile => tile.coords[0] === currentPlayer.coords[0] && tile.coords[1] === currentPlayer.coords[1]) || null
+  }, [currentPlayer, tiles])
+
+  const dispatchMove = React.useCallback((direction: VectorTuple) => {
+    if (!currentTile || !controlsEnabled) {
+      return
+    }
+
+    toggleControls(false)
 
     const coords: Coords = [
       currentTile.coords[0] + direction[0],
       currentTile.coords[1] + direction[2]
     ]
 
+    const uncharted = !tiles.find(tile => tile.coords[0] === coords[0] && tile.coords[1] === coords[1])
+
     dispatch(moveToCoords({
       coords,
       fromDirection: direction,
-      uncharted: true // todo
+      uncharted
     }))
-  }, [dispatch, currentTile, controlsEnabled])
+  }, [dispatch, currentTile, controlsEnabled, tiles])
 
   const tilePosition = React.useMemo<Vector3>(
-    () => new Vector3(currentTile.coords[0] * 8, 0, currentTile.coords[1] * 8),
+    () => currentTile ? new Vector3(currentTile.coords[0] * 8, 0, currentTile.coords[1] * 8) : new Vector3(0, 0, 0),
     [currentTile]
   )
 
-  if (!playerTurn) {
+  if (!playerTurn || !currentTile) {
     return null
   }
 
