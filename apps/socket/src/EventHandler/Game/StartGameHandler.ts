@@ -17,9 +17,7 @@ export default class StartGameHandler extends AbstractEventHandler<'startGame'> 
     this.server.in(startPayload.roomId).fetchSockets()
       .then(sockets => {
         const ids = sockets.map(({ id }) => id)
-        const randomIndex = Math.floor(Math.random() * ids.length)
-
-        this.server.emit('playerTurn', ids[randomIndex])
+        this.server.in(startPayload.roomId).emit('playerTurn', ids[0])
       })
 
     console.log('Game starting', startPayload.roomId)

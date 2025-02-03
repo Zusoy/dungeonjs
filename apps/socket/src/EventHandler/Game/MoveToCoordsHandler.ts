@@ -39,6 +39,7 @@ export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoo
     ]
 
     user.coords = movePayload.coords
+    user.movesCount = Math.max(0, user.movesCount - 1)
     this.users.update(user, userIndex)
 
     this.server.in(room.roomId).fetchSockets()
@@ -51,5 +52,15 @@ export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoo
 
         this.server.in(room.roomId).emit('players', roomUsers)
       })
+
+    if (user.movesCount === 0) {
+      this.server.in(room.roomId).fetchSockets()
+        .then(sockets => {
+          const ids = sockets.map(({ id }) => id)
+          const index = ids.findIndex(id => id === socket.id)
+          const newPlayerIndex = index === ids.length - 1 ? 0 : index + 1
+          this.server.in(room.roomId).emit('playerTurn', ids[newPlayerIndex])
+        })
+    }
   }
 }

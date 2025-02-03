@@ -1,4 +1,5 @@
 import React from 'react'
+import MoveCounter from 'features/Game/Scene/Game/HUD/MoveCounter'
 import { useSelector } from 'react-redux'
 import { selectIsPlayerTurn } from 'features/Game/slice'
 
@@ -11,8 +12,8 @@ const HUD: React.FC = () => {
 
   return (
     <div className='absolute top-0 flex'>
-      <div className='flex flex-row'>
-        <button type='button' className='btn btn-primary'>Test</button>
+      <div className='flex flex-row items-center'>
+        <MoveCounter />
       </div>
     </div>
   )

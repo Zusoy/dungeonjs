@@ -12,6 +12,7 @@ export type UserPayload = {
   readonly position: VectorTuple
   readonly rotation: VectorTuple
   readonly coords: Coords
+  readonly movesCount: number
   readonly host?: boolean
 }
 
@@ -26,7 +27,8 @@ export default class User implements INetcodeItem {
       hero,
       [0, 0, 0],
       [0, 0, 0],
-      [0, 0]
+      [0, 0],
+      4
     )
   }
 
@@ -37,7 +39,8 @@ export default class User implements INetcodeItem {
     public hero: Hero,
     public position: VectorTuple,
     public rotation: VectorTuple,
-    public coords: Coords
+    public coords: Coords,
+    public movesCount: number
   ) {
   }
 
@@ -53,7 +56,8 @@ export default class User implements INetcodeItem {
       hero: this.hero,
       position: this.position,
       rotation: this.rotation,
-      coords: this.coords
+      coords: this.coords,
+      movesCount: this.movesCount
     })
   }
 
@@ -66,6 +70,7 @@ export default class User implements INetcodeItem {
       position: this.position,
       rotation: this.rotation,
       coords: this.coords,
+      movesCount: this.movesCount,
       host
     })
   }

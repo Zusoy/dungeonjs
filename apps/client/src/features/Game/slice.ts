@@ -13,7 +13,7 @@ export enum GameStatus {
 }
 
 export type State = {
-  players: UserPayload[],
+  players: UserPayload[]
   tiles: ITile[],
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
