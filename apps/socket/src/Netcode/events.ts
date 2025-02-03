@@ -6,7 +6,8 @@ import type {
   LeftRoomReason,
   ChangeHeroPayload,
   StartGamePayload,
-  MoveToCoordsPayload
+  MoveToCoordsPayload,
+  ITile
 } from 'types'
 
 export interface ClientToServer {
@@ -37,6 +38,7 @@ export interface ServerToClients {
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
+  discoverTile: (payload: ITile) => void
 }
 
 export interface InterServer {

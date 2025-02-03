@@ -37,6 +37,11 @@ const ModularRoom: React.FC<Props> = props => {
   const doorwaysCount = React.useMemo(() => props.directions.length, [props.directions])
   const wallsCount = React.useMemo(() => 4 - props.directions.length, [props.directions])
 
+  console.log('left', hasLeftDoorway)
+  console.log('right', hasRightDoorway)
+  console.log('up', hasUpDoorway)
+  console.log('down', hasDownDoorway)
+
   return (
     <group {...props} dispose={null}>
       <Instances count={4} geometry={nodes.floor_tile_large.geometry} material={materials['texture.006']}>

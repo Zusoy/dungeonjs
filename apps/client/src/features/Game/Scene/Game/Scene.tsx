@@ -1,6 +1,7 @@
 import React from 'react'
 import Tile from 'features/Game/Tile'
 import HeroCharacter from 'features/Game/Character/Hero'
+import MoveControls from 'features/Game/Scene/Game/MoveControls'
 import { Canvas } from '@react-three/fiber'
 import { CameraControls, Environment, Stats } from '@react-three/drei'
 import { useSelector } from 'react-redux'
@@ -15,7 +16,7 @@ const Scene: React.FC = () => {
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>
       <Stats />
       <Environment preset='city' />
-      <CameraControls maxDistance={30} minDistance={20} ref={camera} />
+      <CameraControls maxDistance={30} minDistance={20} ref={camera} makeDefault />
       {tiles.map(
         tile =>
           <Tile
@@ -36,6 +37,7 @@ const Scene: React.FC = () => {
             rotation={player.rotation}
           />
       )}
+      <MoveControls />
     </Canvas>
   )
 }

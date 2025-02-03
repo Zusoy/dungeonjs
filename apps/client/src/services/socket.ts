@@ -2,6 +2,7 @@ import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
 import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
 import { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload } from 'features/Game/slice'
+import { ITile } from 'features/Game/Tile/type'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
 export type VectorTuple = [x: number, y: number, z: number]
@@ -32,6 +33,7 @@ export interface ServerToClients {
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
+  discoverTile: (payload: ITile) => void
 }
 
 export interface ClientToServer {

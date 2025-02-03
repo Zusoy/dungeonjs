@@ -35,8 +35,8 @@ export class RoomTile implements ITile {
 export class Direction {
   public static readonly Left: VectorTuple = [-1, 0, 0]
   public static readonly Right: VectorTuple = [1, 0, 0]
-  public static readonly Up: VectorTuple = [0, 0, 1]
-  public static readonly Down: VectorTuple = [0, 0, -1]
+  public static readonly Up: VectorTuple = [0, 0, -1]
+  public static readonly Down: VectorTuple = [0, 0, 1]
   public static readonly All: VectorTuple[] = [
     Direction.Left,
     Direction.Right,

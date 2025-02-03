@@ -5,12 +5,12 @@ import UserCollection from 'Netcode/Collection/UserCollection'
 import RoomCollection from 'Netcode/Collection/RoomCollection'
 import EventSubscriber from 'EventSubscriber'
 import User from 'Netcode/User'
-import CreateRoomHandler from 'EventHandler/CreateRoomHandler'
-import JoinRoomHandler from 'EventHandler/JoinRoomHandler'
-import LeaveRoomHandler from 'EventHandler/LeaveRoomHandler'
-import ChangeHeroHandler from 'EventHandler/ChangeHeroHandler'
-import StartGameHandler from 'EventHandler/StartGameHandler'
-import MoveToCoordsHandler from 'EventHandler/MoveToCoordsHandler'
+import CreateRoomHandler from 'EventHandler/Room/CreateRoomHandler'
+import JoinRoomHandler from 'EventHandler/Room/JoinRoomHandler'
+import LeaveRoomHandler from 'EventHandler/Room/LeaveRoomHandler'
+import ChangeHeroHandler from 'EventHandler/Game/ChangeHeroHandler'
+import StartGameHandler from 'EventHandler/Game/StartGameHandler'
+import MoveToCoordsHandler from 'EventHandler/Game/MoveToCoordsHandler'
 
 const httpServer = createServer((_, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')

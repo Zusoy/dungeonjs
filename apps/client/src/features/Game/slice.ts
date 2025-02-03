@@ -70,6 +70,10 @@ const slice = createSlice({
     moveToCoords: (state, _action: PayloadAction<MoveToCoordsPayload>) => ({
       ...state,
     }),
+    discoverTile: (state, action: PayloadAction<ITile>) => ({
+      ...state,
+      tiles: [...state.tiles, action.payload]
+    }),
     error: state => ({
       ...state,
       status: GameStatus.Error,
@@ -93,6 +97,7 @@ export const {
   playerTurn,
   started,
   moveToCoords,
+  discoverTile,
   error
 } = slice.actions
 
@@ -117,6 +122,12 @@ export const selectIsPlayerTurn: Selector<boolean> = state =>
 export const selectTiles: Selector<ITile[]> = state =>
   state.game.tiles
 
+export const selectCurrentTile: Selector<ITile> = state =>
+  state.game.tiles.find(tile => {
+    const [x, y] = tile.coords
+    return x === state.game.coords[0] && y === state.game.coords[1]
+  })!
+
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
   ReturnType<typeof changeHero> |
@@ -126,6 +137,7 @@ export type LobbyActions =
 
 export type GameActions =
   ReturnType<typeof playerTurn> |
-  ReturnType<typeof moveToCoords>
+  ReturnType<typeof moveToCoords> |
+  ReturnType<typeof discoverTile>
 
 export default slice
