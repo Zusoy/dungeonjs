@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
-import { Hero, UserPayload } from 'services/socket'
+import { Coords, Hero, UserPayload, VectorTuple } from 'services/socket'
 import { left } from 'features/Rooms/slice'
 import { Nullable } from 'utils'
 import { Direction, ITile, TileType } from 'features/Game/Tile/type'
@@ -13,7 +13,7 @@ export enum GameStatus {
 }
 
 export type State = {
-  players: UserPayload[],
+  players: UserPayload[]
   tiles: ITile[],
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
@@ -34,6 +34,12 @@ export type ChangeHeroPayload = {
 
 export type StartGamePayload = {
   readonly roomId: string
+}
+
+export type MoveToCoordsPayload = {
+  readonly coords: Coords
+  readonly fromDirection: VectorTuple
+  readonly uncharted: boolean
 }
 
 const slice = createSlice({
@@ -59,6 +65,13 @@ const slice = createSlice({
       ...state,
       status: GameStatus.Started
     }),
+    moveToCoords: (state, _action: PayloadAction<MoveToCoordsPayload>) => ({
+      ...state
+    }),
+    discoverTile: (state, action: PayloadAction<ITile>) => ({
+      ...state,
+      tiles: [...state.tiles, action.payload]
+    }),
     error: state => ({
       ...state,
       status: GameStatus.Error,
@@ -81,6 +94,8 @@ export const {
   startGame,
   playerTurn,
   started,
+  moveToCoords,
+  discoverTile,
   error
 } = slice.actions
 
@@ -102,8 +117,14 @@ export const selectIsHost: Selector<boolean> = state =>
 export const selectIsPlayerTurn: Selector<boolean> = state =>
   state.game.playerTurn === state.auth.id
 
+export const selectPlayerTurn: Selector<State['playerTurn']> = state =>
+  state.game.playerTurn
+
 export const selectTiles: Selector<ITile[]> = state =>
   state.game.tiles
+
+export const selectCurrentPlayer: Selector<UserPayload> = state =>
+  state.game.players.find(p => p.id === state.auth.id)!
 
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
@@ -113,6 +134,8 @@ export type LobbyActions =
   ReturnType<typeof error>
 
 export type GameActions =
-  ReturnType<typeof playerTurn>
+  ReturnType<typeof playerTurn> |
+  ReturnType<typeof moveToCoords> |
+  ReturnType<typeof discoverTile>
 
 export default slice

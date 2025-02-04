@@ -1,7 +1,8 @@
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
 import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
-import { ChangeHeroPayload, StartGamePayload } from 'features/Game/slice'
+import { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload } from 'features/Game/slice'
+import { ITile } from 'features/Game/Tile/type'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
 export type VectorTuple = [x: number, y: number, z: number]
@@ -21,6 +22,8 @@ export type UserPayload = {
   readonly hero: Hero
   readonly position: VectorTuple
   readonly rotation: VectorTuple
+  readonly coords: Coords
+  readonly movesCount: number
   readonly host?: boolean
 }
 
@@ -32,6 +35,7 @@ export interface ServerToClients {
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
+  discoverTile: (payload: ITile) => void
 }
 
 export interface ClientToServer {
@@ -41,6 +45,7 @@ export interface ClientToServer {
   leaveRoom: (payload: LeaveRoomPayload) => void
   changeHero: (payload: ChangeHeroPayload) => void
   startGame: (payload: StartGamePayload) => void
+  moveToCoords: (payload: MoveToCoordsPayload) => void
 }
 
 export type AppSocket = Socket<ServerToClients, ClientToServer>

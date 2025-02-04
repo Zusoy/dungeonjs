@@ -3,7 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { connect, connected, error, type ConnectPayload } from 'features/Authentication/slice'
 import { createWebsocketConnection } from 'services/socket'
 import { subscribeCreateRoom, subscribeJoinRoom, subscribeLeaveRoom } from 'features/Rooms/effects'
-import { subscribeChangeHero, subscribeStartGame } from 'features/Game/effects'
+import { subscribeChangeHero, subscribeStartGame, subscribeMoveToCoords } from 'features/Game/effects'
 import roomChannel from 'features/Rooms/channel'
 import lobbyChannel from 'features/Game/Scene/Lobby/channel'
 import gameChannel from 'features/Game/Scene/Game/channel'
@@ -43,7 +43,8 @@ export function* connectAndSubscribeWebsocketEffect(action: PayloadAction<Connec
       fork(subscribeJoinRoom, socket),
       fork(subscribeLeaveRoom, socket),
       fork(subscribeChangeHero, socket),
-      fork(subscribeStartGame, socket)
+      fork(subscribeStartGame, socket),
+      fork(subscribeMoveToCoords, socket)
     ])
   } catch {
     yield put(error())

@@ -2,6 +2,7 @@ import React from 'react'
 import * as THREE from 'three'
 import { useGLTF, useAnimations, Text } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { useFrame } from '@react-three/fiber'
 
 type ActionName =
   | '1H_Melee_Attack_Chop'
@@ -111,6 +112,7 @@ type GLTFResult = GLTF & {
 }
 
 type Props = JSX.IntrinsicElements['group'] & {
+  readonly position: THREE.Vector3
   readonly username?: string
   readonly color?: string
 }
@@ -119,17 +121,36 @@ const Knight: React.FC<Props> = props => {
   const transform = React.useRef<THREE.Group>(null!)
   const { nodes, materials, animations } = useGLTF('/arts/heroes/Characters/gltf/Knight.glb') as unknown as GLTFResult
   const { actions } = useAnimations<GLTFAction>(animations, transform)
+  const position = React.useMemo(() => props.position, [])
+  const [animation, setAnimation] = React.useState<ActionName>('Idle')
 
   React.useEffect(() => {
-    actions.Idle?.reset()?.play()
+    actions[animation]?.reset()?.fadeIn(0.1)?.play()
 
     return () => {
-      actions.Idle?.stop()
+      actions[animation]?.fadeOut(0.1)
     }
-  }, [actions])
+  }, [animation, actions])
+
+  useFrame(() => {
+    if (transform.current.position.distanceTo(props.position) > 0.1) {
+      const direction = transform.current.position
+        .clone()
+        .sub(props.position)
+        .normalize()
+        .multiplyScalar(0.032)
+
+      transform.current.position.sub(direction)
+      transform.current.lookAt(props.position)
+
+      setAnimation('Walking_A')
+    } else {
+      setAnimation('Idle')
+    }
+  })
 
   return (
-    <group ref={transform} {...props} dispose={null}>
+    <group ref={transform} {...props} dispose={null} position={position}>
       {props.username &&
         <Text position={[0, 2.7, 0]} color={props.color ?? 'black'} fontSize={0.3}>{props.username}</Text>
       }
