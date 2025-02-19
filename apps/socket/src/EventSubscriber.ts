@@ -1,9 +1,15 @@
-import AbstractEventHandler from 'AbstractEventHandler'
-import { ClientToServer, clientToServerEvents } from 'Netcode/events'
-import { AppSocket } from 'types'
+import { injectable, injectAll } from 'tsyringe'
+import type IEventHandler from 'IEventHandler'
+import type { AppSocket } from 'types'
+import { type ClientToServer, clientToServerEvents } from 'Netcode/events'
 
+@injectable()
 export default class EventSubscriber {
-  constructor(private readonly handlers: Iterable<AbstractEventHandler<keyof ClientToServer>>) {}
+  constructor(
+    @injectAll('handlers')
+    private readonly handlers: IEventHandler<keyof ClientToServer>[]
+  ) {
+  }
 
   subscribe(socket: AppSocket): void {
     const handlers = Array.from(this.handlers)

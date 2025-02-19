@@ -1,8 +1,22 @@
-import AbstractEventHandler from 'AbstractEventHandler'
-import { VectorTuple } from 'Netcode/User'
-import { MoveToCoordsPayload, AppSocket, TileType, Direction, ITile } from 'types'
+import { inject, injectable, registry } from 'tsyringe'
+import type IEventHandler from 'IEventHandler'
+import type ICollection from 'Netcode/Collection/ICollection'
+import type ILogger from 'ILogger'
+import { MoveToCoordsPayload, AppSocket, TileType, Direction, ITile, type AppServer } from 'types'
+import User, { VectorTuple } from 'Netcode/User'
+import Room from 'Netcode/Room'
 
-export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoords'> {
+@injectable()
+@registry([{ token: 'handlers', useClass: MoveToCoordsHandler }])
+export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'> {
+  constructor(
+    @inject('users') private readonly users: ICollection<User>,
+    @inject('rooms') private readonly rooms: ICollection<Room>,
+    @inject('server') private readonly server: AppServer,
+    @inject('logger') private readonly logger: ILogger
+  ) {
+  }
+
   supports(event: 'moveToCoords', _payload: [payload: MoveToCoordsPayload], _socket: AppSocket): boolean {
     return event === 'moveToCoords'
   }
@@ -40,7 +54,7 @@ export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoo
       }
 
       this.server.in(room.roomId).emit('discoverTile', tile)
-      console.log('Discover tile', tile)
+      this.logger.info('Discover tile', tile)
     }
 
     user.position = [

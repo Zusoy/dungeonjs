@@ -37,3 +37,11 @@ client-install:
 .PHONY: client-build
 client-build:
 	@docker-compose run --rm --no-deps client npm run build
+
+##########
+# SOCKET #
+##########
+
+.PHONY: socket-shell
+socket-shell:
+	@docker exec -it "$$(docker ps -q -f name=dungeonjs_socket)" sh

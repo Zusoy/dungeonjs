@@ -1,7 +1,20 @@
-import AbstractEventHandler from 'AbstractEventHandler'
-import { JoinRoomPayload, AppSocket } from 'types'
+import { inject, injectable, registry } from 'tsyringe'
+import type IEventHandler from 'IEventHandler'
+import type ICollection from 'Netcode/Collection/ICollection'
+import type { JoinRoomPayload, AppSocket, AppServer } from 'types'
+import Room from 'Netcode/Room'
+import User from 'Netcode/User'
 
-export default class JoinRoomHandler extends AbstractEventHandler<'joinRoom'> {
+@injectable()
+@registry([{ token: 'handlers', useClass: JoinRoomHandler }])
+export default class JoinRoomHandler implements IEventHandler<'joinRoom'> {
+  constructor(
+    @inject('rooms') private readonly rooms: ICollection<Room>,
+    @inject('users') private readonly users: ICollection<User>,
+    @inject('server') private readonly server: AppServer
+  ) {
+  }
+
   supports(event: "joinRoom", payload: [payload: JoinRoomPayload], _socket: AppSocket): boolean {
     const [joinPayload] = payload
 

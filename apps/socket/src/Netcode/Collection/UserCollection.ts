@@ -1,7 +1,9 @@
+import { injectable, Disposable } from 'tsyringe'
 import ICollection from 'Netcode/Collection/ICollection'
 import User from 'Netcode/User'
 
-export default class UserCollection implements ICollection<User> {
+@injectable()
+export default class UserCollection implements ICollection<User>, Disposable {
   private users: User[] = []
 
   add(user: User): void {
@@ -24,5 +26,9 @@ export default class UserCollection implements ICollection<User> {
     for (const user of this.users) {
       yield user
     }
+  }
+
+  dispose(): Promise<void> | void {
+    this.users = []
   }
 }

@@ -1,7 +1,9 @@
+import { injectable, Disposable } from 'tsyringe'
 import ICollection from 'Netcode/Collection/ICollection'
 import Room from 'Netcode/Room'
 
-export default class RoomCollection implements ICollection<Room> {
+@injectable()
+export default class RoomCollection implements ICollection<Room>, Disposable {
   private rooms: Room[] = []
 
   add(item: Room): void {
@@ -24,5 +26,9 @@ export default class RoomCollection implements ICollection<Room> {
     for (const room of this.rooms) {
       yield room
     }
+  }
+
+  dispose(): Promise<void> | void {
+    this.rooms = []
   }
 }

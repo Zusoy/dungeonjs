@@ -1,7 +1,22 @@
-import AbstractEventHandler from 'AbstractEventHandler'
-import { LeaveRoomPayload, AppSocket } from 'types'
+import { inject, injectable, registry } from 'tsyringe'
+import type IEventHandler from 'IEventHandler'
+import type ICollection from 'Netcode/Collection/ICollection'
+import type { LeaveRoomPayload, AppSocket, AppServer } from 'types'
+import type ILogger from 'ILogger'
+import Room from 'Netcode/Room'
+import User from 'Netcode/User'
 
-export default class LeaveRoomHandler extends AbstractEventHandler<'leaveRoom'> {
+@injectable()
+@registry([{ token: 'handlers', useClass: LeaveRoomHandler }])
+export default class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
+  constructor(
+    @inject('rooms') private readonly rooms: ICollection<Room>,
+    @inject('users') private readonly users: ICollection<User>,
+    @inject('server') private readonly server: AppServer,
+    @inject('logger') private readonly logger: ILogger
+  ) {
+  }
+
   supports(event: 'leaveRoom', payload: [payload: LeaveRoomPayload], socket: AppSocket): boolean {
     const [leavePayload] = payload
 
@@ -23,7 +38,7 @@ export default class LeaveRoomHandler extends AbstractEventHandler<'leaveRoom'> 
       this.server.in(leavePayload.roomId).socketsLeave(leavePayload.roomId)
 
       this.server.emit('availableRooms', Array.from(this.rooms).map(({ roomId }) => roomId))
-      console.log('Room author leave, cleaned room', room.roomId)
+      this.logger.info('Room author leave, cleaned room', room.roomId)
     }
 
     socket.leave(leavePayload.roomId)
@@ -40,6 +55,6 @@ export default class LeaveRoomHandler extends AbstractEventHandler<'leaveRoom'> 
         this.server.in(leavePayload.roomId).emit('players', roomUsers)
       })
 
-    console.log('User leave room', socket.id, room.roomId)
+    this.logger.info('User leave room', socket.id, room.roomId)
   }
 }
