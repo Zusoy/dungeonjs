@@ -1,17 +1,16 @@
 import { inject, injectable, registry } from 'tsyringe'
 import type IEventHandler from 'IEventHandler'
 import type ICollection from 'Netcode/Collection/ICollection'
-import type { JoinRoomPayload, AppSocket, AppServer } from 'types'
+import type { JoinRoomPayload, AppSocket } from 'types'
 import Room from 'Netcode/Room'
-import User from 'Netcode/User'
+import UserEmitter from 'Netcode/UserEmitter'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: JoinRoomHandler }])
 export default class JoinRoomHandler implements IEventHandler<'joinRoom'> {
   constructor(
     @inject('rooms') private readonly rooms: ICollection<Room>,
-    @inject('users') private readonly users: ICollection<User>,
-    @inject('server') private readonly server: AppServer
+    @inject('emitter.user') private readonly userEmitter: UserEmitter,
   ) {
   }
 
@@ -32,16 +31,6 @@ export default class JoinRoomHandler implements IEventHandler<'joinRoom'> {
 
     socket.join(joinPayload.roomId)
     socket.emit('joinedRoom', joinPayload.roomId)
-
-    this.server.in(joinPayload.roomId).fetchSockets()
-      .then(sockets => {
-        const roomUsers = sockets
-          .map(({ id }) => id)
-          .map(id => this.users.find(id))
-          .filter(u => !!u)
-          .map(u => u.getRoomPayload(u.id === room.createdById))
-
-        this.server.in(joinPayload.roomId).emit('players', roomUsers)
-      })
+    this.userEmitter.broadcast(room)
   }
 }

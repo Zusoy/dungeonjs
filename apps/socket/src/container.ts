@@ -7,6 +7,7 @@ import type Room from 'Netcode/Room'
 import UserCollection from 'Netcode/Collection/UserCollection'
 import RoomCollection from 'Netcode/Collection/RoomCollection'
 import ConsoleLogger from 'Logger/ConsoleLogger'
+import UserEmitter from 'Netcode/UserEmitter'
 
 // collections
 container.register<ICollection<User>>(
@@ -25,6 +26,12 @@ container.register<ICollection<Room>>(
 container.register<ILogger>(
   'logger',
   { useClass: ConsoleLogger }
+)
+
+// emitters
+container.register<UserEmitter>(
+  'emitter.user',
+  { useClass: UserEmitter }
 )
 
 export default container

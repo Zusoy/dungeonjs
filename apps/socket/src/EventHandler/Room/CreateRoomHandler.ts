@@ -5,6 +5,7 @@ import type ICollection from 'Netcode/Collection/ICollection'
 import type ILogger from 'ILogger'
 import type User from 'Netcode/User'
 import Room from 'Netcode/Room'
+import UserEmitter from 'Netcode/UserEmitter'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: CreateRoomHandler }])
@@ -12,6 +13,7 @@ export default class CreateRoomHandler implements IEventHandler<'createRoom'> {
   constructor(
     @inject('users') private readonly users: ICollection<User>,
     @inject('rooms') private readonly rooms: ICollection<Room>,
+    @inject('emitter.user') private readonly userEmitter: UserEmitter,
     @inject('server') private readonly server: AppServer,
     @inject('logger') private readonly logger: ILogger
   ) {
@@ -35,7 +37,7 @@ export default class CreateRoomHandler implements IEventHandler<'createRoom'> {
     socket.join(createPayload.roomId)
     socket.emit('joinedRoom', createPayload.roomId)
 
-    this.server.in(createPayload.roomId).emit('players', [ user.getRoomPayload(true) ])
+    this.userEmitter.broadcast(room)
     this.server.emit('availableRooms', Array.from(this.rooms).map(({ roomId }) => roomId))
     this.logger.info('Room created', room)
   }

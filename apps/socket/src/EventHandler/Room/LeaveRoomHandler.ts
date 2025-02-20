@@ -4,15 +4,15 @@ import type ICollection from 'Netcode/Collection/ICollection'
 import type { LeaveRoomPayload, AppSocket, AppServer } from 'types'
 import type ILogger from 'ILogger'
 import Room from 'Netcode/Room'
-import User from 'Netcode/User'
+import UserEmitter from 'Netcode/UserEmitter'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: LeaveRoomHandler }])
 export default class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
   constructor(
     @inject('rooms') private readonly rooms: ICollection<Room>,
-    @inject('users') private readonly users: ICollection<User>,
     @inject('server') private readonly server: AppServer,
+    @inject('emitter.user') private readonly userEmitter: UserEmitter,
     @inject('logger') private readonly logger: ILogger
   ) {
   }
@@ -44,17 +44,7 @@ export default class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
     socket.leave(leavePayload.roomId)
     socket.emit('leftRoom', 'user_left')
 
-    this.server.in(leavePayload.roomId).fetchSockets()
-      .then(sockets => {
-        const roomUsers = sockets
-          .map(({ id }) => id)
-          .map(id => this.users.find(id))
-          .filter(u => !!u)
-          .map(u => u.getRoomPayload(u.id === room.createdById))
-
-        this.server.in(leavePayload.roomId).emit('players', roomUsers)
-      })
-
+    this.userEmitter.broadcast(room)
     this.logger.info('User leave room', socket.id, room.roomId)
   }
 }
