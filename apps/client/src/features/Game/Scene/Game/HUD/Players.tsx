@@ -12,7 +12,7 @@ const Players: React.FC = () => {
         player =>
           <div key={player.id} className='avatar placeholder cursor-pointer'>
             <div className={`${player.id === playerTurn ? 'ring-success ring-offset-base-100 ring ring-offset-2' : ''} bg-neutral w-12 rounded-full`}>
-              <span style={{ color: player.color }}>{player.username.slice(0, 1)}</span>
+              <img src={`/img/hero/${player.hero}.png`} />
             </div>
           </div>
       )}

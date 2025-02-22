@@ -1,7 +1,21 @@
-import AbstractEventHandler from 'AbstractEventHandler'
-import { ChangeHeroPayload, AppSocket } from 'types'
+import { inject, injectable, registry } from 'tsyringe'
+import type ICollection from 'Netcode/Collection/ICollection'
+import type { ChangeHeroPayload, AppSocket } from 'types'
+import type IEventHandler from 'IEventHandler'
+import type Room from 'Netcode/Room'
+import type User from 'Netcode/User'
+import UserEmitter from 'Netcode/UserEmitter'
 
-export default class ChangeHeroHandler extends AbstractEventHandler<'changeHero'> {
+@injectable()
+@registry([{ token: 'handlers', useClass: ChangeHeroHandler }])
+export default class ChangeHeroHandler implements IEventHandler<'changeHero'> {
+  constructor(
+    @inject('users') private readonly users: ICollection<User>,
+    @inject('rooms') private readonly rooms: ICollection<Room>,
+    @inject('emitter.user') private readonly userEmitter: UserEmitter
+  ) {
+  }
+
   supports(event: 'changeHero', _payload: [payload: ChangeHeroPayload], socket: AppSocket): boolean {
     return event === 'changeHero'
       && socket.rooms.size > 0
@@ -24,17 +38,8 @@ export default class ChangeHeroHandler extends AbstractEventHandler<'changeHero'
     }
 
     user.hero = changeHeroPayload.hero
+
     this.users.update(user, index)
-
-    this.server.in(room.roomId).fetchSockets()
-      .then(sockets => {
-        const roomUsers = sockets
-          .map(({ id }) => id)
-          .map(id => this.users.find(id))
-          .filter(u => !!u)
-          .map(u => u.getRoomPayload(u.id === room.createdById))
-
-        this.server.in(room.roomId).emit('players', roomUsers)
-      })
+    this.userEmitter.broadcast(room)
   }
 }

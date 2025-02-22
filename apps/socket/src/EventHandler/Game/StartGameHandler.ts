@@ -1,7 +1,20 @@
-import AbstractEventHandler from 'AbstractEventHandler'
-import { StartGamePayload, AppSocket } from 'types'
+import { inject, injectable, registry } from 'tsyringe'
+import type { StartGamePayload, AppSocket, AppServer } from 'types'
+import type IEventHandler from 'IEventHandler'
+import type ICollection from 'Netcode/Collection/ICollection'
+import type ILogger from 'ILogger'
+import type Room from 'Netcode/Room'
 
-export default class StartGameHandler extends AbstractEventHandler<'startGame'> {
+@injectable()
+@registry([{ token: 'handlers', useClass: StartGameHandler }])
+export default class StartGameHandler implements IEventHandler<'startGame'> {
+  constructor(
+    @inject('rooms') private readonly rooms: ICollection<Room>,
+    @inject('server') private readonly server: AppServer,
+    @inject('logger') private readonly logger: ILogger
+  ) {
+  }
+
   supports(event: 'startGame', payload: [payload: StartGamePayload], socket: AppSocket): boolean {
     const [startPayload] = payload
 
@@ -20,6 +33,6 @@ export default class StartGameHandler extends AbstractEventHandler<'startGame'> 
         this.server.in(startPayload.roomId).emit('playerTurn', ids[0])
       })
 
-    console.log('Game starting', startPayload.roomId)
+    this.logger.info('Game starting', startPayload.roomId)
   }
 }

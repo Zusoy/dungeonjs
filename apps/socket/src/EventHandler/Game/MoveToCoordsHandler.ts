@@ -1,8 +1,24 @@
-import AbstractEventHandler from 'AbstractEventHandler'
-import { VectorTuple } from 'Netcode/User'
-import { MoveToCoordsPayload, AppSocket, TileType, Direction, ITile } from 'types'
+import { inject, injectable, registry } from 'tsyringe'
+import type IEventHandler from 'IEventHandler'
+import type ICollection from 'Netcode/Collection/ICollection'
+import type ILogger from 'ILogger'
+import { MoveToCoordsPayload, AppSocket, TileType, Direction, ITile, type AppServer } from 'types'
+import User, { VectorTuple } from 'Netcode/User'
+import Room from 'Netcode/Room'
+import UserEmitter from 'Netcode/UserEmitter'
 
-export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoords'> {
+@injectable()
+@registry([{ token: 'handlers', useClass: MoveToCoordsHandler }])
+export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'> {
+  constructor(
+    @inject('users') private readonly users: ICollection<User>,
+    @inject('rooms') private readonly rooms: ICollection<Room>,
+    @inject('emitter.user') private readonly userEmitter: UserEmitter,
+    @inject('server') private readonly server: AppServer,
+    @inject('logger') private readonly logger: ILogger
+  ) {
+  }
+
   supports(event: 'moveToCoords', _payload: [payload: MoveToCoordsPayload], _socket: AppSocket): boolean {
     return event === 'moveToCoords'
   }
@@ -40,7 +56,7 @@ export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoo
       }
 
       this.server.in(room.roomId).emit('discoverTile', tile)
-      console.log('Discover tile', tile)
+      this.logger.info('Discover tile', tile)
     }
 
     user.position = [
@@ -51,18 +67,9 @@ export default class MoveToCoordsHandler extends AbstractEventHandler<'moveToCoo
 
     user.coords = movePayload.coords
     user.movesCount = Math.max(0, user.movesCount - 1)
+
     this.users.update(user, userIndex)
-
-    this.server.in(room.roomId).fetchSockets()
-      .then(sockets => {
-        const roomUsers = sockets
-          .map(({ id }) => id)
-          .map(id => this.users.find(id))
-          .filter(u => !!u)
-          .map(u => u.getRoomPayload(u.id === room.createdById))
-
-        this.server.in(room.roomId).emit('players', roomUsers)
-      })
+    this.userEmitter.broadcast(room)
 
     if (user.movesCount === 0) {
       this.server.in(room.roomId).fetchSockets()
