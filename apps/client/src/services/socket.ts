@@ -1,31 +1,11 @@
+import type { UserPayload } from 'types/user'
+import type { Tile } from 'types/tile'
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
 import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
 import { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload } from 'features/Game/slice'
-import { ITile } from 'features/Game/Tile/type'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
-export type VectorTuple = [x: number, y: number, z: number]
-export type Coords = [x: number, y: number]
-
-export enum Hero {
-  Rogue = 'rogue',
-  Knight = 'knight',
-  Mage = 'mage',
-  Barbarian = 'barbarian'
-}
-
-export type UserPayload = {
-  readonly id: string
-  readonly username: string
-  readonly color: string
-  readonly hero: Hero
-  readonly position: VectorTuple
-  readonly rotation: VectorTuple
-  readonly coords: Coords
-  readonly movesCount: number
-  readonly host?: boolean
-}
 
 export interface ServerToClients {
   pong: () => void
@@ -35,7 +15,7 @@ export interface ServerToClients {
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
-  discoverTile: (payload: ITile) => void
+  discoverTile: (payload: Tile) => void
 }
 
 export interface ClientToServer {
@@ -55,7 +35,7 @@ export type SocketChannel<T extends NotUndefined> = (socket: AppSocket) => Event
 
 export const createWebsocketConnection = (username: string): Promise<AppSocket> => {
   return new Promise((resolve, reject) => {
-    const socket: AppSocket = io('http://192.168.1.13:8080', {
+    const socket: AppSocket = io('http://127.0.0.1:8080', {
       transports: ['websocket'],
       autoConnect: false,
       query: {

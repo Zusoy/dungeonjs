@@ -1,7 +1,8 @@
-import type { SocketChannel, AppSocket, UserPayload } from 'services/socket'
+import type { SocketChannel, AppSocket } from 'services/socket'
+import type { Tile } from 'types/tile'
+import type { UserPayload } from 'types/user'
 import { discoverTile, GameActions, playerTurn } from 'features/Game/slice'
 import { eventChannel } from 'redux-saga'
-import { ITile } from 'features/Game/Tile/type'
 
 const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
   return eventChannel(emitter => {
@@ -9,7 +10,7 @@ const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
       emitter(playerTurn(playerId))
     }
 
-    const onDiscoverTileListener = (tile: ITile) => {
+    const onDiscoverTileListener = (tile: Tile) => {
       emitter(discoverTile(tile))
     }
 

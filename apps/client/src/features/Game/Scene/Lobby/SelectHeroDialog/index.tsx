@@ -1,7 +1,7 @@
 import React from 'react'
 import { changeHero } from 'features/Game/slice'
 import { useDispatch } from 'react-redux'
-import { Hero } from 'services/socket'
+import { Hero } from 'types/user'
 import { isEnumValue } from 'utils'
 
 type Props = {

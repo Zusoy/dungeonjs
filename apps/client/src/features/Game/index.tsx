@@ -9,6 +9,18 @@ const Game: React.FC = () => {
   const waitingForPlayers = useSelector(selectInLobby)
   const gameStarted = useSelector(selectIsStarted)
 
+  React.useEffect(() => {
+    const beforeUnloadListener = (e: BeforeUnloadEvent): void => {
+      e.preventDefault()
+    }
+
+    window.addEventListener('beforeunload', beforeUnloadListener)
+
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnloadListener)
+    }
+  }, [])
+
   return (
     <div style={{ width: window.innerWidth, height: window.innerHeight }} className='overflow-hidden absolute top-0'>
       <React.Suspense fallback={<Loading />}>

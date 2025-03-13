@@ -1,21 +1,22 @@
 import React from 'react'
-import { selectPlayers, selectPlayerTurn } from 'features/Game/slice'
+import PlayerCard from 'widgets/HUD/PlayerCard'
+import { selectPlayers } from 'features/Game/slice'
 import { useSelector } from 'react-redux'
 
 const Players: React.FC = () => {
   const players = useSelector(selectPlayers)
-  const playerTurn = useSelector(selectPlayerTurn)
 
   return (
-    <div className='flex flex-row gap-2 justify-center'>
-      {players.map(
-        player =>
-          <div key={player.id} className='avatar placeholder cursor-pointer'>
-            <div className={`${player.id === playerTurn ? 'ring-success ring-offset-base-100 ring ring-offset-2' : ''} bg-neutral w-12 rounded-full`}>
-              <img src={`/img/hero/${player.hero}.png`} />
-            </div>
-          </div>
-      )}
+    <div className='absolute bottom-0 max-h-64'>
+      <div className='flex w-full flex-wrap py-4 gap-4'>
+        {players.map(player =>
+          <PlayerCard
+            username={player.username}
+            avatar={`/img/hero/${player.hero.toString()}.png`}
+            weapons={player.inventory.weapons}
+          />
+        )}
+      </div>
     </div>
   )
 }

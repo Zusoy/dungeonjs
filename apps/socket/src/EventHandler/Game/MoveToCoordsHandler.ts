@@ -2,8 +2,8 @@ import { inject, injectable, registry } from 'tsyringe'
 import type IEventHandler from 'IEventHandler'
 import type ICollection from 'Netcode/Collection/ICollection'
 import type ILogger from 'ILogger'
-import { MoveToCoordsPayload, AppSocket, TileType, Direction, ITile, type AppServer } from 'types'
-import User, { VectorTuple } from 'Netcode/User'
+import { MoveToCoordsPayload, AppSocket, TileType, Direction, type Tile, type AppServer } from 'types'
+import User from 'Netcode/User'
 import Room from 'Netcode/Room'
 import UserEmitter from 'Netcode/UserEmitter'
 
@@ -13,9 +13,9 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
   constructor(
     @inject('users') private readonly users: ICollection<User>,
     @inject('rooms') private readonly rooms: ICollection<Room>,
-    @inject('emitter.user') private readonly userEmitter: UserEmitter,
     @inject('server') private readonly server: AppServer,
-    @inject('logger') private readonly logger: ILogger
+    @inject('logger') private readonly logger: ILogger,
+    @inject('emitter.user') private readonly userEmitter: UserEmitter
   ) {
   }
 
@@ -29,6 +29,8 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     const user = this.users.find(socket.id)
     const userIndex = Array.from(this.users).findIndex(user => user.id === socket.id)
 
+    this.logger.info(movePayload)
+
     if (!roomId || !user || userIndex < 0) {
       return
     }
@@ -40,18 +42,16 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     }
 
     if (movePayload.uncharted) {
-      const origin = Direction.opposite(movePayload.fromDirection)
-      const randomDirections: VectorTuple[] = Array
-        .from({ length: Math.floor(Math.random() * 3) + 1 })
-        .map(() => Direction.random())
+      const types = Object.values(TileType)
+      const type = types[Math.floor(Math.random() * types.length)]
+      const corridorDirections = movePayload.fromDirection[0] !== 0
+        ? [Direction.Left, Direction.Right]
+        : [Direction.Up, Direction.Down]
 
-      const directions = [origin, ...randomDirections]
-        .filter((dir, index, arr) => index === arr.findIndex(d => d[0] === dir[0] && d[1] === dir[1] && d[2] === dir[2]))
-
-      const tile: ITile = {
+      const tile: Tile = {
         id: Date.now().toString(),
-        type: TileType.Room,
-        directions,
+        type,
+        directions: type === TileType.Room ? Direction.All : corridorDirections,
         coords: movePayload.coords
       }
 
@@ -72,13 +72,7 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     this.userEmitter.broadcast(room)
 
     if (user.movesCount === 0) {
-      this.server.in(room.roomId).fetchSockets()
-        .then(sockets => {
-          const ids = sockets.map(({ id }) => id)
-          const index = ids.findIndex(id => id === socket.id)
-          const newPlayerIndex = index === ids.length - 1 ? 0 : index + 1
-          this.server.in(room.roomId).emit('playerTurn', ids[newPlayerIndex])
-        })
+      this.userEmitter.broadcastNextTurn(room, socket.id)
     }
   }
 }

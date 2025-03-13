@@ -1,8 +1,14 @@
-import { AppSocket, Coords } from 'types'
-import INetcodeItem from 'Netcode/INetcodeItem'
+import type { AppSocket, Coords } from 'types'
+import { Axe, Dagger, Sword, type Weapon } from 'Netcode/Weapon'
+import type INetcodeItem from 'Netcode/INetcodeItem'
 
 export type VectorTuple = [x: number, y: number, z: number]
 export type Hero = 'rogue'|'knight'|'mage'|'barbarian'
+
+export type Inventory = {
+  readonly treasures: number
+  readonly weapons: Weapon[]
+}
 
 export type UserPayload = {
   readonly id: string
@@ -13,6 +19,7 @@ export type UserPayload = {
   readonly rotation: VectorTuple
   readonly coords: Coords
   readonly movesCount: number
+  readonly inventory: Inventory
   readonly host?: boolean
 }
 
@@ -25,6 +32,11 @@ export default class User implements INetcodeItem {
       username,
       color,
       hero,
+      { weapons: [
+        new Sword(Date.now().toString()),
+        new Dagger(Date.now().toString()),
+        new Axe(Date.now().toString())
+      ], treasures: 0 },
       [0, 0, 0],
       [0, 0, 0],
       [0, 0],
@@ -37,6 +49,7 @@ export default class User implements INetcodeItem {
     public readonly username: string,
     public readonly color: string,
     public hero: Hero,
+    public inventory: Inventory,
     public position: VectorTuple,
     public rotation: VectorTuple,
     public coords: Coords,
@@ -48,6 +61,30 @@ export default class User implements INetcodeItem {
     return this.id
   }
 
+  public addWeapon(weapon: Weapon): void {
+    this.inventory = {
+      ...this.inventory,
+      weapons: [
+        ...this.inventory.weapons,
+        weapon
+      ]
+    }
+  }
+
+  public removeWeapon(weapon: Weapon): void {
+    this.inventory = {
+      ...this.inventory,
+      weapons: this.inventory.weapons.filter(({ id }) => id !== weapon.id)
+    }
+  }
+
+  public addTreasure(): void {
+    this.inventory = {
+      ...this.inventory,
+      treasures: this.inventory.treasures + 1
+    }
+  }
+
   public getPayload(): UserPayload {
     return ({
       username: this.username,
@@ -57,7 +94,8 @@ export default class User implements INetcodeItem {
       position: this.position,
       rotation: this.rotation,
       coords: this.coords,
-      movesCount: this.movesCount
+      movesCount: this.movesCount,
+      inventory: this.inventory
     })
   }
 
@@ -71,6 +109,7 @@ export default class User implements INetcodeItem {
       rotation: this.rotation,
       coords: this.coords,
       movesCount: this.movesCount,
+      inventory: this.inventory,
       host
     })
   }

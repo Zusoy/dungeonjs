@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
-import { Nullable } from 'utils'
+import type { Nullable } from 'types/utils'
 
 export enum AuthStatus {
   Offline = 'offline',

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
 import { LeftRoomReason } from 'services/socket'
-import { Nullable } from 'utils'
+import type { Nullable } from 'types/utils'
 
 export type State = {
   rooms: string[]
