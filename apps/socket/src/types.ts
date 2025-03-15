@@ -60,6 +60,10 @@ export class Direction {
     return [0, 0, 0]
   }
 
+  public static equals(a: VectorTuple, b: VectorTuple): boolean {
+    return (a[0] === b[0]) && (a[1] === b[1]) && (a[2] === b[2])
+  }
+
   public static random(): VectorTuple {
     const index = Math.floor(Math.random() * Direction.All.length)
     return Direction.All[index]
