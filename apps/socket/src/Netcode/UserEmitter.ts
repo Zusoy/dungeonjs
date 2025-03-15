@@ -33,12 +33,17 @@ export default class UserEmitter {
     this.server.in(room.roomId).fetchSockets()
       .then(sockets => {
         const ids = sockets.map(({ id }) => id)
+        const user = this.users.find(currentPlayerId)
         const index = ids.findIndex(id => id === currentPlayerId)
 
-        if (index < 0) {
+        if (index < 0 || !user) {
           this.logger.error(`Player socket id not found: ${currentPlayerId}`)
           return
         }
+
+        user.movesCount = 4
+        this.users.update(user, index)
+        this.broadcast(room)
 
         const newPlayerIndex = index === ids.length - 1 ? 0 : index + 1
         this.server.in(room.roomId).emit('playerTurn', ids[newPlayerIndex])
