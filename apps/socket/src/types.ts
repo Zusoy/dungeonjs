@@ -60,6 +60,10 @@ export class Direction {
     return [0, 0, 0]
   }
 
+  public static equals(a: VectorTuple, b: VectorTuple): boolean {
+    return (a[0] === b[0]) && (a[1] === b[1]) && (a[2] === b[2])
+  }
+
   public static random(): VectorTuple {
     const index = Math.floor(Math.random() * Direction.All.length)
     return Direction.All[index]
@@ -68,6 +72,7 @@ export class Direction {
 
 export type MoveToCoordsPayload = {
   readonly coords: Coords
+  readonly neighborTiles: Tile[]
   readonly fromDirection: VectorTuple
   readonly uncharted: boolean
 }
@@ -79,33 +84,9 @@ export enum TileType {
   Room = 'room'
 }
 
-export interface ITile {
+export type Tile = {
   readonly id: string
   readonly type: TileType
   readonly coords: Coords
   readonly directions: VectorTuple[]
 }
-
-export class CorridorTile implements ITile {
-  public readonly type = TileType.Corridor
-
-  constructor(
-    public readonly id: string,
-    public readonly coords: Coords,
-    public readonly directions: VectorTuple[]
-  ) {}
-}
-
-export class RoomTile implements ITile {
-  public readonly type = TileType.Room
-
-  constructor(
-    public readonly id: string,
-    public readonly coords: Coords,
-    public readonly directions: VectorTuple[]
-  ) {}
-}
-
-export type Tiles =
-  CorridorTile |
-  RoomTile

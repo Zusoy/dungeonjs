@@ -1,10 +1,10 @@
 import React from 'react'
-import { moveToCoords, selectCurrentPlayer, selectIsPlayerTurn, selectTiles } from 'features/Game/slice'
+import { Coords } from 'types/coords'
+import type { Tile } from 'types/tile'
+import type { Nullable, VectorTuple } from 'types/utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { Vector3 } from 'three'
-import { Coords, VectorTuple } from 'services/socket'
-import { ITile } from 'features/Game/Tile/type'
-import { Nullable } from 'utils'
+import { moveToCoords, selectCurrentPlayer, selectIsPlayerTurn, selectTiles } from 'features/Game/slice'
 
 const MoveControls: React.FC = () => {
   const dispatch = useDispatch()
@@ -27,9 +27,10 @@ const MoveControls: React.FC = () => {
     }
   }, [controlsEnabled])
 
-  const currentTile = React.useMemo<Nullable<ITile>>(() => {
-    return tiles.find(tile => tile.coords[0] === currentPlayer.coords[0] && tile.coords[1] === currentPlayer.coords[1]) || null
-  }, [currentPlayer, tiles])
+  const currentTile = React.useMemo<Nullable<Tile>>(() => {
+    const currentCoords = new Coords(currentPlayer.coords[0], currentPlayer.coords[1])
+    return tiles.find(tile => Coords.fromScalar(tile.coords).equals(currentCoords)) || null
+  }, [currentPlayer.coords, tiles])
 
   const dispatchMove = React.useCallback((direction: VectorTuple) => {
     if (!currentTile || !controlsEnabled) {
@@ -38,16 +39,30 @@ const MoveControls: React.FC = () => {
 
     toggleControls(false)
 
-    const coords: Coords = [
+    const targetCoords = new Coords(
       currentTile.coords[0] + direction[0],
       currentTile.coords[1] + direction[2]
-    ]
+    )
 
-    const uncharted = !tiles.find(tile => tile.coords[0] === coords[0] && tile.coords[1] === coords[1])
+    const neighborTiles = tiles.filter(
+      tile => {
+        const coords = Coords.fromScalar(tile.coords)
+
+        return [
+          Coords.fromScalar([-1, 0]),
+          Coords.fromScalar([1, 0]),
+          Coords.fromScalar([0, 1]),
+          Coords.fromScalar([0, -1])
+        ].some(coord => coords.equals(targetCoords.sum(coord)))
+      }
+    )
+
+    const uncharted = !tiles.find(tile => Coords.fromScalar(tile.coords).equals(targetCoords))
 
     dispatch(moveToCoords({
-      coords,
+      coords: targetCoords.toScalar(),
       fromDirection: direction,
+      neighborTiles,
       uncharted
     }))
   }, [dispatch, currentTile, controlsEnabled, tiles])
@@ -63,23 +78,23 @@ const MoveControls: React.FC = () => {
 
   return (
     <>
-    {currentTile.directions.map(
-      direction =>
-        <arrowHelper
-          args={[
-            new Vector3(direction[0], direction[1], direction[2]),
-            new Vector3(tilePosition.x + direction[0], 1, tilePosition.z + direction[2]),
-            2,
-            controlsEnabled ? 'green' : 'red',
-            2,
-            1
-          ]}
-          onClick={e => {
-            e.stopPropagation()
-            dispatchMove(direction)
-          }}
-        />
-    )}
+      {currentTile.directions.map(
+        direction =>
+          <arrowHelper
+            args={[
+              new Vector3(direction[0], direction[1], direction[2]),
+              new Vector3(tilePosition.x + direction[0], 1, tilePosition.z + direction[2]),
+              2,
+              controlsEnabled ? 'green' : 'red',
+              2,
+              1
+            ]}
+            onClick={e => {
+              e.stopPropagation()
+              dispatchMove(direction)
+            }}
+          />
+      )}
     </>
   )
 }

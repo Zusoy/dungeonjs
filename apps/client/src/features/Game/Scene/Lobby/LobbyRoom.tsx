@@ -2,7 +2,7 @@ import React from 'react'
 import * as THREE from 'three'
 import { Instance, Instances, useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
-import { VectorTuple } from 'services/socket'
+import type { VectorTuple } from 'types/utils'
 
 type GLTFResult = GLTF & {
   nodes: {

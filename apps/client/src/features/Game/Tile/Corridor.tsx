@@ -2,6 +2,7 @@ import React from 'react'
 import * as THREE from 'three'
 import { Instance, Instances, useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import type { VectorTuple } from 'types/utils'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -16,11 +17,15 @@ type GLTFResult = GLTF & {
   }
 }
 
-const Corridor: React.FC<JSX.IntrinsicElements['group']> = props => {
+type Props = JSX.IntrinsicElements['group'] & {
+  readonly directions: VectorTuple[]
+}
+
+const Corridor: React.FC<Props> = props => {
   const { nodes, materials } = useGLTF('/arts/dungeon/Corridors/01.gltf') as unknown as GLTFResult
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props} dispose={null} rotation={[0, THREE.MathUtils.degToRad(props.directions.some(dir => dir[0] === 0) ? 90 : 0), 0]}>
       <Instances count={2} geometry={nodes.floor_tile_large.geometry} material={materials.texture}>
         <Instance position={[0, 0, 0]} castShadow receiveShadow />
         <Instance position={[-4, 0, 0]} castShadow receiveShadow />

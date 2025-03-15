@@ -1,8 +1,8 @@
 import React from 'react'
 import ModularRoom from 'features/Game/Tile/ModularRoom'
 import Corridor from 'features/Game/Tile/Corridor'
-import { TileType } from 'features/Game/Tile/type'
-import { VectorTuple } from 'services/socket'
+import { TileType } from 'types/tile'
+import type { VectorTuple } from 'types/utils'
 
 type Props = JSX.IntrinsicElements['group'] & {
   readonly type: TileType

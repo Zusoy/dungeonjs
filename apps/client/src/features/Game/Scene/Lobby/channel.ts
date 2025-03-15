@@ -1,4 +1,5 @@
-import { AppSocket, SocketChannel, UserPayload } from 'services/socket'
+import type { UserPayload } from 'types/user'
+import { AppSocket, SocketChannel } from 'services/socket'
 import { LobbyActions, receivedPlayers, started } from 'features/Game/slice'
 import { eventChannel } from 'redux-saga'
 

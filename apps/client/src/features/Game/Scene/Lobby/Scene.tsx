@@ -5,7 +5,7 @@ import { Canvas } from '@react-three/fiber'
 import { Environment, Stats } from '@react-three/drei'
 import { useSelector } from 'react-redux'
 import { selectPlayers } from 'features/Game/slice'
-import { MathUtils } from 'three'
+import { MathUtils, Vector3 } from 'three'
 
 const Scene: React.FC = () => {
   const players = useSelector(selectPlayers)
@@ -25,7 +25,7 @@ const Scene: React.FC = () => {
             hero={player.hero}
             username={player.username}
             color={player.color}
-            position={[i * -2, 0, -3]}
+            position={new Vector3(i * -2, 0, -3)}
           />
       )}
     </Canvas>

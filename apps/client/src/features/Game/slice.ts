@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
-import { Coords, Hero, UserPayload, VectorTuple } from 'services/socket'
+import { Hero, UserPayload } from 'types/user'
 import { left } from 'features/Rooms/slice'
-import { Nullable } from 'utils'
-import { Direction, ITile, TileType } from 'features/Game/Tile/type'
+import type { ScalarCoords } from 'types/coords'
+import { type Tile, TileType } from 'types/tile'
+import { type Nullable, type VectorTuple, Direction } from 'types/utils'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -14,7 +15,7 @@ export enum GameStatus {
 
 export type State = {
   players: UserPayload[]
-  tiles: ITile[],
+  tiles: Tile[],
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
 }
@@ -37,8 +38,9 @@ export type StartGamePayload = {
 }
 
 export type MoveToCoordsPayload = {
-  readonly coords: Coords
+  readonly coords: ScalarCoords
   readonly fromDirection: VectorTuple
+  readonly neighborTiles: Tile[]
   readonly uncharted: boolean
 }
 
@@ -68,7 +70,7 @@ const slice = createSlice({
     moveToCoords: (state, _action: PayloadAction<MoveToCoordsPayload>) => ({
       ...state
     }),
-    discoverTile: (state, action: PayloadAction<ITile>) => ({
+    discoverTile: (state, action: PayloadAction<Tile>) => ({
       ...state,
       tiles: [...state.tiles, action.payload]
     }),
@@ -120,7 +122,7 @@ export const selectIsPlayerTurn: Selector<boolean> = state =>
 export const selectPlayerTurn: Selector<State['playerTurn']> = state =>
   state.game.playerTurn
 
-export const selectTiles: Selector<ITile[]> = state =>
+export const selectTiles: Selector<Tile[]> = state =>
   state.game.tiles
 
 export const selectCurrentPlayer: Selector<UserPayload> = state =>
