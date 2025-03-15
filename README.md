@@ -7,7 +7,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <div align="center">
-  <a href="https://github.com/Zusoy/chatterer">
+  <a href="https://github.com/Zusoy/dungeonjs">
     <img src="logo.png" alt="Logo" width="500" height="500">
   </a>
   <br />
@@ -106,7 +106,7 @@ make start
 
 | URL                       | Link     |
 |---------------------------|----------|
-| http://127.0.0.1:2000     | Client   |
+| http://127.0.0.1:3000     | Client   |
 | http://127.0.0.1:8080     | Socket   |
 
 ## Contact
