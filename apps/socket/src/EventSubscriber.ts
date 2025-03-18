@@ -1,6 +1,6 @@
 import { injectable, injectAll } from 'tsyringe'
 import type IEventHandler from 'IEventHandler'
-import type { AppSocket } from 'types'
+import type { AppSocket } from 'types/socket'
 import { type ClientToServer, clientToServerEvents } from 'Netcode/events'
 
 @injectable()

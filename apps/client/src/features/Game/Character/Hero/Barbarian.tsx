@@ -196,6 +196,7 @@ const Barbarian: React.FC<Props> = props => {
     </group>
   )
 }
+
 useGLTF.preload('/arts/heroes/Characters/gltf/Barbarian.glb')
 
 export default Barbarian
