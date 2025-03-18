@@ -1,14 +1,14 @@
 import type { UserPayload } from 'Netcode/User'
+import type { Tile } from 'types/tile'
 import type {
   CreateRoomPayload,
   JoinRoomPayload,
   LeaveRoomPayload,
-  LeftRoomReason,
   ChangeHeroPayload,
   StartGamePayload,
   MoveToCoordsPayload,
-  Tile
-} from 'types'
+  LeftRoomReason
+} from 'types/payload'
 
 export interface ClientToServer {
   ping: () => void

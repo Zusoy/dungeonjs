@@ -1,4 +1,4 @@
-import type { AppSocket } from 'types'
+import type { AppSocket } from 'types/socket'
 import type { ClientToServer } from 'Netcode/events'
 
 export default interface IEventHandler<T extends keyof ClientToServer> {
