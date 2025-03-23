@@ -1,6 +1,7 @@
 import { inject, injectable, registry } from 'tsyringe'
 import type IEventHandler from 'IEventHandler'
-import type { CreateRoomPayload, AppSocket, AppServer } from 'types'
+import type { AppSocket, AppServer } from 'types/socket'
+import type { CreateRoomPayload } from 'types/payload'
 import type ICollection from 'Netcode/Collection/ICollection'
 import type ILogger from 'ILogger'
 import type User from 'Netcode/User'

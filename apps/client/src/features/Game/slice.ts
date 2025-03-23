@@ -3,7 +3,9 @@ import { Selector } from 'app/store'
 import { Hero, UserPayload } from 'types/user'
 import { left } from 'features/Rooms/slice'
 import type { ScalarCoords } from 'types/coords'
+import type { Chest } from 'types/object'
 import { type Tile, TileType } from 'types/tile'
+import type { Skeleton } from 'types/enemy'
 import { type Nullable, type VectorTuple, Direction } from 'types/utils'
 
 export enum GameStatus {
@@ -15,13 +17,17 @@ export enum GameStatus {
 
 export type State = {
   players: UserPayload[]
-  tiles: Tile[],
+  enemies: Skeleton[]
+  tiles: Tile[]
+  chests: Chest[]
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
 }
 
 export const initialState: State = {
   players: [],
+  enemies: [],
+  chests: [],
   tiles: [
     { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
   ],
@@ -74,6 +80,14 @@ const slice = createSlice({
       ...state,
       tiles: [...state.tiles, action.payload]
     }),
+    discoverChest: (state, action: PayloadAction<Chest>) => ({
+      ...state,
+      chests: [...state.chests, action.payload]
+    }),
+    discoverEnemy: (state, action: PayloadAction<Skeleton>) => ({
+      ...state,
+      enemies: [...state.enemies, action.payload]
+    }),
     error: state => ({
       ...state,
       status: GameStatus.Error,
@@ -98,6 +112,8 @@ export const {
   started,
   moveToCoords,
   discoverTile,
+  discoverChest,
+  discoverEnemy,
   error
 } = slice.actions
 
@@ -125,6 +141,12 @@ export const selectPlayerTurn: Selector<State['playerTurn']> = state =>
 export const selectTiles: Selector<Tile[]> = state =>
   state.game.tiles
 
+export const selectChests: Selector<Chest[]> = state =>
+  state.game.chests
+
+export const selectEnemies: Selector<Skeleton[]> = state =>
+  state.game.enemies
+
 export const selectCurrentPlayer: Selector<UserPayload> = state =>
   state.game.players.find(p => p.id === state.auth.id)!
 
@@ -138,6 +160,8 @@ export type LobbyActions =
 export type GameActions =
   ReturnType<typeof playerTurn> |
   ReturnType<typeof moveToCoords> |
-  ReturnType<typeof discoverTile>
+  ReturnType<typeof discoverTile> |
+  ReturnType<typeof discoverChest> |
+  ReturnType<typeof discoverEnemy>
 
 export default slice

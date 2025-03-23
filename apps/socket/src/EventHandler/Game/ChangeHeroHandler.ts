@@ -1,6 +1,7 @@
 import { inject, injectable, registry } from 'tsyringe'
 import type ICollection from 'Netcode/Collection/ICollection'
-import type { ChangeHeroPayload, AppSocket } from 'types'
+import type { AppSocket } from 'types/socket'
+import type { ChangeHeroPayload } from 'types/payload'
 import type IEventHandler from 'IEventHandler'
 import type Room from 'Netcode/Room'
 import type User from 'Netcode/User'

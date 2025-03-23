@@ -8,6 +8,13 @@ import UserCollection from 'Netcode/Collection/UserCollection'
 import RoomCollection from 'Netcode/Collection/RoomCollection'
 import ConsoleLogger from 'Logger/ConsoleLogger'
 import UserEmitter from 'Netcode/UserEmitter'
+import CorridorBuilder from 'Factory/Tile/CorridorBuilder'
+import RoomBuilder from 'Factory/Tile/RoomBuilder'
+import TileFactory from 'Factory/TileFactory'
+
+// parameters
+container.register('chance.enemy', { useValue: 80 })
+container.register('chance.room', { useValue: 36 })
 
 // collections
 container.register<ICollection<User>>(
@@ -32,6 +39,14 @@ container.register<ILogger>(
 container.register<UserEmitter>(
   'emitter.user',
   { useClass: UserEmitter }
+)
+
+// factories
+container.register<CorridorBuilder>(CorridorBuilder, { useClass: CorridorBuilder })
+container.register<RoomBuilder>(RoomBuilder, { useClass: RoomBuilder })
+container.register<TileFactory>(
+  'tile.factory',
+  { useClass: TileFactory }
 )
 
 export default container

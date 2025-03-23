@@ -2,10 +2,15 @@ import { inject, injectable, registry } from 'tsyringe'
 import type IEventHandler from 'IEventHandler'
 import type ICollection from 'Netcode/Collection/ICollection'
 import type ILogger from 'ILogger'
-import { MoveToCoordsPayload, AppSocket, TileType, Direction, type Tile, type AppServer, Coords } from 'types'
+import type { AppSocket, AppServer } from 'types/socket'
+import type { MoveToCoordsPayload } from 'types/payload'
+import { Skeleton, SkeletonType } from 'types/enemy'
+import { TileType } from 'types/tile'
 import User from 'Netcode/User'
 import Room from 'Netcode/Room'
 import UserEmitter from 'Netcode/UserEmitter'
+import TileFactory from 'Factory/TileFactory'
+import Random from 'Random'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: MoveToCoordsHandler }])
@@ -15,7 +20,10 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     @inject('rooms') private readonly rooms: ICollection<Room>,
     @inject('server') private readonly server: AppServer,
     @inject('logger') private readonly logger: ILogger,
-    @inject('emitter.user') private readonly userEmitter: UserEmitter
+    @inject('emitter.user') private readonly userEmitter: UserEmitter,
+    @inject('tile.factory') private readonly tileFactory: TileFactory,
+    @inject('chance.room') private readonly roomDiscoveryChance: number,
+    @inject('chance.enemy') private readonly enemyDiscoveryChance: number
   ) {
   }
 
@@ -41,37 +49,42 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     }
 
     if (movePayload.uncharted) {
-      const types = Object.values(TileType)
+      const roomDiscovery = Random.boolean(this.roomDiscoveryChance)
+      const randomTileType = roomDiscovery ? TileType.Room : TileType.Corridor
+
       const type = movePayload.neighborTiles.length > 1
         ? TileType.Room
-        : types[Math.floor(Math.random() * types.length)]
+        : randomTileType
 
-      const corridorDirections = movePayload.fromDirection[0] !== 0
-        ? [Direction.Left, Direction.Right]
-        : [Direction.Up, Direction.Down]
-
-      const roomDirections = Direction.All
-        .filter(dir => {
-          const dirCoords: Coords = [movePayload.coords[0] + dir[0], movePayload.coords[1] + dir[2]]
-          const adjacentTile = movePayload.neighborTiles.find(({ coords }) => coords[0] === dirCoords[0] && coords[1] === dirCoords[1])
-
-          if (!adjacentTile) {
-            return true
-          }
-
-          const opposite = Direction.opposite(dir)
-          return adjacentTile.directions.some(dir => Direction.equals(opposite, dir))
-        })
-
-      const tile: Tile = {
-        id: Date.now().toString(),
+      const tile = this.tileFactory.build(
         type,
-        directions: type === TileType.Room ? roomDirections : corridorDirections,
-        coords: movePayload.coords
-      }
+        {
+          id: Date.now().toString(),
+          coords: movePayload.coords,
+          direction: movePayload.fromDirection,
+          adjacentTiles: movePayload.neighborTiles
+        }
+      )
 
       this.server.in(room.roomId).emit('discoverTile', tile)
       this.logger.info('Discover tile', tile)
+
+      if (tile.type === TileType.Room) {
+        const hasEnemy = Random.boolean(this.enemyDiscoveryChance)
+
+        if (hasEnemy) {
+          const skeletonType = Random.enumValue(SkeletonType)
+          const enemy: Skeleton = {
+            coords: movePayload.coords,
+            defense: 6,
+            type: skeletonType
+          }
+
+          this.server.in(room.roomId).emit('discoverEnemy', enemy)
+        } else {
+          this.server.in(room.roomId).emit('discoverChest', { id: Date.now().toString(), coords: movePayload.coords })
+        }
+      }
     }
 
     user.position = [

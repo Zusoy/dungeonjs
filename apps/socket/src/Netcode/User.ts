@@ -1,8 +1,9 @@
-import type { AppSocket, Coords } from 'types'
+import type { AppSocket } from 'types/socket'
+import type { ScalarCoords } from 'types/coords'
+import type { VectorTuple } from 'types/utils'
 import { Axe, Dagger, Sword, type Weapon } from 'Netcode/Weapon'
 import type INetcodeItem from 'Netcode/INetcodeItem'
 
-export type VectorTuple = [x: number, y: number, z: number]
 export type Hero = 'rogue'|'knight'|'mage'|'barbarian'
 
 export type Inventory = {
@@ -17,7 +18,7 @@ export type UserPayload = {
   readonly hero: Hero
   readonly position: VectorTuple
   readonly rotation: VectorTuple
-  readonly coords: Coords
+  readonly coords: ScalarCoords
   readonly movesCount: number
   readonly inventory: Inventory
   readonly host?: boolean
@@ -52,7 +53,7 @@ export default class User implements INetcodeItem {
     public inventory: Inventory,
     public position: VectorTuple,
     public rotation: VectorTuple,
-    public coords: Coords,
+    public coords: ScalarCoords,
     public movesCount: number
   ) {
   }

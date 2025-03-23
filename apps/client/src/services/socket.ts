@@ -1,5 +1,7 @@
 import type { UserPayload } from 'types/user'
 import type { Tile } from 'types/tile'
+import type { Chest } from 'types/object'
+import type { Skeleton } from 'types/enemy'
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
 import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
@@ -16,6 +18,8 @@ export interface ServerToClients {
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
   discoverTile: (payload: Tile) => void
+  discoverChest: (payload: Chest) => void
+  discoverEnemy: (payload: Skeleton) => void
 }
 
 export interface ClientToServer {

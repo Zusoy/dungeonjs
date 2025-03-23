@@ -1,5 +1,5 @@
 import { inject, injectable } from 'tsyringe'
-import type { AppServer } from 'types'
+import type { AppServer } from 'types/socket'
 import type Room from 'Netcode/Room'
 import type User from 'Netcode/User'
 import type ILogger from 'ILogger'
