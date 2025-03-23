@@ -1,5 +1,7 @@
 import type { UserPayload } from 'Netcode/User'
 import type { Tile } from 'types/tile'
+import type { Chest } from 'types/object'
+import type { Skeleton } from 'types/enemy'
 import type {
   CreateRoomPayload,
   JoinRoomPayload,
@@ -39,6 +41,8 @@ export interface ServerToClients {
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
   discoverTile: (payload: Tile) => void
+  discoverChest: (payload: Chest) => void
+  discoverEnemy: (payload: Skeleton) => void
 }
 
 export interface InterServer {

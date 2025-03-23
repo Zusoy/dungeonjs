@@ -28,8 +28,7 @@ export default class RoomBuilder implements ITileBuilder<TileType.Room> {
     return new RoomTile(
       payload.id,
       payload.coords,
-      directions,
-      { shelves: [] }
+      directions
     )
   }
 }

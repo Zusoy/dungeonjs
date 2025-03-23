@@ -4,11 +4,13 @@ import type ICollection from 'Netcode/Collection/ICollection'
 import type ILogger from 'ILogger'
 import type { AppSocket, AppServer } from 'types/socket'
 import type { MoveToCoordsPayload } from 'types/payload'
+import { Skeleton, SkeletonType } from 'types/enemy'
 import { TileType } from 'types/tile'
 import User from 'Netcode/User'
 import Room from 'Netcode/Room'
 import UserEmitter from 'Netcode/UserEmitter'
 import TileFactory from 'Factory/TileFactory'
+import Random from 'Random'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: MoveToCoordsHandler }])
@@ -19,7 +21,9 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     @inject('server') private readonly server: AppServer,
     @inject('logger') private readonly logger: ILogger,
     @inject('emitter.user') private readonly userEmitter: UserEmitter,
-    @inject('tile.factory') private readonly tileFactory: TileFactory
+    @inject('tile.factory') private readonly tileFactory: TileFactory,
+    @inject('chance.room') private readonly roomDiscoveryChance: number,
+    @inject('chance.enemy') private readonly enemyDiscoveryChance: number
   ) {
   }
 
@@ -45,10 +49,12 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     }
 
     if (movePayload.uncharted) {
-      const types = Object.values(TileType)
+      const roomDiscovery = Random.boolean(this.roomDiscoveryChance)
+      const randomTileType = roomDiscovery ? TileType.Room : TileType.Corridor
+
       const type = movePayload.neighborTiles.length > 1
         ? TileType.Room
-        : types[Math.floor(Math.random() * types.length)]
+        : randomTileType
 
       const tile = this.tileFactory.build(
         type,
@@ -62,6 +68,23 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
 
       this.server.in(room.roomId).emit('discoverTile', tile)
       this.logger.info('Discover tile', tile)
+
+      if (tile.type === TileType.Room) {
+        const hasEnemy = Random.boolean(this.enemyDiscoveryChance)
+
+        if (hasEnemy) {
+          const skeletonType = Random.enumValue(SkeletonType)
+          const enemy: Skeleton = {
+            coords: movePayload.coords,
+            defense: 6,
+            type: skeletonType
+          }
+
+          this.server.in(room.roomId).emit('discoverEnemy', enemy)
+        } else {
+          this.server.in(room.roomId).emit('discoverChest', { id: Date.now().toString(), coords: movePayload.coords })
+        }
+      }
     }
 
     user.position = [

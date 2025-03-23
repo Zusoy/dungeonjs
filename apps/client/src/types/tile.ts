@@ -13,22 +13,13 @@ export interface Tile {
   readonly directions: VectorTuple[]
 }
 
-export interface ConfigurableTile<T> extends Tile {
-  readonly configuration: T
-}
-
-export type RoomConfiguration = {
-  readonly shelves: ScalarCoords[]
-}
-
-export class RoomTile implements ConfigurableTile<RoomConfiguration> {
+export class RoomTile implements Tile {
   public readonly type: TileType = TileType.Room
 
   constructor(
     public readonly id: string,
     public readonly coords: ScalarCoords,
-    public readonly directions: VectorTuple[],
-    public readonly configuration: RoomConfiguration
+    public readonly directions: VectorTuple[]
   ) {}
 }
 

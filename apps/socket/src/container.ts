@@ -12,6 +12,10 @@ import CorridorBuilder from 'Factory/Tile/CorridorBuilder'
 import RoomBuilder from 'Factory/Tile/RoomBuilder'
 import TileFactory from 'Factory/TileFactory'
 
+// parameters
+container.register('chance.enemy', { useValue: 80 })
+container.register('chance.room', { useValue: 36 })
+
 // collections
 container.register<ICollection<User>>(
   'users',
