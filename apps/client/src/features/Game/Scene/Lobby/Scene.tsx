@@ -1,6 +1,6 @@
 import React from 'react'
 import LobbyRoom from 'features/Game/Scene/Lobby/LobbyRoom'
-import HeroCharacter from 'features/Game/Character/Hero'
+import HeroCharacter from 'features/Game/GameObject/Character/Hero'
 import { Canvas } from '@react-three/fiber'
 import { Environment, Stats } from '@react-three/drei'
 import { useSelector } from 'react-redux'

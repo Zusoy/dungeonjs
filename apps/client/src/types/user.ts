@@ -24,6 +24,7 @@ export type UserPayload = {
   readonly id: string
   readonly username: string
   readonly color: string
+  readonly health: number
   readonly hero: Hero
   readonly inventory: Inventory
   readonly position: VectorTuple

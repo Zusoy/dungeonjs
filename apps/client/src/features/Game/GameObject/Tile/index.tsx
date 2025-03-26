@@ -1,6 +1,6 @@
 import React from 'react'
-import ModularRoom from 'features/Game/Tile/ModularRoom'
-import Corridor from 'features/Game/Tile/Corridor'
+import ModularRoom from 'features/Game/GameObject/Tile/ModularRoom'
+import Corridor from 'features/Game/GameObject/Tile/Corridor'
 import { TileType } from 'types/tile'
 import type { VectorTuple } from 'types/utils'
 

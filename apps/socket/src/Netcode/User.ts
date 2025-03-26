@@ -15,6 +15,7 @@ export type UserPayload = {
   readonly id: string
   readonly username: string
   readonly color: string
+  readonly health: number
   readonly hero: Hero
   readonly position: VectorTuple
   readonly rotation: VectorTuple
@@ -25,6 +26,8 @@ export type UserPayload = {
 }
 
 export default class User implements INetcodeItem {
+  public health: number = 5
+
   static fromSocket(socket: AppSocket, color: string, hero: Hero): User {
     const username = socket.handshake.query.username?.toString() || ''
 
@@ -91,6 +94,7 @@ export default class User implements INetcodeItem {
       username: this.username,
       id: this.id,
       color: this.color,
+      health: this.health,
       hero: this.hero,
       position: this.position,
       rotation: this.rotation,
@@ -105,6 +109,7 @@ export default class User implements INetcodeItem {
       username: this.username,
       id: this.id,
       color: this.color,
+      health: this.health,
       hero: this.hero,
       position: this.position,
       rotation: this.rotation,

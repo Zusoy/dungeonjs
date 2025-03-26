@@ -3,8 +3,31 @@ import MoveCounter from 'features/Game/Scene/Game/HUD/MoveCounter'
 import Players from 'features/Game/Scene/Game/HUD/Players'
 import Inventory from 'features/Game/Scene/Game/HUD/Inventory'
 import Fullscreen from 'features/Game/Scene/Game/HUD/Fullscreen'
+import TurnAnnounceDialog, { TurnAnnouncer } from 'widgets/Dialog/TurnAnnounceDialog'
+import { useSelector } from 'react-redux'
+import { selectPlayers, selectPlayerTurn } from 'features/Game/slice'
 
 const HUD: React.FC = () => {
+  const turnAnnouncer = React.useRef<TurnAnnouncer>(null!)
+  const playerTurnId = useSelector(selectPlayerTurn)
+  const players = useSelector(selectPlayers)
+
+  const playerTurn = React.useMemo(
+    () => players.find((player) => player.id === playerTurnId),
+    [playerTurnId]
+  )
+
+  React.useEffect(() => {
+    if (!playerTurn) {
+      return
+    }
+
+    turnAnnouncer.current.announce({
+      username : playerTurn.username,
+      hero: playerTurn.hero
+    })
+  }, [playerTurn])
+
   return (
     <>
       <div className='absolute top-0 flex w-screen justify-center'>
@@ -15,6 +38,7 @@ const HUD: React.FC = () => {
         </div>
       </div>
       <Players />
+      <TurnAnnounceDialog ref={turnAnnouncer} />
     </>
   )
 }

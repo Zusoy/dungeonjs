@@ -1,10 +1,10 @@
 import React from 'react'
 import { Hero } from 'types/user'
 import { Vector3 } from 'three'
-import Barbarian from 'features/Game/Character/Hero/Barbarian'
-import Knight from 'features/Game/Character/Hero/Knight'
-import Mage from 'features/Game/Character/Hero/Mage'
-import Rogue from 'features/Game/Character/Hero/Rogue'
+import Barbarian from 'features/Game/GameObject/Character/Hero/Barbarian'
+import Knight from 'features/Game/GameObject/Character/Hero/Knight'
+import Mage from 'features/Game/GameObject/Character/Hero/Mage'
+import Rogue from 'features/Game/GameObject/Character/Hero/Rogue'
 
 type Props = JSX.IntrinsicElements['group'] & {
   readonly hero: Hero
