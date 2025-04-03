@@ -1,12 +1,13 @@
 import container from 'container'
 import { createServer } from 'http'
-import { Server } from 'socket.io'
+import { Server as IOServer } from 'socket.io'
+import type IServer from 'IServer'
+import Server from 'Websocket/Server'
 import type { ClientToServer, ServerToClients, InterServer } from 'Netcode/events'
 import EventSubscriber from 'EventSubscriber'
 import User from 'Netcode/User'
 import ICollection from 'Netcode/Collection/ICollection'
 import Room from 'Netcode/Room'
-import { AppServer } from 'types/socket'
 import ChangeHeroHandler from 'EventHandler/Game/ChangeHeroHandler'
 import MoveToCoordsHandler from 'EventHandler/Game/MoveToCoordsHandler'
 import StartGameHandler from 'EventHandler/Game/StartGameHandler'
@@ -24,8 +25,13 @@ const httpServer = createServer((_, res) => {
   res.end()
 })
 
-const io = new Server<ClientToServer, ServerToClients, InterServer>(httpServer)
-container.register<AppServer>('server', { useValue: io })
+const io = new IOServer<ClientToServer, ServerToClients, InterServer>(httpServer)
+const users = container.resolve<ICollection<User>>('users')
+const rooms = container.resolve<ICollection<Room>>('rooms')
+const logger = container.resolve<ILogger>('logger')
+
+const server = new Server(io)
+container.register<IServer>('server', { useValue: server })
 
 container.register<ChangeHeroHandler>(ChangeHeroHandler, { useClass: ChangeHeroHandler })
 container.register<MoveToCoordsHandler>(MoveToCoordsHandler, { useClass: MoveToCoordsHandler })
@@ -35,9 +41,6 @@ container.register<JoinRoomHandler>(JoinRoomHandler, { useClass: JoinRoomHandler
 container.register<LeaveRoomHandler>(LeaveRoomHandler, { useClass: LeaveRoomHandler })
 
 const subscriber = container.resolve(EventSubscriber)
-const users = container.resolve<ICollection<User>>('users')
-const rooms = container.resolve<ICollection<Room>>('rooms')
-const logger = container.resolve<ILogger>('logger')
 
 io.on('connect', socket => {
   const randomColor = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
@@ -59,14 +62,14 @@ io.on('connect', socket => {
         continue
       }
 
-      const sockets = await io.in(lastSocketRoomId).fetchSockets()
-      const roomsUsers = sockets
-        .map(({ id }) => id)
+      const socketIds = await server.fetchSocketIds(room)
+
+      const roomsUsers = Array.from(socketIds)
         .map(id => Array.from(users).find(user => user.id === id) || null)
         .filter(u => !!u)
         .map(u => u.getRoomPayload(u.id === room.createdById))
 
-      io.in(lastSocketRoomId).emit('players', roomsUsers)
+      server.emitInRoom('players', room, roomsUsers)
     }
   })
 
@@ -75,12 +78,12 @@ io.on('connect', socket => {
 
     createdRooms.forEach(createdRoom => {
       rooms.remove(createdRoom)
-      io.in(createdRoom.roomId).emit('leftRoom', 'room_deleted')
+      server.emitInRoom('leftRoom', createdRoom, 'room_deleted')
       io.in(createdRoom.roomId).socketsLeave(createdRoom.roomId)
       logger.info('Room author disconnec, clean room', createdRoom.roomId)
     })
 
-    io.emit('availableRooms', Array.from(rooms).map(({ roomId }) => roomId))
+    server.emit('availableRooms', Array.from(rooms).map(({ roomId }) => roomId))
     users.remove(user)
     logger.info('User disconnected', reason)
   })

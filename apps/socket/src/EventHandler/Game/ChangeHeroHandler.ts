@@ -1,6 +1,6 @@
 import { inject, injectable, registry } from 'tsyringe'
 import type ICollection from 'Netcode/Collection/ICollection'
-import type { AppSocket } from 'types/socket'
+import type ISocket from 'ISocket'
 import type { ChangeHeroPayload } from 'types/payload'
 import type IEventHandler from 'IEventHandler'
 import type Room from 'Netcode/Room'
@@ -17,12 +17,12 @@ export default class ChangeHeroHandler implements IEventHandler<'changeHero'> {
   ) {
   }
 
-  supports(event: 'changeHero', _payload: [payload: ChangeHeroPayload], socket: AppSocket): boolean {
+  supports(event: 'changeHero', _payload: [payload: ChangeHeroPayload], socket: ISocket): boolean {
     return event === 'changeHero'
-      && socket.rooms.size > 0
+      && socket.rooms.length > 0
   }
 
-  handle(_event: 'changeHero', payload: [payload: ChangeHeroPayload], socket: AppSocket): void {
+  handle(_event: 'changeHero', payload: [payload: ChangeHeroPayload], socket: ISocket): void {
     const [changeHeroPayload] = payload
     const currentRoomId = Array.from(socket.rooms).find(room => !!this.rooms.find(room))
 

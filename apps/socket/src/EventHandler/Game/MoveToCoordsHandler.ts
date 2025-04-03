@@ -2,7 +2,8 @@ import { inject, injectable, registry } from 'tsyringe'
 import type IEventHandler from 'IEventHandler'
 import type ICollection from 'Netcode/Collection/ICollection'
 import type ILogger from 'ILogger'
-import type { AppSocket, AppServer } from 'types/socket'
+import type ISocket from 'ISocket'
+import type IServer from 'IServer'
 import type { MoveToCoordsPayload } from 'types/payload'
 import { Skeleton, SkeletonType } from 'types/enemy'
 import { TileType } from 'types/tile'
@@ -18,7 +19,7 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
   constructor(
     @inject('users') private readonly users: ICollection<User>,
     @inject('rooms') private readonly rooms: ICollection<Room>,
-    @inject('server') private readonly server: AppServer,
+    @inject('server') private readonly server: IServer,
     @inject('logger') private readonly logger: ILogger,
     @inject('emitter.user') private readonly userEmitter: UserEmitter,
     @inject('tile.factory') private readonly tileFactory: TileFactory,
@@ -27,13 +28,13 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
   ) {
   }
 
-  supports(event: 'moveToCoords', _payload: [payload: MoveToCoordsPayload], _socket: AppSocket): boolean {
+  supports(event: 'moveToCoords', _payload: [payload: MoveToCoordsPayload], _socket: ISocket): boolean {
     return event === 'moveToCoords'
   }
 
-  handle(_event: 'moveToCoords', payload: [payload: MoveToCoordsPayload], socket: AppSocket): void {
+  handle(_event: 'moveToCoords', payload: [payload: MoveToCoordsPayload], socket: ISocket): void {
     const [movePayload] = payload
-    const roomId = Array.from(socket.rooms).find(room => !!this.rooms.find(room))
+    const roomId = socket.rooms.find(room => !!this.rooms.find(room))
     const user = this.users.find(socket.id)
     const userIndex = Array.from(this.users).findIndex(user => user.id === socket.id)
 
@@ -66,7 +67,7 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
         }
       )
 
-      this.server.in(room.roomId).emit('discoverTile', tile)
+      this.server.emitInRoom('discoverTile', room, tile)
       this.logger.info('Discover tile', tile)
 
       if (tile.type === TileType.Room) {
@@ -80,9 +81,9 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
             type: skeletonType
           }
 
-          this.server.in(room.roomId).emit('discoverEnemy', enemy)
+          this.server.emitInRoom('discoverEnemy', room, enemy)
         } else {
-          this.server.in(room.roomId).emit('discoverChest', { id: Date.now().toString(), coords: movePayload.coords })
+          this.server.emitInRoom('discoverChest', room, { id: Date.now().toString(), coords: movePayload.coords })
         }
       }
     }

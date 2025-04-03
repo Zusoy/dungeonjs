@@ -107,15 +107,16 @@ interface GLTFAction extends THREE.AnimationClip {
 
 type GLTFResult = GLTF & {
   nodes: {
-    Skeleton_Mage_ArmLeft: THREE.SkinnedMesh
-    Skeleton_Mage_ArmRight: THREE.SkinnedMesh
-    Skeleton_Mage_Body: THREE.SkinnedMesh
-    Skeleton_Mage_Eyes: THREE.SkinnedMesh
-    Skeleton_Mage_Jaw: THREE.SkinnedMesh
-    Skeleton_Mage_LegLeft: THREE.SkinnedMesh
-    Skeleton_Mage_LegRight: THREE.SkinnedMesh
-    Skeleton_Mage_Skull: THREE.SkinnedMesh
-    Skeleton_Mage_Hat: THREE.Mesh
+    Skeleton_Rogue_ArmLeft: THREE.SkinnedMesh
+    Skeleton_Rogue_ArmRight: THREE.SkinnedMesh
+    Skeleton_Rogue_Body: THREE.SkinnedMesh
+    Skeleton_Rogue_Eyes: THREE.SkinnedMesh
+    Skeleton_Rogue_Head: THREE.SkinnedMesh
+    Skeleton_Rogue_Jaw: THREE.SkinnedMesh
+    Skeleton_Rogue_LegLeft: THREE.SkinnedMesh
+    Skeleton_Rogue_LegRight: THREE.SkinnedMesh
+    Skeleton_Rogue_Hood: THREE.Mesh
+    Skeleton_Rogue_Cape: THREE.Mesh
     root: THREE.Bone
   }
   materials: {
@@ -125,14 +126,14 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[]
 }
 
-const MageSkeleton: React.FC<JSX.IntrinsicElements['group']> = props => {
+const RogueSkeleton: React.FC<JSX.IntrinsicElements['group']> = props => {
   const transform = React.useRef<THREE.Group>(null!)
-  const { scene, materials, animations } = useGLTF('/arts/skeletons/characters/gltf/Skeleton_Mage.glb') as unknown as GLTFResult
+  const { scene, materials, animations } = useGLTF('/arts/skeletons/characters/gltf/Skeleton_Rogue.glb') as unknown as GLTFResult
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes } = useGraph(clone) as unknown as GLTFResult
 
   const { actions } = useAnimations<GLTFAction>(animations, transform)
-  const [animation] = React.useState<ActionName>('Idle_B')
+  const [animation] = React.useState<ActionName>('Idle_Combat')
 
   React.useEffect(() => {
     actions[animation]?.reset()?.fadeIn(0.1)?.play()
@@ -147,52 +148,52 @@ const MageSkeleton: React.FC<JSX.IntrinsicElements['group']> = props => {
       <group name="Scene">
         <group name="Rig">
           <skinnedMesh
-            name="Skeleton_Mage_ArmLeft"
-            geometry={nodes.Skeleton_Mage_ArmLeft.geometry}
+            name="Skeleton_Rogue_ArmLeft"
+            geometry={nodes.Skeleton_Rogue_ArmLeft.geometry}
             material={materials.skeleton}
-            skeleton={nodes.Skeleton_Mage_ArmLeft.skeleton}
+            skeleton={nodes.Skeleton_Rogue_ArmLeft.skeleton}
           />
           <skinnedMesh
-            name="Skeleton_Mage_ArmRight"
-            geometry={nodes.Skeleton_Mage_ArmRight.geometry}
+            name="Skeleton_Rogue_ArmRight"
+            geometry={nodes.Skeleton_Rogue_ArmRight.geometry}
             material={materials.skeleton}
-            skeleton={nodes.Skeleton_Mage_ArmRight.skeleton}
+            skeleton={nodes.Skeleton_Rogue_ArmRight.skeleton}
           />
           <skinnedMesh
-            name="Skeleton_Mage_Body"
-            geometry={nodes.Skeleton_Mage_Body.geometry}
+            name="Skeleton_Rogue_Body"
+            geometry={nodes.Skeleton_Rogue_Body.geometry}
             material={materials.skeleton}
-            skeleton={nodes.Skeleton_Mage_Body.skeleton}
+            skeleton={nodes.Skeleton_Rogue_Body.skeleton}
           />
           <skinnedMesh
-            name="Skeleton_Mage_Eyes"
-            geometry={nodes.Skeleton_Mage_Eyes.geometry}
+            name="Skeleton_Rogue_Eyes"
+            geometry={nodes.Skeleton_Rogue_Eyes.geometry}
             material={materials.Glow}
-            skeleton={nodes.Skeleton_Mage_Eyes.skeleton}
+            skeleton={nodes.Skeleton_Rogue_Eyes.skeleton}
           />
           <skinnedMesh
-            name="Skeleton_Mage_Jaw"
-            geometry={nodes.Skeleton_Mage_Jaw.geometry}
+            name="Skeleton_Rogue_Head"
+            geometry={nodes.Skeleton_Rogue_Head.geometry}
             material={materials.skeleton}
-            skeleton={nodes.Skeleton_Mage_Jaw.skeleton}
+            skeleton={nodes.Skeleton_Rogue_Head.skeleton}
           />
           <skinnedMesh
-            name="Skeleton_Mage_LegLeft"
-            geometry={nodes.Skeleton_Mage_LegLeft.geometry}
+            name="Skeleton_Rogue_Jaw"
+            geometry={nodes.Skeleton_Rogue_Jaw.geometry}
             material={materials.skeleton}
-            skeleton={nodes.Skeleton_Mage_LegLeft.skeleton}
+            skeleton={nodes.Skeleton_Rogue_Jaw.skeleton}
           />
           <skinnedMesh
-            name="Skeleton_Mage_LegRight"
-            geometry={nodes.Skeleton_Mage_LegRight.geometry}
+            name="Skeleton_Rogue_LegLeft"
+            geometry={nodes.Skeleton_Rogue_LegLeft.geometry}
             material={materials.skeleton}
-            skeleton={nodes.Skeleton_Mage_LegRight.skeleton}
+            skeleton={nodes.Skeleton_Rogue_LegLeft.skeleton}
           />
           <skinnedMesh
-            name="Skeleton_Mage_Skull"
-            geometry={nodes.Skeleton_Mage_Skull.geometry}
+            name="Skeleton_Rogue_LegRight"
+            geometry={nodes.Skeleton_Rogue_LegRight.geometry}
             material={materials.skeleton}
-            skeleton={nodes.Skeleton_Mage_Skull.skeleton}
+            skeleton={nodes.Skeleton_Rogue_LegRight.skeleton}
           />
           <primitive object={nodes.root} />
         </group>
@@ -201,6 +202,6 @@ const MageSkeleton: React.FC<JSX.IntrinsicElements['group']> = props => {
   )
 }
 
-useGLTF.preload('/arts/skeletons/characters/gltf/Skeleton_Mage.glb')
+useGLTF.preload('/arts/skeletons/characters/gltf/Skeleton_Rogue.glb')
 
-export default MageSkeleton
+export default RogueSkeleton

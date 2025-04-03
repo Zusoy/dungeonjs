@@ -133,7 +133,7 @@ const WarriorSkeleton: React.FC<JSX.IntrinsicElements['group']> = props => {
   const { nodes } = useGraph(clone) as unknown as GLTFResult
 
   const { actions } = useAnimations<GLTFAction>(animations, transform)
-  const [animation] = React.useState<ActionName>('Idle_B')
+  const [animation] = React.useState<ActionName>('Idle_Combat')
 
   React.useEffect(() => {
     actions[animation]?.reset()?.fadeIn(0.1)?.play()

@@ -1,6 +1,7 @@
 import { inject, injectable, registry } from 'tsyringe'
+import type IServer from 'IServer'
+import type ISocket from 'ISocket'
 import type IEventHandler from 'IEventHandler'
-import type { AppSocket, AppServer } from 'types/socket'
 import type { CreateRoomPayload } from 'types/payload'
 import type ICollection from 'Netcode/Collection/ICollection'
 import type ILogger from 'ILogger'
@@ -15,16 +16,16 @@ export default class CreateRoomHandler implements IEventHandler<'createRoom'> {
     @inject('users') private readonly users: ICollection<User>,
     @inject('rooms') private readonly rooms: ICollection<Room>,
     @inject('emitter.user') private readonly userEmitter: UserEmitter,
-    @inject('server') private readonly server: AppServer,
+    @inject('server') private readonly server: IServer,
     @inject('logger') private readonly logger: ILogger
   ) {
   }
 
-  supports(event: "createRoom", _payload: [payload: CreateRoomPayload], _socket: AppSocket): boolean {
+  supports(event: "createRoom", _payload: [payload: CreateRoomPayload], _socket: ISocket): boolean {
     return event === 'createRoom'
   }
 
-  handle(_event: "createRoom", payload: [payload: CreateRoomPayload], socket: AppSocket): void {
+  handle(_event: "createRoom", payload: [payload: CreateRoomPayload], socket: ISocket): void {
     const [createPayload] = payload
     const user = this.users.find(socket.id)
 
@@ -35,7 +36,7 @@ export default class CreateRoomHandler implements IEventHandler<'createRoom'> {
     const room = new Room(createPayload.roomId, socket.id)
     this.rooms.add(room)
 
-    socket.join(createPayload.roomId)
+    socket.join(room)
     socket.emit('joinedRoom', createPayload.roomId)
 
     this.userEmitter.broadcast(room)

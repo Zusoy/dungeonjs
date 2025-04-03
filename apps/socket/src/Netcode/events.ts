@@ -47,3 +47,5 @@ export interface ServerToClients {
 
 export interface InterServer {
 }
+
+export type EventsMap = ClientToServer & ServerToClients & InterServer

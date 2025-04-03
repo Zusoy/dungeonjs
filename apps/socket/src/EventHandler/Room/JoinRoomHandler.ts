@@ -1,7 +1,7 @@
 import { inject, injectable, registry } from 'tsyringe'
 import type IEventHandler from 'IEventHandler'
 import type ICollection from 'Netcode/Collection/ICollection'
-import type { AppSocket } from 'types/socket'
+import type ISocket from 'ISocket'
 import type { JoinRoomPayload } from 'types/payload'
 import Room from 'Netcode/Room'
 import UserEmitter from 'Netcode/UserEmitter'
@@ -15,14 +15,14 @@ export default class JoinRoomHandler implements IEventHandler<'joinRoom'> {
   ) {
   }
 
-  supports(event: "joinRoom", payload: [payload: JoinRoomPayload], _socket: AppSocket): boolean {
+  supports(event: "joinRoom", payload: [payload: JoinRoomPayload], _socket: ISocket): boolean {
     const [joinPayload] = payload
 
     return event === 'joinRoom'
       && !!this.rooms.find(joinPayload.roomId)
   }
 
-  handle(_event: "joinRoom", payload: [payload: JoinRoomPayload], socket: AppSocket): void {
+  handle(_event: "joinRoom", payload: [payload: JoinRoomPayload], socket: ISocket): void {
     const [joinPayload] = payload
     const room = this.rooms.find(joinPayload.roomId)
 
@@ -30,7 +30,7 @@ export default class JoinRoomHandler implements IEventHandler<'joinRoom'> {
       return
     }
 
-    socket.join(joinPayload.roomId)
+    socket.join(room)
     socket.emit('joinedRoom', joinPayload.roomId)
     this.userEmitter.broadcast(room)
   }

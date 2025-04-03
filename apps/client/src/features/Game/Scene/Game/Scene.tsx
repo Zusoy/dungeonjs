@@ -1,17 +1,18 @@
 import React from 'react'
-import Tile from 'features/Game/Tile'
-import HeroCharacter from 'features/Game/Character/Hero'
-import SkeletonCharacter from 'features/Game/Character/Skeleton'
+import Tile from 'features/Game/GameObject/Tile'
+import HeroCharacter from 'features/Game/GameObject/Character/Hero'
+import SkeletonCharacter from 'features/Game/GameObject/Character/Skeleton'
 import MoveControls from 'features/Game/Scene/Game/MoveControls'
+import Camera, { GameCamera } from 'features/Game/Scene/Game/Camera'
 import { Canvas } from '@react-three/fiber'
 import { Vector3 } from 'three'
-import { CameraControls, Environment, Stats } from '@react-three/drei'
+import { Environment, Stats } from '@react-three/drei'
 import { useSelector } from 'react-redux'
 import { selectChests, selectEnemies, selectPlayers, selectTiles } from 'features/Game/slice'
-import { Chest, Instances as Chests } from 'features/Game/Prop/Chest'
+import { Chest, Instances as Chests } from 'features/Game/GameObject/Prop/Chest'
 
 const Scene: React.FC = () => {
-  const camera = React.useRef<CameraControls>(null!)
+  const camera = React.useRef<GameCamera>(null!)
   const players = useSelector(selectPlayers)
   const tiles = useSelector(selectTiles)
   const enemies = useSelector(selectEnemies)
@@ -21,7 +22,7 @@ const Scene: React.FC = () => {
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>
       <Stats />
       <Environment preset='city' />
-      <CameraControls maxDistance={30} minDistance={20} ref={camera} makeDefault />
+      <Camera ref={camera} />
       {tiles.map(
         tile =>
           <Tile
