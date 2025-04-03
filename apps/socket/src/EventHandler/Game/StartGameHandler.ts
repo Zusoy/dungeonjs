@@ -1,5 +1,6 @@
 import { inject, injectable, registry } from 'tsyringe'
-import type { AppSocket, AppServer } from 'types/socket'
+import type IServer from 'IServer'
+import type ISocket from 'ISocket'
 import type { StartGamePayload } from 'types/payload'
 import type IEventHandler from 'IEventHandler'
 import type ICollection from 'Netcode/Collection/ICollection'
@@ -11,27 +12,32 @@ import type Room from 'Netcode/Room'
 export default class StartGameHandler implements IEventHandler<'startGame'> {
   constructor(
     @inject('rooms') private readonly rooms: ICollection<Room>,
-    @inject('server') private readonly server: AppServer,
+    @inject('server') private readonly server: IServer,
     @inject('logger') private readonly logger: ILogger
   ) {
   }
 
-  supports(event: 'startGame', payload: [payload: StartGamePayload], socket: AppSocket): boolean {
+  supports(event: 'startGame', payload: [payload: StartGamePayload], socket: ISocket): boolean {
     const [startPayload] = payload
 
     return event === 'startGame'
       && !!this.rooms.find(startPayload.roomId)
-      && Array.from(socket.rooms).includes(startPayload.roomId)
+      && socket.rooms.includes(startPayload.roomId)
   }
 
-  handle(_event: 'startGame', payload: [payload: StartGamePayload], _socket: AppSocket): void {
+  handle(_event: 'startGame', payload: [payload: StartGamePayload], _socket: ISocket): void {
     const [startPayload] = payload
-    this.server.in(startPayload.roomId).emit('gameStarted', startPayload.roomId)
+    const room = this.rooms.find(startPayload.roomId)
 
-    this.server.in(startPayload.roomId).fetchSockets()
-      .then(sockets => {
-        const ids = sockets.map(({ id }) => id)
-        this.server.in(startPayload.roomId).emit('playerTurn', ids[0])
+    if (!room) {
+      return
+    }
+
+    this.server.emitInRoom('gameStarted', room, startPayload.roomId)
+    this.server.fetchSocketIds(room)
+      .then(ids => {
+        const firstTurn = Array.from(ids)[0]
+        this.server.emitInRoom('playerTurn', room, firstTurn)
       })
 
     this.logger.info('Game starting', startPayload.roomId)

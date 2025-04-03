@@ -25,6 +25,7 @@ const TurnAnnounceDialog = React.forwardRef<TurnAnnouncer>((_, ref) => {
   }), [dialog])
 
   const close = React.useCallback(() => {
+    setTarget(null)
     dialog.current.close()
   }, [dialog])
 
