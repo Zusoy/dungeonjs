@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
 import { Hero, UserPayload } from 'types/user'
 import { left } from 'features/Rooms/slice'
@@ -7,6 +7,7 @@ import type { Chest } from 'types/object'
 import { type Tile, TileType } from 'types/tile'
 import type { Skeleton } from 'types/enemy'
 import { type Nullable, type VectorTuple, Direction } from 'types/utils'
+import { selectId } from 'features/Authentication/slice'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -182,8 +183,29 @@ export const selectEnemies: Selector<Skeleton[]> = state =>
 export const selectFocusedCoords: Selector<Nullable<ScalarCoords>> = state =>
   state.game.focusedCoords
 
-export const selectCurrentPlayer: Selector<UserPayload> = state =>
-  state.game.players.find(p => p.id === state.auth.id)!
+export const selectCurrentPlayer = createSelector(
+  [selectPlayers, selectId],
+  (players, id) => players.find(p => p.id === id)!
+)
+
+export const selectCurrentFight: Selector<Nullable<Fight>> = state =>
+  state.game.fight
+
+export const selectFightingPlayer = createSelector([selectCurrentFight, selectPlayers], (fight, players) => {
+  if (!fight) {
+    return null
+  }
+
+  return players.find(p => p.id === fight.playerId) || null
+})
+
+export const selectFightingEnemy = createSelector([selectCurrentFight, selectEnemies], (fight, enemies) => {
+  if (!fight) {
+    return null
+  }
+
+  return enemies.find(e => e.id === fight.enemyId) || null
+})
 
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
