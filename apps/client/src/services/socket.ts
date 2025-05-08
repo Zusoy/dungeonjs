@@ -4,16 +4,14 @@ import type { Chest } from 'types/object'
 import type { Skeleton } from 'types/enemy'
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
-import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
+import { CreateRoomPayload, FailedToJoinRoomPayload, JoinRoomPayload, LeaveRoomPayload, LeftRoomReason } from 'features/Rooms/slice'
 import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload } from 'features/Game/slice'
-
-export type LeftRoomReason = 'user_left'|'room_deleted'
 
 export interface ServerToClients {
   pong: () => void
-  availableRooms: (rooms: Iterable<string>) => void
   players: (players: Iterable<UserPayload>) => void
   joinedRoom: (room: string) => void
+  failedToJoinRoom: (payload: FailedToJoinRoomPayload) => void
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void

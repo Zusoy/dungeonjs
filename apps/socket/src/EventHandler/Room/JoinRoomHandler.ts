@@ -15,11 +15,8 @@ export default class JoinRoomHandler implements IEventHandler<'joinRoom'> {
   ) {
   }
 
-  supports(event: "joinRoom", payload: [payload: JoinRoomPayload], _socket: ISocket): boolean {
-    const [joinPayload] = payload
-
+  supports(event: "joinRoom", _payload: [payload: JoinRoomPayload], _socket: ISocket): boolean {
     return event === 'joinRoom'
-      && !!this.rooms.find(joinPayload.roomId)
   }
 
   handle(_event: "joinRoom", payload: [payload: JoinRoomPayload], socket: ISocket): void {
@@ -27,6 +24,7 @@ export default class JoinRoomHandler implements IEventHandler<'joinRoom'> {
     const room = this.rooms.find(joinPayload.roomId)
 
     if (!room) {
+      socket.emit('failedToJoinRoom', { roomId: joinPayload.roomId, code: 'room_not_found' })
       return
     }
 

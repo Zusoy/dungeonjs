@@ -1,14 +1,16 @@
 import React from 'react'
-import ListRooms from 'features/Rooms/List'
 import CreateRoom from 'features/Rooms/Create'
+import JoinRoom from 'features/Rooms/Join'
 import Game from 'features/Game'
 import { useSelector } from 'react-redux'
 import { selectCurrentRoomId } from 'features/Rooms/slice'
 import { FaPlusSquare } from 'react-icons/fa'
+import { FaUsers } from 'react-icons/fa6'
 
 const Hub: React.FC = () => {
   const roomId = useSelector(selectCurrentRoomId)
   const createRoomDialog = React.useRef<HTMLDialogElement>(null!)
+  const joinRoomDialog = React.useRef<HTMLDialogElement>(null!)
 
   const openCreateRoomDialog = React.useCallback(() => {
     if (!createRoomDialog.current) {
@@ -17,6 +19,14 @@ const Hub: React.FC = () => {
 
     createRoomDialog.current.showModal()
   }, [createRoomDialog])
+
+  const openJoinRoomDialog = React.useCallback(() => {
+    if (!joinRoomDialog.current) {
+      return
+    }
+
+    joinRoomDialog.current.showModal()
+  }, [joinRoomDialog])
 
   if (roomId) {
     return (
@@ -30,10 +40,14 @@ const Hub: React.FC = () => {
         <div className='flex-1'>
           <a className='btn btn-ghost text-xl'>Dungeon'JS <p className='text-sm text-info'>v0.0.1</p></a>
         </div>
-        <div className='flex-none'>
+        <div className='flex gap-2 flex-none'>
           <button type='button' className='btn btn-success' onClick={openCreateRoomDialog}>
             <FaPlusSquare />
             New Game
+          </button>
+          <button type='button' className='btn btn-info' onClick={openJoinRoomDialog}>
+            <FaUsers />
+            Join Game
           </button>
         </div>
       </div>
@@ -47,10 +61,11 @@ const Hub: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className='flex flex-col w-full items-center bg-base-100'>
-        <ListRooms />
+      <div className='flex flex-col w-full items-center bg-base-100 mt-10'>
+        <p>Tutorials here</p>
       </div>
       <CreateRoom ref={createRoomDialog} />
+      <JoinRoom ref={joinRoomDialog} />
     </>
   )
 }

@@ -5,6 +5,7 @@ import type { Tile } from 'types/tile'
 import type { Skeleton } from 'types/enemy'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
+export type JoinRoomErrorCode = 'room_not_found'
 
 export type CreateRoomPayload = {
   readonly roomId: string
@@ -36,4 +37,9 @@ export type MoveToCoordsPayload = {
 export type BeginFightPayload = {
   readonly playerId: UserPayload['id']
   readonly enemyId: Skeleton['id']
+}
+
+export type FailedToJoinRoomPayload = {
+  readonly roomId: string
+  readonly code: JoinRoomErrorCode
 }

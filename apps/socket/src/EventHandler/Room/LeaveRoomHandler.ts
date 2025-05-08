@@ -40,7 +40,6 @@ export default class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
       this.server.kick(room)
       this.server.emitInRoom('leftRoom', room, 'room_deleted')
 
-      this.server.emit('availableRooms', Array.from(this.rooms).map(({ roomId }) => roomId))
       this.logger.info('Room author leave, cleaned room', room.roomId)
     }
 

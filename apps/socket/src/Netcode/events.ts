@@ -10,7 +10,8 @@ import type {
   StartGamePayload,
   MoveToCoordsPayload,
   LeftRoomReason,
-  BeginFightPayload
+  BeginFightPayload,
+  FailedToJoinRoomPayload
 } from 'types/payload'
 
 export interface ClientToServer {
@@ -35,9 +36,9 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
 
 export interface ServerToClients {
   pong: () => void
-  availableRooms: (rooms: Iterable<string>) => void
   players: (players: Iterable<UserPayload>) => void
   joinedRoom: (room: string) => void
+  failedToJoinRoom: (payload: FailedToJoinRoomPayload) => void
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void

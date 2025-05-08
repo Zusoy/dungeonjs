@@ -40,7 +40,6 @@ export default class CreateRoomHandler implements IEventHandler<'createRoom'> {
     socket.emit('joinedRoom', createPayload.roomId)
 
     this.userEmitter.broadcast(room)
-    this.server.emit('availableRooms', Array.from(this.rooms).map(({ roomId }) => roomId))
     this.logger.info('Room created', room)
   }
 }
