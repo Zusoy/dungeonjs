@@ -9,7 +9,9 @@ import type {
   ChangeHeroPayload,
   StartGamePayload,
   MoveToCoordsPayload,
-  LeftRoomReason
+  LeftRoomReason,
+  BeginFightPayload,
+  FailedToJoinRoomPayload
 } from 'types/payload'
 
 export interface ClientToServer {
@@ -34,15 +36,16 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
 
 export interface ServerToClients {
   pong: () => void
-  availableRooms: (rooms: Iterable<string>) => void
   players: (players: Iterable<UserPayload>) => void
   joinedRoom: (room: string) => void
+  failedToJoinRoom: (payload: FailedToJoinRoomPayload) => void
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
   discoverTile: (payload: Tile) => void
   discoverChest: (payload: Chest) => void
   discoverEnemy: (payload: Skeleton) => void
+  startFight: (payload: BeginFightPayload) => void
 }
 
 export interface InterServer {

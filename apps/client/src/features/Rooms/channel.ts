@@ -1,13 +1,9 @@
-import { AppSocket, LeftRoomReason, SocketChannel } from 'services/socket'
-import { joined, left, received, RoomActions } from 'features/Rooms/slice'
+import { AppSocket, SocketChannel } from 'services/socket'
+import { joined, left, error, LeftRoomReason, RoomActions } from 'features/Rooms/slice'
 import { eventChannel } from 'redux-saga'
 
 const roomChannel: SocketChannel<RoomActions> = (socket: AppSocket) => {
   return eventChannel(emitter => {
-    const availableRoomsListener = (rooms: Iterable<string>) => {
-      emitter(received(Array.from(rooms)))
-    }
-
     const joinedRoomListener = (room: string) => {
       emitter(joined(room))
     }
@@ -16,14 +12,18 @@ const roomChannel: SocketChannel<RoomActions> = (socket: AppSocket) => {
       emitter(left(reason))
     }
 
-    socket.on('availableRooms', availableRoomsListener)
+    const failedToJoinRoomListener = () => {
+      emitter(error())
+    }
+
     socket.on('joinedRoom', joinedRoomListener)
     socket.on('leftRoom', leftRoomListener)
+    socket.on('failedToJoinRoom', failedToJoinRoomListener)
 
     return () => {
-      socket.off('availableRooms', availableRoomsListener)
       socket.off('joinedRoom', joinedRoomListener)
       socket.off('leftRoom', leftRoomListener)
+      socket.off('failedToJoinRoom', failedToJoinRoomListener)
     }
   })
 }

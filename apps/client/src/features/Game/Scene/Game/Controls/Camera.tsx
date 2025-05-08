@@ -15,9 +15,9 @@ const Camera = React.forwardRef<GameCamera>((_, ref) => {
         coords[0] * 8,
         orbitalCamera.current.camera.position.y,
         coords[1] * 8,
+        coords[0] * 8,
         0,
-        0,
-        0,
+        coords[1] * 8,
         true
       )
     }

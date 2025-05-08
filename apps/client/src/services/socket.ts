@@ -4,22 +4,21 @@ import type { Chest } from 'types/object'
 import type { Skeleton } from 'types/enemy'
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
-import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
-import { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload } from 'features/Game/slice'
-
-export type LeftRoomReason = 'user_left'|'room_deleted'
+import { CreateRoomPayload, FailedToJoinRoomPayload, JoinRoomPayload, LeaveRoomPayload, LeftRoomReason } from 'features/Rooms/slice'
+import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload } from 'features/Game/slice'
 
 export interface ServerToClients {
   pong: () => void
-  availableRooms: (rooms: Iterable<string>) => void
   players: (players: Iterable<UserPayload>) => void
   joinedRoom: (room: string) => void
+  failedToJoinRoom: (payload: FailedToJoinRoomPayload) => void
   leftRoom: (reason: LeftRoomReason) => void
   gameStarted: (roomId: string) => void
   playerTurn: (playerId: UserPayload['id']) => void
   discoverTile: (payload: Tile) => void
   discoverChest: (payload: Chest) => void
   discoverEnemy: (payload: Skeleton) => void
+  startFight: (payload: BeginFightPayload) => void
 }
 
 export interface ClientToServer {
@@ -39,7 +38,7 @@ export type SocketChannel<T extends NotUndefined> = (socket: AppSocket) => Event
 
 export const createWebsocketConnection = (username: string): Promise<AppSocket> => {
   return new Promise((resolve, reject) => {
-    const socket: AppSocket = io('http://192.168.1.53:8080', {
+    const socket: AppSocket = io('http://127.0.0.1:8080', {
       transports: ['websocket'],
       autoConnect: false,
       query: {

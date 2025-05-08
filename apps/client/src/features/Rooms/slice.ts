@@ -1,15 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
-import { LeftRoomReason } from 'services/socket'
 import type { Nullable } from 'types/utils'
 
+export type LeftRoomReason = 'user_left'|'room_deleted'
+export type JoinRoomErrorCode = 'room_not_found'
+
+export enum RoomStatus {
+  Initial = 'initial',
+  Joining = 'joining',
+  Joined = 'joined',
+  Leaving = 'leaving',
+  Error = 'error'
+}
+
 export type State = {
-  rooms: string[]
   currentRoomId: Nullable<string>
+  status: RoomStatus
 }
 
 export const initialState: State = {
-  rooms: [],
+  status: RoomStatus.Initial,
   currentRoomId: null
 }
 
@@ -25,35 +35,41 @@ export type LeaveRoomPayload = {
   readonly roomId: string
 }
 
+export type FailedToJoinRoomPayload = {
+  readonly roomId: string
+  readonly code: JoinRoomErrorCode
+}
+
 const slice = createSlice({
   name: 'rooms',
   initialState,
   reducers: {
     create: (state, _action: PayloadAction<CreateRoomPayload>) => ({
       ...state,
+      status: RoomStatus.Joining
     }),
     join: (state, _action: PayloadAction<JoinRoomPayload>) => ({
       ...state,
+      status: RoomStatus.Joining
     }),
     joined: (state, action: PayloadAction<string>) => ({
       ...state,
-      currentRoomId: action.payload
+      currentRoomId: action.payload,
+      status: RoomStatus.Joined
     }),
     leave: (state, _action: PayloadAction<LeaveRoomPayload>) => ({
       ...state,
+      status: RoomStatus.Leaving
     }),
     left: (state, _action: PayloadAction<LeftRoomReason>) => ({
       ...state,
-      currentRoomId: null
-    }),
-    received: (state, action: PayloadAction<string[]>) => ({
-      ...state,
-      rooms: action.payload
+      currentRoomId: null,
+      status: RoomStatus.Initial
     }),
     error: state => ({
       ...state,
       currentRoomId: null,
-      rooms: []
+      status: RoomStatus.Error
     })
   }
 })
@@ -64,15 +80,14 @@ export const {
   joined,
   leave,
   left,
-  received,
   error
 } = slice.actions
 
 export const selectCurrentRoomId: Selector<Nullable<string>> = state =>
   state.rooms.currentRoomId
 
-export const selectRooms: Selector<string[]> = state =>
-  state.rooms.rooms
+export const selectIsInError: Selector<boolean> = state =>
+  state.rooms.status === RoomStatus.Error
 
 export type RoomActions =
   ReturnType<typeof create> |
@@ -80,7 +95,6 @@ export type RoomActions =
   ReturnType<typeof joined> |
   ReturnType<typeof leave> |
   ReturnType<typeof left> |
-  ReturnType<typeof received> |
   ReturnType<typeof error>
 
 export default slice

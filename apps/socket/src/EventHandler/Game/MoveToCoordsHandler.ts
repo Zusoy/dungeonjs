@@ -76,12 +76,14 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
         if (hasEnemy) {
           const skeletonType = Random.enumValue(SkeletonType)
           const enemy: Skeleton = {
+            id: Date.now().toString(),
             coords: movePayload.coords,
             defense: 6,
             type: skeletonType
           }
 
           this.server.emitInRoom('discoverEnemy', room, enemy)
+          this.server.emitInRoom('startFight', room, { enemyId: enemy.id, playerId: socket.id })
         } else {
           this.server.emitInRoom('discoverChest', room, { id: Date.now().toString(), coords: movePayload.coords })
         }

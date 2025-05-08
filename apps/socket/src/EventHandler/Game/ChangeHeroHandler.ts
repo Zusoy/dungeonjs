@@ -24,7 +24,7 @@ export default class ChangeHeroHandler implements IEventHandler<'changeHero'> {
 
   handle(_event: 'changeHero', payload: [payload: ChangeHeroPayload], socket: ISocket): void {
     const [changeHeroPayload] = payload
-    const currentRoomId = Array.from(socket.rooms).find(room => !!this.rooms.find(room))
+    const currentRoomId = socket.rooms.find(room => !!this.rooms.find(room))
 
     if (!currentRoomId) {
       return

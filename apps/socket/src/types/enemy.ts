@@ -8,6 +8,7 @@ export enum SkeletonType {
 }
 
 export interface Skeleton {
+  readonly id: string
   readonly type: SkeletonType
   readonly defense: number
   readonly coords: ScalarCoords
