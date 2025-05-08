@@ -1,7 +1,8 @@
-import { Hero } from 'Netcode/User'
+import { Hero, UserPayload } from 'Netcode/User'
 import type { ScalarCoords } from 'types/coords'
 import type { VectorTuple } from 'types/utils'
 import type { Tile } from 'types/tile'
+import type { Skeleton } from 'types/enemy'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
 
@@ -30,4 +31,9 @@ export type MoveToCoordsPayload = {
   readonly neighborTiles: Tile[]
   readonly fromDirection: VectorTuple
   readonly uncharted: boolean
+}
+
+export type BeginFightPayload = {
+  readonly playerId: UserPayload['id']
+  readonly enemyId: Skeleton['id']
 }

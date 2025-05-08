@@ -45,3 +45,7 @@ client-build:
 .PHONY: socket-shell
 socket-shell:
 	@docker exec -it "$$(docker ps -q -f name=dungeonjs_socket)" sh
+
+.PHONY: socket-test
+socket-test:
+	@docker-compose run --rm --no-deps socket npm run test

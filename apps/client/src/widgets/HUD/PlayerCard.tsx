@@ -12,11 +12,12 @@ type Props = {
   readonly health: number
   readonly avatar: string
   readonly weapons: WeaponLite[]
+  readonly onClick?: React.MouseEventHandler<HTMLDivElement>
 }
 
-const PlayerCard: React.FC<Props> = ({ username, avatar, health, weapons }) => {
+const PlayerCard: React.FC<Props> = ({ username, avatar, health, weapons, onClick }) => {
   return (
-    <div className='card card-side p-2 bg-gradient-to-tr from-orange-100 to-orange-300'>
+    <div className='card card-side p-2 bg-gradient-to-tr from-orange-100 to-orange-300 cursor-pointer' onClick={onClick}>
       <figure>
         <img src={avatar} alt='avatar' className='w-24 h-24' />
       </figure>

@@ -2,13 +2,13 @@ import React from 'react'
 import Tile from 'features/Game/GameObject/Tile'
 import HeroCharacter from 'features/Game/GameObject/Character/Hero'
 import SkeletonCharacter from 'features/Game/GameObject/Character/Skeleton'
-import MoveControls from 'features/Game/Scene/Game/MoveControls'
-import Camera, { GameCamera } from 'features/Game/Scene/Game/Camera'
+import MoveControls from 'features/Game/Scene/Game/Controls/MoveControls'
+import Camera, { GameCamera } from 'features/Game/Scene/Game/Controls/Camera'
 import { Canvas } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import { Environment, Stats } from '@react-three/drei'
 import { useSelector } from 'react-redux'
-import { selectChests, selectEnemies, selectPlayers, selectTiles } from 'features/Game/slice'
+import { selectChests, selectEnemies, selectFocusedCoords, selectPlayers, selectTiles } from 'features/Game/slice'
 import { Chest, Instances as Chests } from 'features/Game/GameObject/Prop/Chest'
 
 const Scene: React.FC = () => {
@@ -17,6 +17,15 @@ const Scene: React.FC = () => {
   const tiles = useSelector(selectTiles)
   const enemies = useSelector(selectEnemies)
   const chests = useSelector(selectChests)
+  const focusedCoords = useSelector(selectFocusedCoords)
+
+  React.useEffect(() => {
+    if (!focusedCoords) {
+      return
+    }
+
+    camera.current.focus(focusedCoords)
+  }, [focusedCoords, camera])
 
   return (
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>

@@ -9,7 +9,8 @@ import type {
   ChangeHeroPayload,
   StartGamePayload,
   MoveToCoordsPayload,
-  LeftRoomReason
+  LeftRoomReason,
+  BeginFightPayload
 } from 'types/payload'
 
 export interface ClientToServer {
@@ -43,6 +44,7 @@ export interface ServerToClients {
   discoverTile: (payload: Tile) => void
   discoverChest: (payload: Chest) => void
   discoverEnemy: (payload: Skeleton) => void
+  startFight: (payload: BeginFightPayload) => void
 }
 
 export interface InterServer {

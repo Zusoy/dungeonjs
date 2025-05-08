@@ -5,7 +5,7 @@ import type { Skeleton } from 'types/enemy'
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
 import { CreateRoomPayload, JoinRoomPayload, LeaveRoomPayload } from 'features/Rooms/slice'
-import { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload } from 'features/Game/slice'
+import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload } from 'features/Game/slice'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
 
@@ -20,6 +20,7 @@ export interface ServerToClients {
   discoverTile: (payload: Tile) => void
   discoverChest: (payload: Chest) => void
   discoverEnemy: (payload: Skeleton) => void
+  startFight: (payload: BeginFightPayload) => void
 }
 
 export interface ClientToServer {
@@ -39,7 +40,7 @@ export type SocketChannel<T extends NotUndefined> = (socket: AppSocket) => Event
 
 export const createWebsocketConnection = (username: string): Promise<AppSocket> => {
   return new Promise((resolve, reject) => {
-    const socket: AppSocket = io('http://192.168.1.53:8080', {
+    const socket: AppSocket = io('http://127.0.0.1:8080', {
       transports: ['websocket'],
       autoConnect: false,
       query: {

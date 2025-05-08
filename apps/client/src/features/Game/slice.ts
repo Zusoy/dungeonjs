@@ -15,6 +15,11 @@ export enum GameStatus {
   Error = 'error'
 }
 
+type Fight = {
+  readonly playerId: UserPayload['id']
+  readonly enemyId: Skeleton['id']
+}
+
 export type State = {
   players: UserPayload[]
   enemies: Skeleton[]
@@ -22,17 +27,21 @@ export type State = {
   chests: Chest[]
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
+  fight: Nullable<Fight>
+  focusedCoords: Nullable<ScalarCoords>
 }
 
 export const initialState: State = {
   players: [],
   enemies: [],
   chests: [],
+  fight: null,
   tiles: [
     { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
   ],
   playerTurn: null,
-  status: GameStatus.Lobby
+  status: GameStatus.Lobby,
+  focusedCoords: null
 }
 
 export type ChangeHeroPayload = {
@@ -48,6 +57,11 @@ export type MoveToCoordsPayload = {
   readonly fromDirection: VectorTuple
   readonly neighborTiles: Tile[]
   readonly uncharted: boolean
+}
+
+export type BeginFightPayload = {
+  readonly playerId: UserPayload['id']
+  readonly enemyId: Skeleton['id']
 }
 
 const slice = createSlice({
@@ -88,6 +102,21 @@ const slice = createSlice({
       ...state,
       enemies: [...state.enemies, action.payload]
     }),
+    focusCoords: (state, action: PayloadAction<ScalarCoords>) => ({
+      ...state,
+      focusedCoords: action.payload
+    }),
+    startFight: (state, action: PayloadAction<BeginFightPayload>) => ({
+      ...state,
+      fight: {
+        playerId: action.payload.playerId,
+        enemyId: action.payload.enemyId
+      }
+    }),
+    endFight: state => ({
+      ...state,
+      fight: null
+    }),
     error: state => ({
       ...state,
       status: GameStatus.Error,
@@ -114,6 +143,9 @@ export const {
   discoverTile,
   discoverChest,
   discoverEnemy,
+  focusCoords,
+  startFight,
+  endFight,
   error
 } = slice.actions
 
@@ -147,6 +179,9 @@ export const selectChests: Selector<Chest[]> = state =>
 export const selectEnemies: Selector<Skeleton[]> = state =>
   state.game.enemies
 
+export const selectFocusedCoords: Selector<Nullable<ScalarCoords>> = state =>
+  state.game.focusedCoords
+
 export const selectCurrentPlayer: Selector<UserPayload> = state =>
   state.game.players.find(p => p.id === state.auth.id)!
 
@@ -162,6 +197,8 @@ export type GameActions =
   ReturnType<typeof moveToCoords> |
   ReturnType<typeof discoverTile> |
   ReturnType<typeof discoverChest> |
-  ReturnType<typeof discoverEnemy>
+  ReturnType<typeof discoverEnemy> |
+  ReturnType<typeof startFight> |
+  ReturnType<typeof endFight>
 
 export default slice

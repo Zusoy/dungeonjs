@@ -1,9 +1,10 @@
 import React from 'react'
 import PlayerCard from 'widgets/HUD/PlayerCard'
-import { selectPlayers } from 'features/Game/slice'
-import { useSelector } from 'react-redux'
+import { focusCoords, selectPlayers } from 'features/Game/slice'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Players: React.FC = () => {
+  const dispatch = useDispatch()
   const players = useSelector(selectPlayers)
 
   return (
@@ -16,6 +17,7 @@ const Players: React.FC = () => {
             avatar={`/img/hero/${player.hero.toString()}.png`}
             weapons={player.inventory.weapons}
             health={player.health}
+            onClick={() => dispatch(focusCoords(player.coords))}
           />
         )}
       </div>
