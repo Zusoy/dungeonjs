@@ -11,7 +11,9 @@ import type {
   MoveToCoordsPayload,
   LeftRoomReason,
   BeginFightPayload,
-  FailedToJoinRoomPayload
+  FailedToJoinRoomPayload,
+  AttackPayload,
+  AttackResultPayload
 } from 'types/payload'
 
 export interface ClientToServer {
@@ -22,6 +24,7 @@ export interface ClientToServer {
   changeHero: (payload: ChangeHeroPayload) => void
   startGame: (payload: StartGamePayload) => void
   moveToCoords: (payload: MoveToCoordsPayload) => void
+  attack: (payload: AttackPayload) => void
 }
 
 export const clientToServerEvents: (keyof ClientToServer)[] = [
@@ -31,7 +34,8 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
   'leaveRoom',
   'changeHero',
   'startGame',
-  'moveToCoords'
+  'moveToCoords',
+  'attack'
 ]
 
 export interface ServerToClients {
@@ -46,6 +50,7 @@ export interface ServerToClients {
   discoverChest: (payload: Chest) => void
   discoverEnemy: (payload: Skeleton) => void
   startFight: (payload: BeginFightPayload) => void
+  attacked: (payload: AttackResultPayload) => void
 }
 
 export interface InterServer {

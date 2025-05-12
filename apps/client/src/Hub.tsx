@@ -1,11 +1,13 @@
 import React from 'react'
 import CreateRoom from 'features/Rooms/Create'
 import JoinRoom from 'features/Rooms/Join'
-import Game from 'features/Game'
+import FullPageLoader from 'widgets/Loader/FullPageLoader'
 import { useSelector } from 'react-redux'
 import { selectCurrentRoomId } from 'features/Rooms/slice'
 import { FaPlusSquare } from 'react-icons/fa'
 import { FaUsers } from 'react-icons/fa6'
+
+const Game = React.lazy(() => import('features/Game'))
 
 const Hub: React.FC = () => {
   const roomId = useSelector(selectCurrentRoomId)
@@ -30,7 +32,9 @@ const Hub: React.FC = () => {
 
   if (roomId) {
     return (
-      <Game />
+      <React.Suspense fallback={<FullPageLoader />}>
+        <Game />
+      </React.Suspense>
     )
   }
 

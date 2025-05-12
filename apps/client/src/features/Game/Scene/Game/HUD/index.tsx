@@ -1,14 +1,23 @@
 import React from 'react'
+import Enemies from 'features/Game/Scene/Game/HUD/Enemies'
 import MoveCounter from 'features/Game/Scene/Game/HUD/MoveCounter'
 import Players from 'features/Game/Scene/Game/HUD/Players'
-import Inventory from 'features/Game/Scene/Game/HUD/Inventory'
 import Fullscreen from 'features/Game/Scene/Game/HUD/Fullscreen'
 import TurnAnnounceDialog, { type TurnAnnouncer } from 'widgets/Dialog/TurnAnnounceDialog'
-import FightDialog, { type FightAnnouncer } from 'widgets/Dialog/FightDialog'
-import { useSelector } from 'react-redux'
-import { selectCurrentPlayer, selectFightingEnemy, selectFightingPlayer, selectPlayers, selectPlayerTurn } from 'features/Game/slice'
+import FightAnnounceDialog, { type FightAnnouncer } from 'widgets/Dialog/FightAnnounceDialog'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  selectCurrentPlayer,
+  selectFightingEnemy,
+  selectFightingPlayer,
+  selectPlayers,
+  selectPlayerTurn,
+  attack,
+  selectOriginalFightCoords
+} from 'features/Game/slice'
 
 const HUD: React.FC = () => {
+  const dispatch = useDispatch()
   const fightAnnouncer = React.useRef<FightAnnouncer>(null!)
   const turnAnnouncer = React.useRef<TurnAnnouncer>(null!)
   const playerTurnId = useSelector(selectPlayerTurn)
@@ -16,21 +25,36 @@ const HUD: React.FC = () => {
   const fightingPlayer = useSelector(selectFightingPlayer)
   const fightingEnemy = useSelector(selectFightingEnemy)
   const currentPlayer = useSelector(selectCurrentPlayer)
+  const originalFightCoords = useSelector(selectOriginalFightCoords)
 
   const playerTurn = React.useMemo(
     () => players.find((player) => player.id === playerTurnId),
     [playerTurnId]
   )
 
+  const launchAttack = React.useCallback(() => {
+    if (!currentPlayer || !fightingEnemy || !originalFightCoords) {
+      return
+    }
+
+    dispatch(attack({
+      enemyDefense: fightingEnemy.defense,
+      originCoords: originalFightCoords
+    }))
+  }, [currentPlayer, fightingEnemy, originalFightCoords, dispatch])
+
   React.useEffect(() => {
     if (!fightingPlayer || !fightingEnemy) {
+      fightAnnouncer.current.close()
       return
     }
 
     fightAnnouncer.current.announce(
       fightingPlayer.hero,
       fightingEnemy.type,
-      fightingPlayer.id === currentPlayer.id
+      fightingEnemy.defense,
+      fightingPlayer.id === currentPlayer.id,
+      fightingPlayer.inventory
     )
   }, [fightingPlayer, fightingEnemy, currentPlayer])
 
@@ -40,7 +64,7 @@ const HUD: React.FC = () => {
     }
 
     turnAnnouncer.current.announce({
-      username : playerTurn.username,
+      username: playerTurn.username,
       hero: playerTurn.hero
     })
   }, [playerTurn])
@@ -49,14 +73,14 @@ const HUD: React.FC = () => {
     <>
       <div className='absolute top-0 flex w-screen justify-center'>
         <div className='flex flex-row items-center gap-2'>
-          <Inventory />
+          <Enemies />
           <MoveCounter />
           <Fullscreen />
         </div>
       </div>
       <Players />
       <TurnAnnounceDialog ref={turnAnnouncer} />
-      <FightDialog ref={fightAnnouncer} />
+      <FightAnnounceDialog ref={fightAnnouncer} onAttack={launchAttack} />
     </>
   )
 }

@@ -1,7 +1,7 @@
 import type { AppSocket } from 'types/socket'
 import type { ScalarCoords } from 'types/coords'
 import type { VectorTuple } from 'types/utils'
-import { Axe, Dagger, Sword, type Weapon } from 'Netcode/Weapon'
+import type { Weapon } from 'Netcode/Weapon'
 import type INetcodeItem from 'Netcode/INetcodeItem'
 
 export type Hero = 'rogue'|'knight'|'mage'|'barbarian'
@@ -36,11 +36,7 @@ export default class User implements INetcodeItem {
       username,
       color,
       hero,
-      { weapons: [
-        new Sword(Date.now().toString()),
-        new Dagger(Date.now().toString()),
-        new Axe(Date.now().toString())
-      ], treasures: 0 },
+      { weapons: [], treasures: 0 },
       [0, 0, 0],
       [0, 0, 0],
       [0, 0],

@@ -19,6 +19,7 @@ export enum GameStatus {
 type Fight = {
   readonly playerId: UserPayload['id']
   readonly enemyId: Skeleton['id']
+  readonly originCoords: ScalarCoords
 }
 
 export type State = {
@@ -63,6 +64,17 @@ export type MoveToCoordsPayload = {
 export type BeginFightPayload = {
   readonly playerId: UserPayload['id']
   readonly enemyId: Skeleton['id']
+  readonly originCoords: ScalarCoords
+}
+
+export type AttackPayload = {
+  readonly enemyDefense: number
+  readonly originCoords: ScalarCoords
+}
+
+export type AttackResultPayload = {
+  readonly attack: number
+  readonly succeed: boolean
 }
 
 const slice = createSlice({
@@ -111,11 +123,18 @@ const slice = createSlice({
       ...state,
       fight: {
         playerId: action.payload.playerId,
-        enemyId: action.payload.enemyId
+        enemyId: action.payload.enemyId,
+        originCoords: action.payload.originCoords
       }
     }),
-    endFight: state => ({
+    attack: (state, _action: PayloadAction<AttackPayload>) => ({
+      ...state
+    }),
+    attacked: (state, action: PayloadAction<AttackResultPayload>) => ({
       ...state,
+      enemies: action.payload.succeed
+        ? state.enemies.filter(enemy => enemy.id !== state.fight!.enemyId)
+        : state.enemies,
       fight: null
     }),
     error: state => ({
@@ -146,7 +165,8 @@ export const {
   discoverEnemy,
   focusCoords,
   startFight,
-  endFight,
+  attack,
+  attacked,
   error
 } = slice.actions
 
@@ -207,6 +227,10 @@ export const selectFightingEnemy = createSelector([selectCurrentFight, selectEne
   return enemies.find(e => e.id === fight.enemyId) || null
 })
 
+export const selectOriginalFightCoords = createSelector([selectCurrentFight], fight => {
+  return fight?.originCoords
+})
+
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
   ReturnType<typeof changeHero> |
@@ -221,6 +245,7 @@ export type GameActions =
   ReturnType<typeof discoverChest> |
   ReturnType<typeof discoverEnemy> |
   ReturnType<typeof startFight> |
-  ReturnType<typeof endFight>
+  ReturnType<typeof attack> |
+  ReturnType<typeof attacked>
 
 export default slice

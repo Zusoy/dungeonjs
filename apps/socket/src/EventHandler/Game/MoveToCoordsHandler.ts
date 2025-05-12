@@ -12,6 +12,7 @@ import Room from 'Netcode/Room'
 import UserEmitter from 'Netcode/UserEmitter'
 import TileFactory from 'Factory/TileFactory'
 import Random from 'Random'
+import EnemyFactory from 'Factory/EnemyFactory'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: MoveToCoordsHandler }])
@@ -23,6 +24,7 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     @inject('logger') private readonly logger: ILogger,
     @inject('emitter.user') private readonly userEmitter: UserEmitter,
     @inject('tile.factory') private readonly tileFactory: TileFactory,
+    @inject('enemy.factory') private readonly enemyFactory: EnemyFactory,
     @inject('chance.room') private readonly roomDiscoveryChance: number,
     @inject('chance.enemy') private readonly enemyDiscoveryChance: number
   ) {
@@ -75,15 +77,10 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
 
         if (hasEnemy) {
           const skeletonType = Random.enumValue(SkeletonType)
-          const enemy: Skeleton = {
-            id: Date.now().toString(),
-            coords: movePayload.coords,
-            defense: 6,
-            type: skeletonType
-          }
+          const enemy = this.enemyFactory.build(skeletonType, Date.now().toString(), movePayload.coords)
 
           this.server.emitInRoom('discoverEnemy', room, enemy)
-          this.server.emitInRoom('startFight', room, { enemyId: enemy.id, playerId: socket.id })
+          this.server.emitInRoom('startFight', room, { enemyId: enemy.id, playerId: socket.id, originCoords: user.coords })
         } else {
           this.server.emitInRoom('discoverChest', room, { id: Date.now().toString(), coords: movePayload.coords })
         }

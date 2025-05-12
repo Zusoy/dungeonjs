@@ -14,6 +14,7 @@ import StartGameHandler from 'EventHandler/Game/StartGameHandler'
 import CreateRoomHandler from 'EventHandler/Room/CreateRoomHandler'
 import JoinRoomHandler from 'EventHandler/Room/JoinRoomHandler'
 import LeaveRoomHandler from 'EventHandler/Room/LeaveRoomHandler'
+import AttackHandler from 'EventHandler/Game/AttackHandler'
 import ILogger from 'ILogger'
 
 const httpServer = createServer((_, res) => {
@@ -39,6 +40,7 @@ container.register<StartGameHandler>(StartGameHandler, { useClass: StartGameHand
 container.register<CreateRoomHandler>(CreateRoomHandler, { useClass: CreateRoomHandler })
 container.register<JoinRoomHandler>(JoinRoomHandler, { useClass: JoinRoomHandler })
 container.register<LeaveRoomHandler>(LeaveRoomHandler, { useClass: LeaveRoomHandler })
+container.register<AttackHandler>(AttackHandler, { useClass: AttackHandler })
 
 const subscriber = container.resolve(EventSubscriber)
 
@@ -47,7 +49,6 @@ io.on('connect', socket => {
   const user = User.fromSocket(socket, randomColor, 'barbarian')
   users.add(user)
 
-  socket.emit('availableRooms', Array.from(rooms).map(({ roomId }) => roomId))
   logger.info('User connected', user)
   subscriber.subscribe(socket)
 
@@ -83,7 +84,6 @@ io.on('connect', socket => {
       logger.info('Room author disconnec, clean room', createdRoom.roomId)
     })
 
-    server.emit('availableRooms', Array.from(rooms).map(({ roomId }) => roomId))
     users.remove(user)
     logger.info('User disconnected', reason)
   })
