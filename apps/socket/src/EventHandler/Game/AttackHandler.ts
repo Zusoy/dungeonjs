@@ -54,7 +54,9 @@ export default class AttackHandler implements IEventHandler<'attack'> {
     }
 
     const attackBonus = user.inventory.weapons.reduce((acc, curr) => acc + curr.attack, 0)
-    const attack = Random.diceRoll() + attackBonus
+    const firstDiceRoll = Random.diceRoll()
+    const secondDiceRoll = Random.diceRoll()
+    const attack = firstDiceRoll + secondDiceRoll + attackBonus
     const succeed = attack > enemy.defense
 
     this.server.emitInRoom('attacked', room, { succeed , attack })

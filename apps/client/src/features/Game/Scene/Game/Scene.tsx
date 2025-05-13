@@ -6,7 +6,7 @@ import MoveControls from 'features/Game/Scene/Game/Controls/MoveControls'
 import Camera, { GameCamera } from 'features/Game/Scene/Game/Controls/Camera'
 import { Canvas } from '@react-three/fiber'
 import { Vector3 } from 'three'
-import { Environment, Stats } from '@react-three/drei'
+import { Environment, Stats, Grid } from '@react-three/drei'
 import { useSelector } from 'react-redux'
 import { selectChests, selectEnemies, selectFocusedCoords, selectPlayers, selectTiles } from 'features/Game/slice'
 import { Chest, Instances as Chests } from 'features/Game/GameObject/Prop/Chest'
@@ -30,6 +30,13 @@ const Scene: React.FC = () => {
   return (
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>
       <Stats />
+      <Grid
+        infiniteGrid
+        cellSize={8}
+        sectionSize={4}
+        cellColor={'white'}
+        sectionColor={'white'}
+      />
       <Environment preset='city' />
       <Camera ref={camera} />
       {tiles.map(
@@ -50,6 +57,7 @@ const Scene: React.FC = () => {
             color={player.color}
             position={new Vector3(player.position[0], player.position[1], player.position[2])}
             rotation={player.rotation}
+            health={player.health}
           />
       )}
       {enemies.map(
