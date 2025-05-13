@@ -8,7 +8,7 @@
 
 <div align="center">
   <a href="https://github.com/Zusoy/dungeonjs">
-    <img src="logo.png" alt="Logo" width="500" height="500">
+    <img src="box.png" alt="Logo" width="500" height="500">
   </a>
   <br />
   <p align="center">
