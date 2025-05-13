@@ -36,6 +36,7 @@ export default class AttackHandler implements IEventHandler<'attack'> {
     }
 
     const roomId = socket.rooms.find(room => !!this.rooms.find(room))
+    const roomIndex = Array.from(this.rooms).findIndex(room => room.roomId === roomId)
     const room = roomId
       ? this.rooms.find(roomId)
       : null
@@ -45,9 +46,16 @@ export default class AttackHandler implements IEventHandler<'attack'> {
       return
     }
 
+    const enemy = room.findEnemy(attackPayload.enemyId)
+
+    if (!enemy) {
+      this.logger.error(`Enemy target not found in Room ${room.roomId} with ID ${attackPayload.enemyId}`)
+      return
+    }
+
     const attackBonus = user.inventory.weapons.reduce((acc, curr) => acc + curr.attack, 0)
     const attack = Random.diceRoll() + attackBonus
-    const succeed = attack > attackPayload.enemyDefense
+    const succeed = attack > enemy.defense
 
     this.server.emitInRoom('attacked', room, { succeed , attack })
 
@@ -63,8 +71,13 @@ export default class AttackHandler implements IEventHandler<'attack'> {
 
       this.users.update(user, userIndex)
       this.userEmitter.broadcast(room)
+      this.userEmitter.broadcastNextTurn(room, user.id)
+      return
     }
 
+    room.removeEnemy(attackPayload.enemyId)
+    this.rooms.update(room, roomIndex)
+    this.server.emitInRoom('enemies', room, room.getEnemies())
     this.userEmitter.broadcastNextTurn(room, user.id)
   }
 }

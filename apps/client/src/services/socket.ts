@@ -10,6 +10,7 @@ import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFig
 export interface ServerToClients {
   pong: () => void
   players: (players: Iterable<UserPayload>) => void
+  enemies: (payload: Iterable<Skeleton>) => void
   joinedRoom: (room: string) => void
   failedToJoinRoom: (payload: FailedToJoinRoomPayload) => void
   leftRoom: (reason: LeftRoomReason) => void
@@ -17,7 +18,6 @@ export interface ServerToClients {
   playerTurn: (playerId: UserPayload['id']) => void
   discoverTile: (payload: Tile) => void
   discoverChest: (payload: Chest) => void
-  discoverEnemy: (payload: Skeleton) => void
   startFight: (payload: BeginFightPayload) => void
   attacked: (payload: AttackResultPayload) => void
 }

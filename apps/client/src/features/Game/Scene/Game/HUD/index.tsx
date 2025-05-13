@@ -38,7 +38,7 @@ const HUD: React.FC = () => {
     }
 
     dispatch(attack({
-      enemyDefense: fightingEnemy.defense,
+      enemyId: fightingEnemy.id,
       originCoords: originalFightCoords
     }))
   }, [currentPlayer, fightingEnemy, originalFightCoords, dispatch])

@@ -1,5 +1,6 @@
 export type VectorTuple = [x: number, y: number, z: number]
 export type Coords = [x: number, y: number]
+export type Nullable<T> = T | null
 
 export class Direction {
   public static readonly Left: VectorTuple = [-1, 0, 0]

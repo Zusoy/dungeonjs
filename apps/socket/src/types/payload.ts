@@ -41,7 +41,7 @@ export type BeginFightPayload = {
 }
 
 export type AttackPayload = {
-  readonly enemyDefense: number
+  readonly enemyId: string
   readonly originCoords: ScalarCoords
 }
 

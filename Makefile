@@ -49,3 +49,7 @@ socket-shell:
 .PHONY: socket-test
 socket-test:
 	@docker-compose run --rm --no-deps socket npm run test
+
+.PHONY: socket-log
+socket-log:
+	@docker-compose logs -f socket && echo "\n\n"

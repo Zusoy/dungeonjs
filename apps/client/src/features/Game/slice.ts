@@ -68,7 +68,7 @@ export type BeginFightPayload = {
 }
 
 export type AttackPayload = {
-  readonly enemyDefense: number
+  readonly enemyId: string
   readonly originCoords: ScalarCoords
 }
 
@@ -84,6 +84,10 @@ const slice = createSlice({
     receivedPlayers: (state, action: PayloadAction<UserPayload[]>) => ({
       ...state,
       players: action.payload
+    }),
+    receivedEnemies: (state, action: PayloadAction<Skeleton[]>) => ({
+      ...state,
+      enemies: action.payload
     }),
     playerTurn: (state, action: PayloadAction<UserPayload['id']>) => ({
       ...state,
@@ -111,10 +115,6 @@ const slice = createSlice({
       ...state,
       chests: [...state.chests, action.payload]
     }),
-    discoverEnemy: (state, action: PayloadAction<Skeleton>) => ({
-      ...state,
-      enemies: [...state.enemies, action.payload]
-    }),
     focusCoords: (state, action: PayloadAction<ScalarCoords>) => ({
       ...state,
       focusedCoords: action.payload
@@ -130,11 +130,8 @@ const slice = createSlice({
     attack: (state, _action: PayloadAction<AttackPayload>) => ({
       ...state
     }),
-    attacked: (state, action: PayloadAction<AttackResultPayload>) => ({
+    attacked: (state, _action: PayloadAction<AttackResultPayload>) => ({
       ...state,
-      enemies: action.payload.succeed
-        ? state.enemies.filter(enemy => enemy.id !== state.fight!.enemyId)
-        : state.enemies,
       fight: null
     }),
     error: state => ({
@@ -155,6 +152,7 @@ const slice = createSlice({
 
 export const {
   receivedPlayers,
+  receivedEnemies,
   changeHero,
   startGame,
   playerTurn,
@@ -162,7 +160,6 @@ export const {
   moveToCoords,
   discoverTile,
   discoverChest,
-  discoverEnemy,
   focusCoords,
   startFight,
   attack,
@@ -239,11 +236,11 @@ export type LobbyActions =
   ReturnType<typeof error>
 
 export type GameActions =
+  ReturnType<typeof receivedEnemies> |
   ReturnType<typeof playerTurn> |
   ReturnType<typeof moveToCoords> |
   ReturnType<typeof discoverTile> |
   ReturnType<typeof discoverChest> |
-  ReturnType<typeof discoverEnemy> |
   ReturnType<typeof startFight> |
   ReturnType<typeof attack> |
   ReturnType<typeof attacked>
