@@ -3,7 +3,7 @@ import type { Tile } from 'types/tile'
 import type { UserPayload } from 'types/user'
 import type { Chest } from 'types/object'
 import type { Skeleton } from 'types/enemy'
-import { discoverTile, discoverChest, GameActions, playerTurn, discoverEnemy, BeginFightPayload, startFight } from 'features/Game/slice'
+import { discoverTile, discoverChest, GameActions, playerTurn, BeginFightPayload, startFight, AttackResultPayload, attacked, receivedEnemies } from 'features/Game/slice'
 import { eventChannel } from 'redux-saga'
 
 const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
@@ -20,26 +20,32 @@ const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
       emitter(discoverChest(chest))
     }
 
-    const onDiscoverEnemyListener = (enemy: Skeleton) => {
-      emitter(discoverEnemy(enemy))
-    }
-
     const onStartFightListener = (payload: BeginFightPayload) => {
       emitter(startFight(payload))
+    }
+
+    const onFightAttackedListener = (payload: AttackResultPayload) => {
+      emitter(attacked(payload))
+    }
+
+    const onEnemiesListener = (payload: Iterable<Skeleton>) => {
+      emitter(receivedEnemies(Array.from(payload)))
     }
 
     socket.on('playerTurn', onPlayerTurnListener)
     socket.on('discoverTile', onDiscoverTileListener)
     socket.on('discoverChest', onDiscoverChestListener)
-    socket.on('discoverEnemy', onDiscoverEnemyListener)
     socket.on('startFight', onStartFightListener)
+    socket.on('attacked', onFightAttackedListener)
+    socket.on('enemies', onEnemiesListener)
 
     return () => {
       socket.off('playerTurn', onPlayerTurnListener)
       socket.off('discoverTile', onDiscoverTileListener)
       socket.off('discoverChest', onDiscoverChestListener)
-      socket.off('discoverEnemy', onDiscoverEnemyListener)
       socket.off('startFight', onStartFightListener)
+      socket.off('attacked', onFightAttackedListener)
+      socket.off('enemies', onEnemiesListener)
     }
   })
 }

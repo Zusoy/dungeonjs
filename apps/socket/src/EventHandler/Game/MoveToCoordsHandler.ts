@@ -5,13 +5,14 @@ import type ILogger from 'ILogger'
 import type ISocket from 'ISocket'
 import type IServer from 'IServer'
 import type { MoveToCoordsPayload } from 'types/payload'
-import { Skeleton, SkeletonType } from 'types/enemy'
+import { SkeletonType } from 'types/enemy'
 import { TileType } from 'types/tile'
 import User from 'Netcode/User'
 import Room from 'Netcode/Room'
 import UserEmitter from 'Netcode/UserEmitter'
 import TileFactory from 'Factory/TileFactory'
 import Random from 'Random'
+import EnemyFactory from 'Factory/EnemyFactory'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: MoveToCoordsHandler }])
@@ -23,6 +24,7 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     @inject('logger') private readonly logger: ILogger,
     @inject('emitter.user') private readonly userEmitter: UserEmitter,
     @inject('tile.factory') private readonly tileFactory: TileFactory,
+    @inject('enemy.factory') private readonly enemyFactory: EnemyFactory,
     @inject('chance.room') private readonly roomDiscoveryChance: number,
     @inject('chance.enemy') private readonly enemyDiscoveryChance: number
   ) {
@@ -37,12 +39,14 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
     const roomId = socket.rooms.find(room => !!this.rooms.find(room))
     const user = this.users.find(socket.id)
     const userIndex = Array.from(this.users).findIndex(user => user.id === socket.id)
+    const roomIndex = Array.from(this.rooms).findIndex(room => room.roomId === roomId)
 
     if (!roomId || !user || userIndex < 0) {
       return
     }
 
     const room = this.rooms.find(roomId)
+    const originCoords = user.coords
 
     if (!room) {
       this.logger.error(`Room not found with ID ${roomId}`)
@@ -75,16 +79,14 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
 
         if (hasEnemy) {
           const skeletonType = Random.enumValue(SkeletonType)
-          const enemy: Skeleton = {
-            id: Date.now().toString(),
-            coords: movePayload.coords,
-            defense: 6,
-            type: skeletonType
-          }
+          const enemy = this.enemyFactory.build(skeletonType, Date.now().toString(), movePayload.coords)
+          room.addEnemy(enemy)
+          this.rooms.update(room, roomIndex)
 
-          this.server.emitInRoom('discoverEnemy', room, enemy)
-          this.server.emitInRoom('startFight', room, { enemyId: enemy.id, playerId: socket.id })
-        } else {
+          this.server.emitInRoom('enemies', room, room.getEnemies())
+          this.server.emitInRoom('startFight', room, { enemyId: enemy.id, playerId: socket.id, originCoords })
+        }
+        else {
           this.server.emitInRoom('discoverChest', room, { id: Date.now().toString(), coords: movePayload.coords })
         }
       }
@@ -101,6 +103,13 @@ export default class MoveToCoordsHandler implements IEventHandler<'moveToCoords'
 
     this.users.update(user, userIndex)
     this.userEmitter.broadcast(room)
+
+    const enemyAtCoords = room.findEnemyAtCoords(movePayload.coords)
+
+    if (enemyAtCoords) {
+      this.server.emit('startFight', { playerId: socket.id, enemyId: enemyAtCoords.id, originCoords })
+      return
+    }
 
     if (user.movesCount === 0) {
       this.userEmitter.broadcastNextTurn(room, socket.id)

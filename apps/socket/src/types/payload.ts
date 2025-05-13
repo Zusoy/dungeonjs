@@ -37,6 +37,17 @@ export type MoveToCoordsPayload = {
 export type BeginFightPayload = {
   readonly playerId: UserPayload['id']
   readonly enemyId: Skeleton['id']
+  readonly originCoords: ScalarCoords
+}
+
+export type AttackPayload = {
+  readonly enemyId: string
+  readonly originCoords: ScalarCoords
+}
+
+export type AttackResultPayload = {
+  readonly attack: number
+  readonly succeed: boolean
 }
 
 export type FailedToJoinRoomPayload = {

@@ -44,8 +44,22 @@ export default class UserEmitter {
         this.users.update(user, index)
         this.broadcast(room)
 
-        const newPlayerIndex = index === playerIds.length - 1 ? 0 : index + 1
-        this.server.emitInRoom('playerTurn', room, playerIds[newPlayerIndex])
+        const nextPlayerIndex = index === playerIds.length - 1 ? 0 : index + 1
+        const nextPlayer = this.users.find(playerIds[nextPlayerIndex])
+
+        if (!nextPlayer) {
+          return
+        }
+
+        if (nextPlayer.health <= 0) {
+          nextPlayer.health = 1
+          this.users.update(nextPlayer, nextPlayerIndex)
+          this.broadcast(room)
+          this.broadcastNextTurn(room, nextPlayer.id)
+          return
+        }
+
+        this.server.emitInRoom('playerTurn', room, playerIds[nextPlayerIndex])
       })
   }
 }

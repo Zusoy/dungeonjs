@@ -11,6 +11,7 @@ import UserEmitter from 'Netcode/UserEmitter'
 import CorridorBuilder from 'Factory/Tile/CorridorBuilder'
 import RoomBuilder from 'Factory/Tile/RoomBuilder'
 import TileFactory from 'Factory/TileFactory'
+import EnemyFactory from 'Factory/EnemyFactory'
 
 // parameters
 container.register('chance.enemy', { useValue: 80 })
@@ -47,6 +48,11 @@ container.register<RoomBuilder>(RoomBuilder, { useClass: RoomBuilder })
 container.register<TileFactory>(
   'tile.factory',
   { useClass: TileFactory }
+)
+container.register<EnemyFactory>(
+  'enemy.factory',
+  { useClass: EnemyFactory },
+  { lifecycle: Lifecycle.Singleton }
 )
 
 export default container

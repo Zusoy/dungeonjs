@@ -113,6 +113,7 @@ type Props = JSX.IntrinsicElements['group'] & {
   readonly position: THREE.Vector3
   readonly username?: string
   readonly color?: string
+  readonly health: number
 }
 
 const Rogue: React.FC<Props> = props => {
@@ -130,7 +131,17 @@ const Rogue: React.FC<Props> = props => {
     }
   }, [animation, actions])
 
+  React.useEffect(() => {
+    if (props.health <= 0) {
+      setAnimation('Death_A_Pose')
+    }
+  }, [props.health])
+
   useFrame(() => {
+    if (props.health <= 0) {
+      return
+    }
+
     if (transform.current.position.distanceTo(props.position) > 0.1) {
       const direction = transform.current.position
         .clone()

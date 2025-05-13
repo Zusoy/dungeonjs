@@ -17,13 +17,13 @@ type Props = {
 
 const PlayerCard: React.FC<Props> = ({ username, avatar, health, weapons, onClick }) => {
   return (
-    <div className='card card-side p-2 bg-gradient-to-tr from-orange-100 to-orange-300 cursor-pointer' onClick={onClick}>
+    <div className='card card-side p-2 bg-base-300 border-base-300 cursor-pointer' onClick={onClick}>
       <figure>
         <img src={avatar} alt='avatar' className='w-24 h-24' />
       </figure>
       <div className='card-body'>
         <div className='flex items-center gap-2'>
-          <h2 className='card-title text-black'>{username}</h2>
+          <h2 className='card-title text-white'>{username}</h2>
           <div className='flex gap-1 items-center'>
             {Array.from({ length: health }, () => <FaHeart className='text-red-500' />)}
           </div>

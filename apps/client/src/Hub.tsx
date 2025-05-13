@@ -1,11 +1,13 @@
 import React from 'react'
 import CreateRoom from 'features/Rooms/Create'
 import JoinRoom from 'features/Rooms/Join'
-import Game from 'features/Game'
+import FullPageLoader from 'widgets/Loader/FullPageLoader'
 import { useSelector } from 'react-redux'
 import { selectCurrentRoomId } from 'features/Rooms/slice'
 import { FaPlusSquare } from 'react-icons/fa'
 import { FaUsers } from 'react-icons/fa6'
+
+const Game = React.lazy(() => import('features/Game'))
 
 const Hub: React.FC = () => {
   const roomId = useSelector(selectCurrentRoomId)
@@ -30,7 +32,9 @@ const Hub: React.FC = () => {
 
   if (roomId) {
     return (
-      <Game />
+      <React.Suspense fallback={<FullPageLoader />}>
+        <Game />
+      </React.Suspense>
     )
   }
 
@@ -40,7 +44,7 @@ const Hub: React.FC = () => {
         <div className='flex-1'>
           <a className='btn btn-ghost text-xl'>Dungeon'JS <p className='text-sm text-info'>v0.0.1</p></a>
         </div>
-        <div className='flex gap-2 flex-none'>
+        <div className='flex gap-2'>
           <button type='button' className='btn btn-success' onClick={openCreateRoomDialog}>
             <FaPlusSquare />
             New Game
@@ -54,7 +58,7 @@ const Hub: React.FC = () => {
       <div className='hero h-72 bg-base-200'>
         <div className='hero-content text-center'>
           <div className='max-w-md'>
-            <h1 className='text-5xl font-bold'>Hello adventurer !</h1>
+            <h1 className='text-4xl font-bold'>Hello adventurer !</h1>
             <p className='py-6'>
               Are you ready to step into the mysterious depths of Dungeon'JS?
             </p>

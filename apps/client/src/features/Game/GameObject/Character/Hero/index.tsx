@@ -11,6 +11,7 @@ type Props = JSX.IntrinsicElements['group'] & {
   readonly username: string
   readonly color: string
   readonly position: Vector3
+  readonly health: number
 }
 
 const HeroCharacter: React.FC<Props> = props => {

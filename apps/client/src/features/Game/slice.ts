@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Selector } from 'app/store'
 import { Hero, UserPayload } from 'types/user'
 import { left } from 'features/Rooms/slice'
@@ -7,6 +7,7 @@ import type { Chest } from 'types/object'
 import { type Tile, TileType } from 'types/tile'
 import type { Skeleton } from 'types/enemy'
 import { type Nullable, type VectorTuple, Direction } from 'types/utils'
+import { selectId } from 'features/Authentication/slice'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -18,6 +19,7 @@ export enum GameStatus {
 type Fight = {
   readonly playerId: UserPayload['id']
   readonly enemyId: Skeleton['id']
+  readonly originCoords: ScalarCoords
 }
 
 export type State = {
@@ -62,6 +64,17 @@ export type MoveToCoordsPayload = {
 export type BeginFightPayload = {
   readonly playerId: UserPayload['id']
   readonly enemyId: Skeleton['id']
+  readonly originCoords: ScalarCoords
+}
+
+export type AttackPayload = {
+  readonly enemyId: string
+  readonly originCoords: ScalarCoords
+}
+
+export type AttackResultPayload = {
+  readonly attack: number
+  readonly succeed: boolean
 }
 
 const slice = createSlice({
@@ -71,6 +84,10 @@ const slice = createSlice({
     receivedPlayers: (state, action: PayloadAction<UserPayload[]>) => ({
       ...state,
       players: action.payload
+    }),
+    receivedEnemies: (state, action: PayloadAction<Skeleton[]>) => ({
+      ...state,
+      enemies: action.payload
     }),
     playerTurn: (state, action: PayloadAction<UserPayload['id']>) => ({
       ...state,
@@ -98,10 +115,6 @@ const slice = createSlice({
       ...state,
       chests: [...state.chests, action.payload]
     }),
-    discoverEnemy: (state, action: PayloadAction<Skeleton>) => ({
-      ...state,
-      enemies: [...state.enemies, action.payload]
-    }),
     focusCoords: (state, action: PayloadAction<ScalarCoords>) => ({
       ...state,
       focusedCoords: action.payload
@@ -110,10 +123,14 @@ const slice = createSlice({
       ...state,
       fight: {
         playerId: action.payload.playerId,
-        enemyId: action.payload.enemyId
+        enemyId: action.payload.enemyId,
+        originCoords: action.payload.originCoords
       }
     }),
-    endFight: state => ({
+    attack: (state, _action: PayloadAction<AttackPayload>) => ({
+      ...state
+    }),
+    attacked: (state, _action: PayloadAction<AttackResultPayload>) => ({
       ...state,
       fight: null
     }),
@@ -135,6 +152,7 @@ const slice = createSlice({
 
 export const {
   receivedPlayers,
+  receivedEnemies,
   changeHero,
   startGame,
   playerTurn,
@@ -142,10 +160,10 @@ export const {
   moveToCoords,
   discoverTile,
   discoverChest,
-  discoverEnemy,
   focusCoords,
   startFight,
-  endFight,
+  attack,
+  attacked,
   error
 } = slice.actions
 
@@ -182,8 +200,33 @@ export const selectEnemies: Selector<Skeleton[]> = state =>
 export const selectFocusedCoords: Selector<Nullable<ScalarCoords>> = state =>
   state.game.focusedCoords
 
-export const selectCurrentPlayer: Selector<UserPayload> = state =>
-  state.game.players.find(p => p.id === state.auth.id)!
+export const selectCurrentPlayer = createSelector(
+  [selectPlayers, selectId],
+  (players, id) => players.find(p => p.id === id)!
+)
+
+export const selectCurrentFight: Selector<Nullable<Fight>> = state =>
+  state.game.fight
+
+export const selectFightingPlayer = createSelector([selectCurrentFight, selectPlayers], (fight, players) => {
+  if (!fight) {
+    return null
+  }
+
+  return players.find(p => p.id === fight.playerId) || null
+})
+
+export const selectFightingEnemy = createSelector([selectCurrentFight, selectEnemies], (fight, enemies) => {
+  if (!fight) {
+    return null
+  }
+
+  return enemies.find(e => e.id === fight.enemyId) || null
+})
+
+export const selectOriginalFightCoords = createSelector([selectCurrentFight], fight => {
+  return fight?.originCoords
+})
 
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
@@ -193,12 +236,13 @@ export type LobbyActions =
   ReturnType<typeof error>
 
 export type GameActions =
+  ReturnType<typeof receivedEnemies> |
   ReturnType<typeof playerTurn> |
   ReturnType<typeof moveToCoords> |
   ReturnType<typeof discoverTile> |
   ReturnType<typeof discoverChest> |
-  ReturnType<typeof discoverEnemy> |
   ReturnType<typeof startFight> |
-  ReturnType<typeof endFight>
+  ReturnType<typeof attack> |
+  ReturnType<typeof attacked>
 
 export default slice

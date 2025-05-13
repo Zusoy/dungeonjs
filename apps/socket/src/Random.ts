@@ -7,6 +7,10 @@ export default class Random {
     return (Math.random() * 100) < chance
   }
 
+  public static diceRoll(): number {
+    return Math.floor(Math.random() * 6) + 1
+  }
+
   public static enumValue<T extends object>(enumObject: T): T[keyof T] {
     const values = Object.values(enumObject)
     return values[Math.floor(Math.random() * values.length)]
