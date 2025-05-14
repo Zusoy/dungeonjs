@@ -72,6 +72,26 @@ export type AttackPayload = {
   readonly originCoords: ScalarCoords
 }
 
+export type ReceivedPlayersPayload = {
+  readonly players: UserPayload[]
+}
+
+export type ReceivedSkeletonsPayload = {
+  readonly skeletons: Skeleton[]
+}
+
+export type DiscoverChestPayload = {
+  readonly chest: Chest
+}
+
+export type DiscoverTilePayload = {
+  readonly tile: Tile
+}
+
+export type PlayerTurnPayload = {
+  readonly playerId: string
+}
+
 export type AttackResultPayload = {
   readonly attack: number
   readonly succeed: boolean
@@ -81,17 +101,17 @@ const slice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    receivedPlayers: (state, action: PayloadAction<UserPayload[]>) => ({
+    receivedPlayers: (state, action: PayloadAction<ReceivedPlayersPayload>) => ({
       ...state,
-      players: action.payload
+      players: action.payload.players
     }),
-    receivedEnemies: (state, action: PayloadAction<Skeleton[]>) => ({
+    receivedEnemies: (state, action: PayloadAction<ReceivedSkeletonsPayload>) => ({
       ...state,
-      enemies: action.payload
+      enemies: action.payload.skeletons
     }),
-    playerTurn: (state, action: PayloadAction<UserPayload['id']>) => ({
+    playerTurn: (state, action: PayloadAction<PlayerTurnPayload>) => ({
       ...state,
-      playerTurn: action.payload
+      playerTurn: action.payload.playerId
     }),
     changeHero: (state, _action: PayloadAction<ChangeHeroPayload>) => ({
       ...state
@@ -107,13 +127,13 @@ const slice = createSlice({
     moveToCoords: (state, _action: PayloadAction<MoveToCoordsPayload>) => ({
       ...state
     }),
-    discoverTile: (state, action: PayloadAction<Tile>) => ({
+    discoverTile: (state, action: PayloadAction<DiscoverTilePayload>) => ({
       ...state,
-      tiles: [...state.tiles, action.payload]
+      tiles: [...state.tiles, action.payload.tile]
     }),
-    discoverChest: (state, action: PayloadAction<Chest>) => ({
+    discoverChest: (state, action: PayloadAction<DiscoverChestPayload>) => ({
       ...state,
-      chests: [...state.chests, action.payload]
+      chests: [...state.chests, action.payload.chest]
     }),
     focusCoords: (state, action: PayloadAction<ScalarCoords>) => ({
       ...state,

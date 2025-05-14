@@ -1,21 +1,19 @@
 import container from 'container'
 import { createServer } from 'http'
 import { Server as IOServer } from 'socket.io'
-import type IServer from 'IServer'
-import Server from 'Websocket/Server'
-import type { ClientToServer, ServerToClients, InterServer } from 'Netcode/events'
-import EventSubscriber from 'EventSubscriber'
-import User from 'Netcode/User'
-import ICollection from 'Netcode/Collection/ICollection'
-import Room from 'Netcode/Room'
-import ChangeHeroHandler from 'EventHandler/Game/ChangeHeroHandler'
-import MoveToCoordsHandler from 'EventHandler/Game/MoveToCoordsHandler'
-import StartGameHandler from 'EventHandler/Game/StartGameHandler'
-import CreateRoomHandler from 'EventHandler/Room/CreateRoomHandler'
-import JoinRoomHandler from 'EventHandler/Room/JoinRoomHandler'
-import LeaveRoomHandler from 'EventHandler/Room/LeaveRoomHandler'
-import AttackHandler from 'EventHandler/Game/AttackHandler'
-import ILogger from 'ILogger'
+import type { ClientToServer, ServerToClients, InterServer } from 'Domain/Events'
+import * as EventHandlers from 'Domain/EventHandler'
+import { IPlayers } from 'Domain/Repository/IPlayers'
+import { IRooms } from 'Domain/Repository/IRooms'
+import { ILogger } from 'Domain/ILogger'
+import { Server } from 'Application/Websocket/Server'
+import { PlayerBroadcaster } from 'Application/Notification/PlayerBroadcaster'
+import { TurnAllocator } from 'Application/Notification/TurnAllocator'
+import { IServer } from 'Domain/IServer'
+import { EventSubscriber } from 'Infra/EventSubscriber'
+import { Player } from 'Domain/Model/Player'
+import { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
+import { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 
 const httpServer = createServer((_, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -27,29 +25,31 @@ const httpServer = createServer((_, res) => {
 })
 
 const io = new IOServer<ClientToServer, ServerToClients, InterServer>(httpServer)
-const users = container.resolve<ICollection<User>>('users')
-const rooms = container.resolve<ICollection<Room>>('rooms')
+const players = container.resolve<IPlayers>('players')
+const rooms = container.resolve<IRooms>('rooms')
 const logger = container.resolve<ILogger>('logger')
 
 const server = new Server(io)
 container.register<IServer>('server', { useValue: server })
+container.register<IPlayerBroadcaster>('players.broadcaster', { useClass: PlayerBroadcaster })
+container.register<ITurnAllocator>('turn_allocator', { useClass: TurnAllocator })
 
-container.register<ChangeHeroHandler>(ChangeHeroHandler, { useClass: ChangeHeroHandler })
-container.register<MoveToCoordsHandler>(MoveToCoordsHandler, { useClass: MoveToCoordsHandler })
-container.register<StartGameHandler>(StartGameHandler, { useClass: StartGameHandler })
-container.register<CreateRoomHandler>(CreateRoomHandler, { useClass: CreateRoomHandler })
-container.register<JoinRoomHandler>(JoinRoomHandler, { useClass: JoinRoomHandler })
-container.register<LeaveRoomHandler>(LeaveRoomHandler, { useClass: LeaveRoomHandler })
-container.register<AttackHandler>(AttackHandler, { useClass: AttackHandler })
+container.register<EventHandlers.ChangeHeroHandler>(EventHandlers.ChangeHeroHandler, { useClass: EventHandlers.ChangeHeroHandler })
+container.register<EventHandlers.MoveHandler>(EventHandlers.MoveHandler, { useClass: EventHandlers.MoveHandler })
+container.register<EventHandlers.StartGameHandler>(EventHandlers.StartGameHandler, { useClass: EventHandlers.StartGameHandler })
+container.register<EventHandlers.CreateRoomHandler>(EventHandlers.CreateRoomHandler, { useClass: EventHandlers.CreateRoomHandler })
+container.register<EventHandlers.JoinRoomHandler>(EventHandlers.JoinRoomHandler, { useClass: EventHandlers.JoinRoomHandler })
+container.register<EventHandlers.LeaveRoomHandler>(EventHandlers.LeaveRoomHandler, { useClass: EventHandlers.LeaveRoomHandler })
+container.register<EventHandlers.AttackHandler>(EventHandlers.AttackHandler, { useClass: EventHandlers.AttackHandler })
 
 const subscriber = container.resolve(EventSubscriber)
 
 io.on('connect', socket => {
   const randomColor = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
-  const user = User.fromSocket(socket, randomColor, 'barbarian')
-  users.add(user)
+  const player = Player.fromSocket(socket, randomColor, 'barbarian')
+  players.add(player)
 
-  logger.info('User connected', user)
+  logger.info('User connected', player)
   subscriber.subscribe(socket)
 
   socket.on('disconnecting', async () => {
@@ -65,12 +65,12 @@ io.on('connect', socket => {
 
       const socketIds = await server.fetchSocketIds(room)
 
-      const roomsUsers = Array.from(socketIds)
-        .map(id => Array.from(users).find(user => user.id === id) || null)
-        .filter(u => !!u)
-        .map(u => u.getRoomPayload(u.id === room.createdById))
+      const roomsPlayers = Array.from(socketIds)
+        .map(id => Array.from(players).find(p => p.id === id) || null)
+        .filter(p => !!p)
+        .map(p => p.getRoomPayload(p.id === room.createdById))
 
-      server.emitInRoom('players', room, roomsUsers)
+      server.emitInRoom('players', room, { players: roomsPlayers })
     }
   })
 
@@ -79,12 +79,12 @@ io.on('connect', socket => {
 
     createdRooms.forEach(createdRoom => {
       rooms.remove(createdRoom)
-      server.emitInRoom('leftRoom', createdRoom, 'room_deleted')
+      server.emitInRoom('leftRoom', createdRoom, { reason: 'room_deleted' })
       io.in(createdRoom.roomId).socketsLeave(createdRoom.roomId)
       logger.info('Room author disconnec, clean room', createdRoom.roomId)
     })
 
-    users.remove(user)
+    players.remove(player)
     logger.info('User disconnected', reason)
   })
 })

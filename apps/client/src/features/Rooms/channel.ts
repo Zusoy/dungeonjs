@@ -1,15 +1,15 @@
 import { AppSocket, SocketChannel } from 'services/socket'
-import { joined, left, error, LeftRoomReason, RoomActions } from 'features/Rooms/slice'
+import { joined, left, error, RoomActions, JoinedRoomPayload, LeftRoomPayload } from 'features/Rooms/slice'
 import { eventChannel } from 'redux-saga'
 
 const roomChannel: SocketChannel<RoomActions> = (socket: AppSocket) => {
   return eventChannel(emitter => {
-    const joinedRoomListener = (room: string) => {
-      emitter(joined(room))
+    const joinedRoomListener = (payload: JoinedRoomPayload) => {
+      emitter(joined(payload))
     }
 
-    const leftRoomListener = (reason: LeftRoomReason) => {
-      emitter(left(reason))
+    const leftRoomListener = (payload: LeftRoomPayload) => {
+      emitter(left(payload))
     }
 
     const failedToJoinRoomListener = () => {
