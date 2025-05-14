@@ -1,12 +1,11 @@
-import type { UserPayload } from 'types/user'
 import { AppSocket, SocketChannel } from 'services/socket'
-import { LobbyActions, receivedPlayers, started } from 'features/Game/slice'
+import { LobbyActions, receivedPlayers, ReceivedPlayersPayload, started } from 'features/Game/slice'
 import { eventChannel } from 'redux-saga'
 
 const lobbyChannel: SocketChannel<LobbyActions> = (socket: AppSocket) => {
   return eventChannel(emitter => {
-    const onPlayersListener = (players: Iterable<UserPayload>) => {
-      emitter(receivedPlayers(Array.from(players)))
+    const onPlayersListener = (payload: ReceivedPlayersPayload) => {
+      emitter(receivedPlayers(payload))
     }
 
     const onGameStartedListener = () => {

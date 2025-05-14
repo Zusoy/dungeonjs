@@ -1,0 +1,1 @@
+export type VectorTuple = [x: number, y: number, z: number]

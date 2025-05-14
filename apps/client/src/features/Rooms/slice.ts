@@ -31,8 +31,16 @@ export type JoinRoomPayload = {
   readonly roomId: string
 }
 
+export type JoinedRoomPayload = {
+  readonly roomId: string
+}
+
 export type LeaveRoomPayload = {
   readonly roomId: string
+}
+
+export type LeftRoomPayload = {
+  readonly reason: LeftRoomReason
 }
 
 export type FailedToJoinRoomPayload = {
@@ -52,16 +60,16 @@ const slice = createSlice({
       ...state,
       status: RoomStatus.Joining
     }),
-    joined: (state, action: PayloadAction<string>) => ({
+    joined: (state, action: PayloadAction<JoinedRoomPayload>) => ({
       ...state,
-      currentRoomId: action.payload,
+      currentRoomId: action.payload.roomId,
       status: RoomStatus.Joined
     }),
     leave: (state, _action: PayloadAction<LeaveRoomPayload>) => ({
       ...state,
       status: RoomStatus.Leaving
     }),
-    left: (state, _action: PayloadAction<LeftRoomReason>) => ({
+    left: (state, _action: PayloadAction<LeftRoomPayload>) => ({
       ...state,
       currentRoomId: null,
       status: RoomStatus.Initial

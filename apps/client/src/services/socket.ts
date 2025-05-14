@@ -1,23 +1,19 @@
-import type { UserPayload } from 'types/user'
-import type { Tile } from 'types/tile'
-import type { Chest } from 'types/object'
-import type { Skeleton } from 'types/enemy'
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
-import { CreateRoomPayload, FailedToJoinRoomPayload, JoinRoomPayload, LeaveRoomPayload, LeftRoomReason } from 'features/Rooms/slice'
-import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload, AttackPayload, AttackResultPayload } from 'features/Game/slice'
+import { CreateRoomPayload, FailedToJoinRoomPayload, JoinedRoomPayload, JoinRoomPayload, LeaveRoomPayload, LeftRoomPayload } from 'features/Rooms/slice'
+import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload, AttackPayload, AttackResultPayload, ReceivedPlayersPayload, DiscoverChestPayload, DiscoverTilePayload, PlayerTurnPayload, ReceivedSkeletonsPayload } from 'features/Game/slice'
 
 export interface ServerToClients {
   pong: () => void
-  players: (players: Iterable<UserPayload>) => void
-  enemies: (payload: Iterable<Skeleton>) => void
-  joinedRoom: (room: string) => void
+  players: (players: ReceivedPlayersPayload) => void
+  enemies: (payload: ReceivedSkeletonsPayload) => void
+  joinedRoom: (payload: JoinedRoomPayload) => void
   failedToJoinRoom: (payload: FailedToJoinRoomPayload) => void
-  leftRoom: (reason: LeftRoomReason) => void
+  leftRoom: (reason: LeftRoomPayload) => void
   gameStarted: (roomId: string) => void
-  playerTurn: (playerId: UserPayload['id']) => void
-  discoverTile: (payload: Tile) => void
-  discoverChest: (payload: Chest) => void
+  playerTurn: (payload: PlayerTurnPayload) => void
+  discoverTile: (payload: DiscoverTilePayload) => void
+  discoverChest: (payload: DiscoverChestPayload) => void
   startFight: (payload: BeginFightPayload) => void
   attacked: (payload: AttackResultPayload) => void
 }
