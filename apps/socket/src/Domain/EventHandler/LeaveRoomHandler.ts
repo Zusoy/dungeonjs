@@ -5,6 +5,7 @@ import type { ISocket } from 'Domain/ISocket'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IServer } from 'Domain/IServer'
 import type { ILogger } from 'Domain/ILogger'
+import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: LeaveRoomHandler }])
@@ -14,6 +15,8 @@ export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
     private readonly rooms: IRooms,
     @inject('server')
     private readonly server: IServer,
+    @inject('players.broadcaster')
+    private readonly broadcaster: IPlayerBroadcaster,
     @inject('logger')
     private readonly logger: ILogger
   ) {}
@@ -25,8 +28,12 @@ export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
   handle(_channel: 'leaveRoom', socket: ISocket, event: LeaveRoomEvent): void {
     const room = this.rooms.find(event.roomId)
 
-    if (!socket.rooms.includes(event.roomId) || !room) {
-      return
+    if (!socket.rooms.includes(event.roomId)) {
+      throw new Error(`Trying to leave not joined room`)
+    }
+
+    if (!room) {
+      throw new Error(`Room not found with ID ${event.roomId}`)
     }
 
     if (room.createdById === socket.id) {
@@ -37,5 +44,10 @@ export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
 
       this.logger.info('Room author leave, cleaned room', room.roomId)
     }
+
+    socket.leave(room)
+    socket.emit('leftRoom', { reason: 'user_left' })
+    this.broadcaster.broadcast(room)
+    this.logger.info('User leave room', socket.id, room.roomId)
   }
 }
