@@ -29,7 +29,7 @@ describe('EventHandler/CreateRoom', () => {
       logger
     )
 
-    expect(() => handler.handle('createRoom', socket, event)).toThrowError(ObjectNotFoundError)
+    expect(() => handler.handle('createRoom', socket, event)).toThrowError(new ObjectNotFoundError("Player", "player_1"))
   })
 
   test('should create the room and join it and broadcast players', () => {

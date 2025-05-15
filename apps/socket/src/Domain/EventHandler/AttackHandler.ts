@@ -7,7 +7,7 @@ import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
-import { Random } from 'Domain/RNG/Random'
+import type { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 
@@ -24,7 +24,9 @@ export class AttackHandler implements IEventHandler<'attack'> {
     @inject('turn_allocator')
     private readonly turnAllocator: ITurnAllocator,
     @inject('players.broadcaster')
-    private readonly broadcaster: IPlayerBroadcaster
+    private readonly broadcaster: IPlayerBroadcaster,
+    @inject('rng')
+    private readonly rng: IRandomizer
   ) {
   }
 
@@ -58,8 +60,8 @@ export class AttackHandler implements IEventHandler<'attack'> {
     }
 
     const attackBonus = player.inventory.weapons.reduce((acc, curr) => acc + curr.attack, 0)
-    const firstDiceRoll = Random.diceRoll()
-    const secondDiceRoll = Random.diceRoll()
+    const firstDiceRoll = this.rng.diceRoll()
+    const secondDiceRoll = this.rng.diceRoll()
     const attack = firstDiceRoll + secondDiceRoll + attackBonus
     const succeed = attack > enemy.defense
 

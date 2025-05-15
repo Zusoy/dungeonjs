@@ -11,7 +11,7 @@ import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import type { Factory as TileFactory } from 'Domain/Tile/Factory'
 import type { Factory as SkeletonFactory } from 'Domain/Skeleton/Factory'
 import type { Chest } from 'Domain/Model/Chest'
-import { Random } from 'Domain/RNG/Random'
+import type { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { TileType } from 'Domain/Model/Tile'
 import { SkeletonType } from 'Domain/Model/Skeleton'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
@@ -37,6 +37,8 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
     private readonly skeletons: SkeletonFactory,
     @inject('factory.tiles')
     private readonly tiles: TileFactory,
+    @inject('rng')
+    private readonly rng: IRandomizer,
     @inject('chance.room')
     private readonly roomDiscoveryChance: number,
     @inject('chance.enemy')
@@ -71,7 +73,7 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
     }
 
     if (event.uncharted) {
-      const roomDiscovery = Random.boolean(this.roomDiscoveryChance)
+      const roomDiscovery = this.rng.boolean(this.roomDiscoveryChance)
       const randomTileType = roomDiscovery ? TileType.Room : TileType.Corridor
 
       const type = event.neighborTiles.length > 1
@@ -92,10 +94,10 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
       this.logger.info('Discover tile', tile)
 
       if (tile.type === TileType.Room) {
-        const hasEnemy = Random.boolean(this.enemyDiscoveryChance)
+        const hasEnemy = this.rng.boolean(this.enemyDiscoveryChance)
 
         if (hasEnemy) {
-          const skeletonType = Random.enumValue(SkeletonType)
+          const skeletonType = this.rng.enumValue(SkeletonType)
           const enemy = this.skeletons.build(skeletonType, Date.now().toString(), event.coords)
           room.addEnemy(enemy)
           this.rooms.update(room, roomIndex)

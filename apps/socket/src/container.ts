@@ -10,10 +10,19 @@ import { Factory as TileFactory } from 'Domain/Tile/Factory'
 import { Factory as SkeletonFactory } from 'Domain/Skeleton/Factory'
 import { Players } from 'Application/Repository/Players'
 import { Rooms } from 'Application/Repository/Rooms'
+import { IRandomizer } from 'Domain/RNG/IRandomizer'
+import { Randomizer } from 'Application/RNG/Randomizer'
 
 // parameters
 container.register('chance.enemy', { useValue: 80 })
 container.register('chance.room', { useValue: 36 })
+
+// RNG
+container.register<IRandomizer>(
+  'rng',
+  { useClass: Randomizer },
+  { lifecycle: Lifecycle.Singleton }
+)
 
 // repositories
 container.register<IPlayers>(

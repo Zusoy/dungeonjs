@@ -24,7 +24,7 @@ describe('EventHandler/LeaveRoom', () => {
     }
 
     const handler = new LeaveRoomHandler(rooms, server, broadcaster, logger)
-    expect(() => handler.handle('leaveRoom', socket, event)).toThrow(ObjectNotFoundError)
+    expect(() => handler.handle('leaveRoom', socket, event)).toThrow(new ObjectNotFoundError("Room", "test"))
   })
 
   test('throws error when trying to leave not joined room', () => {

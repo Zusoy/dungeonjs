@@ -36,7 +36,7 @@ describe('EventHandler/StartGame', () => {
     }
 
     const handler = new StartGameHandler(rooms, server, logger)
-    await expect(handler.handle('startGame', socket, event)).rejects.toThrow(ObjectNotFoundError)
+    await expect(handler.handle('startGame', socket, event)).rejects.toThrow(new ObjectNotFoundError("Room", "game"))
   })
 
   test('should start game and allocate first player turn', async () => {

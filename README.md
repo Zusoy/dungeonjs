@@ -8,7 +8,8 @@
 
 <br />
 
-![Client](https://github.com/Zusoy/dungeonjs/actions/workflows/socket.yaml/badge.svg)
+![Socket](https://github.com/Zusoy/dungeonjs/actions/workflows/socket.yaml/badge.svg)
+![Client](https://github.com/Zusoy/dungeonjs/actions/workflows/client.yaml/badge.svg)
 
 <div align="center">
   <a href="https://github.com/Zusoy/dungeonjs">
