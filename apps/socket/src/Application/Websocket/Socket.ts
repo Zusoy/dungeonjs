@@ -14,7 +14,7 @@ export class Socket implements ISocket {
   }
 
   public get room(): Nullable<string> {
-    const rooms = Array.from(this.io.rooms)
+    const rooms = Array.from(this.io.rooms).filter(roomId => roomId !== this.id)
 
     if (!rooms.length) {
       return null
