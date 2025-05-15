@@ -2,6 +2,7 @@ import type { Socket as IOSocket } from 'socket.io'
 import type { EventsMap, ClientToServer, ServerToClients, InterServer } from 'Domain/Events'
 import type { ISocket } from 'Domain/ISocket'
 import type { Room } from 'Domain/Model/Room'
+import type { Nullable } from 'utils'
 
 export type AppSocket = IOSocket<ClientToServer, ServerToClients, InterServer>
 
@@ -12,8 +13,14 @@ export class Socket implements ISocket {
     this.id = io.id
   }
 
-  public get rooms(): string[] {
-    return Array.from(this.io.rooms)
+  public get room(): Nullable<string> {
+    const rooms = Array.from(this.io.rooms).filter(roomId => roomId !== this.id)
+
+    if (!rooms.length) {
+      return null
+    }
+
+    return rooms[0]
   }
 
   emit<T extends keyof EventsMap>(channel: T, ...args: Parameters<EventsMap[T]>): void {

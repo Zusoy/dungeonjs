@@ -5,6 +5,8 @@ import type { ISocket } from 'Domain/ISocket'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IServer } from 'Domain/IServer'
 import type { ILogger } from 'Domain/ILogger'
+import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: StartGameHandler }])
@@ -22,19 +24,24 @@ export class StartGameHandler implements IEventHandler<'startGame'> {
     return channel === 'startGame'
   }
 
-  handle(_channel: 'startGame', _socket: ISocket, event: StartGameEvent): void {
+  async handle(_channel: 'startGame', socket: ISocket, event: StartGameEvent): Promise<void> {
+    const roomId = socket.room
+
+    if (!roomId) {
+      throw new OperationDeniedError()
+    }
+
     const room = this.rooms.find(event.roomId)
 
     if (!room) {
-      throw new Error(`Room not found for ID ${event.roomId}`)
+      throw new ObjectNotFoundError("Room", event.roomId)
     }
 
     this.server.emitInRoom('gameStarted', room, { roomId: room.roomId })
-    this.server.fetchSocketIds(room)
-      .then(ids => {
-        const playerId = Array.from(ids)[0]
-        this.server.emitInRoom('playerTurn', room, { playerId })
-      })
+    const socketIds = await this.server.fetchSocketIds(room)
+
+    const playerId = Array.from(socketIds)[0]
+    this.server.emitInRoom('playerTurn', room, { playerId })
 
     this.logger.info('Game starting', event.roomId)
   }

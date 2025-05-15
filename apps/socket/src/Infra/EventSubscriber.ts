@@ -18,7 +18,6 @@ export class EventSubscriber {
     for (const event of clientToServerEvents) {
       // @ts-expect-error
       socket.on(event, payload => {
-        console.log(payload)
         const handler = handlers.find(h => h.supports(event, appSocket, payload))
 
         if (!handler) {

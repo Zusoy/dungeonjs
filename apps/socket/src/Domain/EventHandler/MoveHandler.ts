@@ -14,6 +14,8 @@ import type { Chest } from 'Domain/Model/Chest'
 import { Random } from 'Domain/RNG/Random'
 import { TileType } from 'Domain/Model/Tile'
 import { SkeletonType } from 'Domain/Model/Skeleton'
+import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: MoveHandler }])
@@ -46,20 +48,26 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
   }
 
   handle(_channel: 'moveToCoords', socket: ISocket, event: MoveEvent): void {
-    const roomId = socket.rooms.find(room => !!this.rooms.find(room))
+    const roomId = socket.room
+
+    if (!roomId) {
+      throw new OperationDeniedError()
+    }
+
     const player = this.players.find(socket.id)
+
+    if (!player) {
+      throw new ObjectNotFoundError("Player", socket.id)
+    }
+
     const playerIndex = Array.from(this.players).findIndex(player => player.id === socket.id)
     const roomIndex = Array.from(this.rooms).findIndex(room => room.roomId === roomId)
-
-    if (!roomId || !player || playerIndex < 0) {
-      return
-    }
 
     const room = this.rooms.find(roomId)
     const originCoords = player.coords
 
     if (!room) {
-      throw new Error(`Room not found with ID ${roomId}`)
+      throw new ObjectNotFoundError("Room", roomId)
     }
 
     if (event.uncharted) {
