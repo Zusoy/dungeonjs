@@ -19,7 +19,7 @@ describe('EventHandler/JoinRoom', () => {
     }
 
     const handler = new JoinRoomHandler(rooms, broadcaster)
-    expect(() => handler.handle('joinRoom', socket, event)).toThrow(ObjectNotFoundError)
+    expect(() => handler.handle('joinRoom', socket, event)).toThrow(new ObjectNotFoundError("Room", "test"))
     expect(socket.emittedEvents.includes('failedToJoinRoom')).toBeTruthy()
     expect(broadcaster.broadcastedRooms.includes('test')).toBeFalsy()
   })
