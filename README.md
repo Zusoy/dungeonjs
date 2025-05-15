@@ -6,6 +6,10 @@
 [![License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
+<br />
+
+![Client](https://github.com/Zusoy/dungeonjs/actions/workflows/socket.yaml/badge.svg)
+
 <div align="center">
   <a href="https://github.com/Zusoy/dungeonjs">
     <img src="box.png" alt="Logo" width="500" height="500">
