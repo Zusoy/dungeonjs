@@ -7,6 +7,7 @@ import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { ILogger } from 'Domain/ILogger'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: CreateRoomHandler }])
@@ -30,7 +31,7 @@ export class CreateRoomHandler implements IEventHandler<'createRoom'> {
     const user = this.players.find(socket.id)
 
     if (!user) {
-      throw new Error(`User not found with ID : ${socket.id}`)
+      throw new ObjectNotFoundError("Player", socket.id)
     }
 
     const room = new Room(event.roomId, socket.id)

@@ -15,12 +15,11 @@ export class MockedServer implements IServer {
   }
 
   emitInRoom<T extends keyof ServerToClients>(channel: T, room: Room, ..._args: Parameters<ServerToClients[T]>): void {
-    if (this.roomEmittedEvents[room.roomId]) {
-      this.roomEmittedEvents[room.roomId].push(channel)
-      return
+    if (!this.roomEmittedEvents[room.roomId]) {
+      this.roomEmittedEvents[room.roomId] = []
     }
 
-    this.roomEmittedEvents[room.roomId] = [channel]
+    this.roomEmittedEvents[room.roomId].push(channel)
   }
 
   fetchSocketIds(_room: Room): Promise<Iterable<PlayerPayload['id']>> {

@@ -5,6 +5,8 @@ import type { ISocket } from 'Domain/ISocket'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
+import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: ChangeHeroHandler }])
@@ -24,22 +26,27 @@ export class ChangeHeroHandler implements IEventHandler<'changeHero'> {
   }
 
   handle(_channel: 'changeHero', socket: ISocket, event: ChangeHeroEvent): void {
-    const currentRoomId = socket.rooms.find(room => !!this.rooms.find(room))
+    const roomId = socket.room
 
-    if (!currentRoomId) {
-      return
+    if (!roomId) {
+      throw new OperationDeniedError()
     }
 
-    const room = this.rooms.find(currentRoomId)
+    const room = this.rooms.find(roomId)
+
+    if (!room) {
+      throw new ObjectNotFoundError("Room", roomId)
+    }
+
     const user = this.players.find(socket.id)
+
+    if (!user) {
+      throw new ObjectNotFoundError("Player", socket.id)
+    }
+
     const index = Array.from(this.players).findIndex(({ id }) => id === socket.id)
 
-    if (!room || !user || index < 0) {
-      return
-    }
-
     user.hero = event.hero
-
     this.players.update(user, index)
     this.broadcaster.broadcast(room)
   }

@@ -8,6 +8,8 @@ import type { IRooms } from 'Domain/Repository/IRooms'
 import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import { Random } from 'Domain/RNG/Random'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: AttackHandler }])
@@ -32,25 +34,27 @@ export class AttackHandler implements IEventHandler<'attack'> {
 
   handle(_channel: 'attack', socket: ISocket, event: AttackEvent): void {
     const player = this.players.find(socket.id)
+    const roomId = socket.room
 
     if (!player) {
-      throw new Error(`Player not found with ID: ${socket.id}`)
+      throw new ObjectNotFoundError("Player", socket.id)
     }
 
-    const roomId = socket.rooms.find(room => !!this.rooms.find(room))
-    const roomIndex = Array.from(this.rooms).findIndex(room => room.roomId === roomId)
-    const room = roomId
-      ? this.rooms.find(roomId)
-      : null
+    if (!roomId) {
+      throw new OperationDeniedError()
+    }
+
+    const room = this.rooms.find(roomId)
 
     if (!room) {
-      throw new Error(`Room not found`)
+      throw new ObjectNotFoundError("Room", roomId)
     }
 
+    const roomIndex = Array.from(this.rooms).findIndex(r => r.roomId === room.roomId)
     const enemy = room.findEnemy(event.enemyId)
 
     if (!enemy) {
-      throw new Error(`Enemy with ID not found ${event.enemyId}`)
+      throw new ObjectNotFoundError("Enemy", event.enemyId)
     }
 
     const attackBonus = player.inventory.weapons.reduce((acc, curr) => acc + curr.attack, 0)

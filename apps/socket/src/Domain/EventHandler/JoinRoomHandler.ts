@@ -4,6 +4,7 @@ import type { IEventHandler } from 'Domain/EventHandler/IEventHandler'
 import type { ISocket } from 'Domain/ISocket'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: JoinRoomHandler }])
@@ -24,7 +25,7 @@ export class JoinRoomHandler implements IEventHandler<'joinRoom'> {
 
     if (!room) {
       socket.emit('failedToJoinRoom', { roomId: event.roomId, code: 'room_not_found' })
-      throw new Error(`Failed to join room ${event.roomId}`)
+      throw new ObjectNotFoundError("Room", event.roomId)
     }
 
     socket.join(room)

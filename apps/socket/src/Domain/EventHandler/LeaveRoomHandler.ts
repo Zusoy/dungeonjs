@@ -6,6 +6,8 @@ import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IServer } from 'Domain/IServer'
 import type { ILogger } from 'Domain/ILogger'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
+import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: LeaveRoomHandler }])
@@ -28,12 +30,12 @@ export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
   handle(_channel: 'leaveRoom', socket: ISocket, event: LeaveRoomEvent): void {
     const room = this.rooms.find(event.roomId)
 
-    if (!socket.rooms.includes(event.roomId)) {
-      throw new Error(`Trying to leave not joined room`)
+    if (socket.room !== event.roomId) {
+      throw new OperationDeniedError()
     }
 
     if (!room) {
-      throw new Error(`Room not found with ID ${event.roomId}`)
+      throw new ObjectNotFoundError("Room", event.roomId)
     }
 
     if (room.createdById === socket.id) {

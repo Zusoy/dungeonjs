@@ -8,13 +8,15 @@ import { LeaveRoomEvent } from 'Domain/Event/LeaveRoomEvent'
 import { MockedSocket } from 'Application/Websocket/MockedSocket'
 import { Room } from 'Domain/Model/Room'
 import type { ILogger } from 'Domain/ILogger'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 
 describe('EventHandler/LeaveRoom', () => {
   test('throws error when room not found', () => {
     const rooms = new MockedRooms([])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer()
-    const socket = new MockedSocket('player_1', ['test'])
+    const socket = new MockedSocket('player_1', 'test')
     const logger = { info: () => {}, error: () => {} } as ILogger
 
     const event: LeaveRoomEvent = {
@@ -22,31 +24,29 @@ describe('EventHandler/LeaveRoom', () => {
     }
 
     const handler = new LeaveRoomHandler(rooms, server, broadcaster, logger)
-
-    expect(() => handler.handle('leaveRoom', socket, event)).toThrow(/Room not found/)
+    expect(() => handler.handle('leaveRoom', socket, event)).toThrow(ObjectNotFoundError)
   })
 
-  test('throws error when leave not joined room', () => {
+  test('throws error when trying to leave not joined room', () => {
     const rooms = new MockedRooms([])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer()
-    const socket = new MockedSocket('player_1', ['test'])
+    const socket = new MockedSocket('player_1', 'test')
     const logger = { info: () => {}, error: () => {} } as ILogger
 
     const event: LeaveRoomEvent = {
-      roomId: 'other_room'
+      roomId: 'other_room_name'
     }
 
     const handler = new LeaveRoomHandler(rooms, server, broadcaster, logger)
-
-    expect(() => handler.handle('leaveRoom', socket, event)).toThrow(/Trying to leave not joined room/)
+    expect(() => handler.handle('leaveRoom', socket, event)).toThrow(OperationDeniedError)
   })
 
-  test('should kick all player', () => {
+  test('should kick all player when is room creator', () => {
     const rooms = new MockedRooms([new Room('room_id', 'player_1')])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer()
-    const socket = new MockedSocket('player_1', ['room_id'])
+    const socket = new MockedSocket('player_1', 'room_id')
     const logger = { info: () => {}, error: () => {} } as ILogger
 
     const event: LeaveRoomEvent = {
@@ -59,7 +59,7 @@ describe('EventHandler/LeaveRoom', () => {
     expect(server.kickedRooms.includes('room_id')).toBeTruthy()
     expect(rooms.find('room_id')).toBeNull()
     expect(server.roomEmittedEvents['room_id'].includes('leftRoom')).toBeTruthy()
-    expect(socket.rooms.includes('room_id')).toBeFalsy()
+    expect(socket.room).toBeNull()
     expect(broadcaster.broadcastedRooms.includes('room_id')).toBeTruthy()
   })
 
@@ -67,7 +67,7 @@ describe('EventHandler/LeaveRoom', () => {
     const rooms = new MockedRooms([new Room('room_id', 'player_2')])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer()
-    const socket = new MockedSocket('player_1', ['room_id'])
+    const socket = new MockedSocket('player_1', 'room_id')
     const logger = { info: () => {}, error: () => {} } as ILogger
 
     const event: LeaveRoomEvent = {
@@ -80,7 +80,7 @@ describe('EventHandler/LeaveRoom', () => {
     expect(server.kickedRooms.includes('room_id')).toBeFalsy()
     expect(server.roomEmittedEvents['room_id']).toBeUndefined()
     expect(rooms.find('room_id')).not.toBeNull()
-    expect(socket.rooms.includes('room_id')).toBeFalsy()
+    expect(socket.room).toBeNull()
     expect(broadcaster.broadcastedRooms.includes('room_id')).toBeTruthy()
   })
 })
