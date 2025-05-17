@@ -1,13 +1,14 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Selector } from 'app/store'
-import { Hero, UserPayload } from 'types/user'
+import { selectId } from 'features/Authentication/slice'
 import { left } from 'features/Rooms/slice'
+import { Hero, type UserPayload } from 'types/user'
+import type { Selector } from 'app/store'
 import type { ScalarCoords } from 'types/coords'
 import type { Chest } from 'types/object'
+import type { Loot } from 'types/loot'
 import { type Tile, TileType } from 'types/tile'
 import type { Skeleton } from 'types/enemy'
 import { type Nullable, type VectorTuple, Direction } from 'types/utils'
-import { selectId } from 'features/Authentication/slice'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -27,6 +28,7 @@ export type State = {
   enemies: Skeleton[]
   tiles: Tile[]
   chests: Chest[]
+  loots: Loot[]
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
   fight: Nullable<Fight>
@@ -37,6 +39,7 @@ export const initialState: State = {
   players: [],
   enemies: [],
   chests: [],
+  loots: [],
   fight: null,
   tiles: [
     { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
