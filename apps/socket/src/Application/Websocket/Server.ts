@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe'
+import { injectable, type Disposable as IDisposable } from 'tsyringe'
 import type { Server as IOServer } from 'socket.io'
 import type { ServerToClients, ClientToServer, InterServer } from 'Domain/Events'
 import type { IServer } from 'Domain/IServer'
@@ -8,7 +8,7 @@ import type { PlayerPayload } from 'Domain/Model/Player'
 export type AppServer = IOServer<ClientToServer, ServerToClients, InterServer>
 
 @injectable()
-export class Server implements IServer {
+export class Server implements IServer, IDisposable {
   constructor(private readonly io: AppServer) {}
 
   emit<T extends keyof ServerToClients>(channel: T, ...args: Parameters<ServerToClients[T]>): void {
@@ -27,5 +27,9 @@ export class Server implements IServer {
 
   kickAll(room: Room): void {
     this.io.in(room.roomId).socketsLeave(room.roomId)
+  }
+
+  dispose(): Promise<void> | void {
+    this.io.close()
   }
 }
