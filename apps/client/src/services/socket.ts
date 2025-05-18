@@ -1,12 +1,13 @@
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
 import { CreateRoomPayload, FailedToJoinRoomPayload, JoinedRoomPayload, JoinRoomPayload, LeaveRoomPayload, LeftRoomPayload } from 'features/Rooms/slice'
-import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload, AttackPayload, AttackResultPayload, ReceivedPlayersPayload, DiscoverChestPayload, DiscoverTilePayload, PlayerTurnPayload, ReceivedSkeletonsPayload } from 'features/Game/slice'
+import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload, AttackPayload, AttackResultPayload, ReceivedPlayersPayload, DiscoverChestPayload, DiscoverTilePayload, PlayerTurnPayload, ReceivedSkeletonsPayload, ReceivedLootsPayload } from 'features/Game/slice'
 
 export interface ServerToClients {
   pong: () => void
   players: (players: ReceivedPlayersPayload) => void
   enemies: (payload: ReceivedSkeletonsPayload) => void
+  loots: (payload: ReceivedLootsPayload) => void
   joinedRoom: (payload: JoinedRoomPayload) => void
   failedToJoinRoom: (payload: FailedToJoinRoomPayload) => void
   leftRoom: (reason: LeftRoomPayload) => void

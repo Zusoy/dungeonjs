@@ -3,7 +3,6 @@ import Enemies from 'features/Game/Scene/Game/HUD/Enemies'
 import MoveCounter from 'features/Game/Scene/Game/HUD/MoveCounter'
 import Players from 'features/Game/Scene/Game/HUD/Players'
 import Chests from 'features/Game/Scene/Game/HUD/Chests'
-import Fullscreen from 'features/Game/Scene/Game/HUD/Fullscreen'
 import TurnAnnounceDialog, { type TurnAnnouncer } from 'widgets/Dialog/TurnAnnounceDialog'
 import FightAnnounceDialog, { type FightAnnouncer } from 'widgets/Dialog/FightAnnounceDialog'
 import { useDispatch, useSelector } from 'react-redux'
@@ -77,7 +76,6 @@ const HUD: React.FC = () => {
           <Enemies />
           <MoveCounter />
           <Chests />
-          <Fullscreen />
         </div>
       </div>
       <Players />

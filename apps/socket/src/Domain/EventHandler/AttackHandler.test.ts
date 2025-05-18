@@ -10,12 +10,15 @@ import { MockedSocket } from 'Application/Websocket/MockedSocket'
 import { AttackEvent } from 'Domain/Event/AttackEvent'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { Room } from 'Domain/Model/Room'
-import { createPlayerMock } from 'test-utils'
+import { createMinionSkeletonMock, createPlayerMock, createWeaponLootMock } from 'test-utils'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
-import { MinionSkeleton } from 'Domain/Model/Skeleton'
 import { MockedRandomizer } from 'Application/RNG/MockedRandomizer'
+import { Factory as LootFactory } from 'Domain/Loot/Factory'
+import { KeyLootBuilder } from 'Domain/Loot/Builder/KeyLootBuilder'
+import { WeaponLootBuilder } from 'Domain/Loot/Builder/WeaponLootBuilder'
 import { Player } from 'Domain/Model/Player'
 import { Coords } from 'Domain/Geometry/Coords'
+import { LootableWeapon } from 'Domain/Model/Loot'
 
 describe('EventHandler/Attack', () => {
   test('throws when player not found', () => {
@@ -26,13 +29,22 @@ describe('EventHandler/Attack', () => {
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer()
+    const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
     const event: AttackEvent = {
       enemyId: 'enemy',
       originCoords: [0, 0]
     }
 
-    const handler = new AttackHandler(server, players, rooms, turnAllocator, broadcaster, random)
+    const handler = new AttackHandler(
+      server,
+      players,
+      rooms,
+      turnAllocator,
+      broadcaster,
+      loots,
+      random
+    )
     expect(() => handler.handle('attack', socket, event)).toThrow(new ObjectNotFoundError("Player", "player"))
   })
 
@@ -44,13 +56,22 @@ describe('EventHandler/Attack', () => {
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', null)
     const random = new MockedRandomizer()
+    const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
     const event: AttackEvent = {
       enemyId: 'enemy',
       originCoords: [0, 0]
     }
 
-    const handler = new AttackHandler(server, players, rooms, turnAllocator, broadcaster, random)
+    const handler = new AttackHandler(
+      server,
+      players,
+      rooms,
+      turnAllocator,
+      broadcaster,
+      loots,
+      random
+    )
     expect(() => handler.handle('attack', socket, event)).toThrow(OperationDeniedError)
   })
 
@@ -62,13 +83,23 @@ describe('EventHandler/Attack', () => {
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer()
+    const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
     const event: AttackEvent = {
       enemyId: 'enemy',
       originCoords: [0, 0]
     }
 
-    const handler = new AttackHandler(server, players, rooms, turnAllocator, broadcaster, random)
+    const handler = new AttackHandler(
+      server,
+      players,
+      rooms,
+      turnAllocator,
+      broadcaster,
+      loots,
+      random
+    )
+
     expect(() => handler.handle('attack', socket, event)).toThrow(new ObjectNotFoundError("Room", "room"))
   })
 
@@ -80,13 +111,23 @@ describe('EventHandler/Attack', () => {
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer()
+    const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
     const event: AttackEvent = {
       enemyId: 'enemy',
       originCoords: [0, 0]
     }
 
-    const handler = new AttackHandler(server, players, rooms, turnAllocator, broadcaster, random)
+    const handler = new AttackHandler(
+      server,
+      players,
+      rooms,
+      turnAllocator,
+      broadcaster,
+      loots,
+      random
+    )
+
     expect(() => handler.handle('attack', socket, event)).toThrow(new ObjectNotFoundError("Enemy", "enemy"))
   })
 
@@ -103,10 +144,14 @@ describe('EventHandler/Attack', () => {
       [1, 1],
       4
     )
+    const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
     const players = new MockedPlayers([player])
     const room = new Room('room', 'player')
-    room.addEnemy(new MinionSkeleton('enemy', [0, 0]))
+
+    const loot = createWeaponLootMock('weapon_loot')
+    const skeleton = createMinionSkeletonMock('enemy', loot)
+    room.addEnemy(skeleton)
 
     const rooms = new MockedRooms([room])
     const turnAllocator = new MockedTurnAllocator()
@@ -119,16 +164,29 @@ describe('EventHandler/Attack', () => {
       originCoords: [0, 0]
     }
 
-    const handler = new AttackHandler(server, players, rooms, turnAllocator, broadcaster, random)
+    const handler = new AttackHandler(
+      server,
+      players,
+      rooms,
+      turnAllocator,
+      broadcaster,
+      loots,
+      random
+    )
+
     handler.handle('attack', socket, event)
 
     const updatedPlayer = players.find('player')
+    const updatedRoom = rooms.find('room')
     const targetCoords = Coords.fromScalar([0, 0])
 
     expect(updatedPlayer).not.toBeNull()
+    expect(updatedRoom).not.toBeNull()
+    expect(updatedRoom!.getLoots()).toHaveLength(0)
     expect(Coords.fromScalar(updatedPlayer!.coords).equals(targetCoords)).toBeTruthy()
     expect(updatedPlayer!.health).toBe(4)
     expect(server.roomEmittedEvents['room']?.includes('attacked')).toBeTruthy()
+    expect(server.roomEmittedEvents['room']?.includes('loots')).toBeFalsy()
     expect(broadcaster.broadcastedRooms.includes('room')).toBeTruthy()
     expect(turnAllocator.turnRoomAllocated.includes('room')).toBeTruthy()
   })
@@ -148,8 +206,12 @@ describe('EventHandler/Attack', () => {
     )
 
     const players = new MockedPlayers([player])
+    const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
+
     const room = new Room('room', 'player')
-    room.addEnemy(new MinionSkeleton('enemy', [0, 0]))
+    const loot = createWeaponLootMock('weapon_loot')
+    const skeleton = createMinionSkeletonMock('enemy', loot)
+    room.addEnemy(skeleton)
 
     const rooms = new MockedRooms([room])
     const turnAllocator = new MockedTurnAllocator()
@@ -162,7 +224,16 @@ describe('EventHandler/Attack', () => {
       originCoords: [0, 0]
     }
 
-    const handler = new AttackHandler(server, players, rooms, turnAllocator, broadcaster, random)
+    const handler = new AttackHandler(
+      server,
+      players,
+      rooms,
+      turnAllocator,
+      broadcaster,
+      loots,
+      random
+    )
+
     handler.handle('attack', socket, event)
 
     const updatedPlayer = players.find('player')
@@ -171,10 +242,13 @@ describe('EventHandler/Attack', () => {
 
     expect(updatedPlayer).not.toBeNull()
     expect(updatedRoom).not.toBeNull()
+    expect(updatedRoom!.getLoots()).toHaveLength(1)
+    expect(updatedRoom!.getLoots()[0]).toStrictEqual(new LootableWeapon(loot.item, [0, 0]))
     expect(Coords.fromScalar(updatedPlayer!.coords).equals(targetCoords)).toBeTruthy()
     expect(updatedPlayer!.health).toBe(5)
     expect(server.roomEmittedEvents['room']?.includes('attacked')).toBeTruthy()
     expect(server.roomEmittedEvents['room']?.includes('enemies')).toBeTruthy()
+    expect(server.roomEmittedEvents['room']?.includes('loots')).toBeTruthy()
     expect(broadcaster.broadcastedRooms.includes('room')).toBeFalsy()
     expect(turnAllocator.turnRoomAllocated.includes('room')).toBeTruthy()
     expect(updatedRoom!.getEnemies().length).toBe(0)

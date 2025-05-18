@@ -1,5 +1,5 @@
 import type { SocketChannel, AppSocket } from 'services/socket'
-import { discoverTile, discoverChest, GameActions, playerTurn, BeginFightPayload, startFight, AttackResultPayload, attacked, receivedEnemies, DiscoverChestPayload, DiscoverTilePayload, PlayerTurnPayload, ReceivedSkeletonsPayload } from 'features/Game/slice'
+import { discoverTile, discoverChest, GameActions, playerTurn, BeginFightPayload, startFight, AttackResultPayload, attacked, receivedEnemies, DiscoverChestPayload, DiscoverTilePayload, PlayerTurnPayload, ReceivedSkeletonsPayload, ReceivedLootsPayload, receivedLoots } from 'features/Game/slice'
 import { eventChannel } from 'redux-saga'
 
 const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
@@ -28,12 +28,17 @@ const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
       emitter(receivedEnemies(payload))
     }
 
+    const onLootsListener = (payload: ReceivedLootsPayload) => {
+      emitter(receivedLoots(payload))
+    }
+
     socket.on('playerTurn', onPlayerTurnListener)
     socket.on('discoverTile', onDiscoverTileListener)
     socket.on('discoverChest', onDiscoverChestListener)
     socket.on('startFight', onStartFightListener)
     socket.on('attacked', onFightAttackedListener)
     socket.on('enemies', onEnemiesListener)
+    socket.on('loots', onLootsListener)
 
     return () => {
       socket.off('playerTurn', onPlayerTurnListener)
@@ -42,6 +47,7 @@ const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
       socket.off('startFight', onStartFightListener)
       socket.off('attacked', onFightAttackedListener)
       socket.off('enemies', onEnemiesListener)
+      socket.off('loots', onLootsListener)
     }
   })
 }

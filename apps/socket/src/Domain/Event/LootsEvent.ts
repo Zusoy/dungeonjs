@@ -1,5 +1,5 @@
-import type { Loot } from 'Domain/Model/Loot'
+import type { WorldLoot } from 'Domain/Model/Loot'
 
 export type LootsEvent = {
-  readonly loots: Iterable<Loot>
+  readonly loots: Iterable<WorldLoot>
 }

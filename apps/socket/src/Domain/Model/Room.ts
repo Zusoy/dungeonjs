@@ -1,20 +1,16 @@
 import { Coords, type ScalarCoords } from 'Domain/Geometry/Coords'
 import type { Skeleton } from 'Domain/Model/Skeleton'
 import type { Nullable } from 'utils'
-import type { Loot } from 'Domain/Model/Loot'
+import type { WorldLoot } from 'Domain/Model/Loot'
 
 export class Room {
   private enemies: Skeleton[] = []
-  private loots: Loot[] = []
+  private loots: WorldLoot[] = []
 
   constructor(
     public readonly roomId: string,
     public readonly createdById: string
   ) {
-  }
-
-  public getId(): string {
-    return this.roomId
   }
 
   public addEnemy(enemy: Skeleton): void {
@@ -33,19 +29,19 @@ export class Room {
     return this.enemies
   }
 
-  public addLoot(loot: Loot): void {
+  public addLoot(loot: WorldLoot): void {
     this.loots = [...this.loots, loot]
   }
 
-  public removeLoot(lootId: Loot['id']): void {
+  public removeLoot(lootId: WorldLoot['id']): void {
     this.loots = this.loots.filter(loot => loot.id !== lootId)
   }
 
-  public findLoot(lootId: Loot['id']): Nullable<Loot> {
+  public findLoot(lootId: WorldLoot['id']): Nullable<WorldLoot> {
     return this.loots.find(loot => loot.id === lootId) ?? null
   }
 
-  public getLoots(): Loot[] {
+  public getLoots(): WorldLoot[] {
     return this.loots
   }
 
@@ -58,7 +54,7 @@ export class Room {
     }) ?? null
   }
 
-  public findLootAtCoords(coords: ScalarCoords): Nullable<Loot> {
+  public findLootAtCoords(coords: ScalarCoords): Nullable<WorldLoot> {
     const targetCoords = Coords.fromScalar(coords)
 
     return this.loots.find(loot => {

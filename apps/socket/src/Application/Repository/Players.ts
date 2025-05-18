@@ -1,10 +1,10 @@
-import { injectable, type Disposable } from 'tsyringe'
+import { injectable, type Disposable as IDisposable } from 'tsyringe'
 import type { Player, PlayerPayload } from 'Domain/Model/Player'
 import type { IPlayers as IPlayerRepository } from 'Domain/Repository/IPlayers'
 import type { Nullable } from 'utils'
 
 @injectable()
-export class Players implements IPlayerRepository, Disposable {
+export class Players implements IPlayerRepository, IDisposable {
   private players: Player[] = []
 
   add(player: Player): void {

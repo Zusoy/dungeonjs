@@ -26,6 +26,7 @@ const Scene: React.FC = () => {
             username={player.username}
             color={player.color}
             position={new Vector3(i * -2, 0, -3)}
+            health={player.health}
           />
       )}
     </Canvas>
