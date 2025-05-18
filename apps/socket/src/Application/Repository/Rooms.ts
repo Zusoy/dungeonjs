@@ -1,10 +1,10 @@
-import { injectable, type Disposable } from 'tsyringe'
+import { injectable, type Disposable as IDisposable } from 'tsyringe'
 import type { Room } from 'Domain/Model/Room'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { Nullable } from 'utils'
 
 @injectable()
-export class Rooms implements IRooms, Disposable {
+export class Rooms implements IRooms, IDisposable {
   private rooms: Room[] = []
 
   add(room: Room): void {

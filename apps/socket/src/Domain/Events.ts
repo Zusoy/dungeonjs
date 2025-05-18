@@ -23,6 +23,7 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
 export interface ServerToClients {
   players: (event: Events.PlayersEvent) => void
   enemies: (event: Events.SkeletonsEvent) => void
+  loots: (event: Events.LootsEvent) => void
   joinedRoom: (event: Events.JoinedRoomEvent) => void
   failedToJoinRoom: (event: Events.FailedToJoinRoomEvent) => void
   leftRoom: (event: Events.LeftRoomEvent) => void

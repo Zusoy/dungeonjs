@@ -10,6 +10,7 @@ import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import type { Factory as LootFactory } from 'Domain/Loot/Factory'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: AttackHandler }])
@@ -25,6 +26,8 @@ export class AttackHandler implements IEventHandler<'attack'> {
     private readonly turnAllocator: ITurnAllocator,
     @inject('players.broadcaster')
     private readonly broadcaster: IPlayerBroadcaster,
+    @inject('factory.loots')
+    private readonly loots: LootFactory,
     @inject('rng')
     private readonly rng: IRandomizer
   ) {
@@ -83,9 +86,14 @@ export class AttackHandler implements IEventHandler<'attack'> {
       return
     }
 
-    room.removeEnemy(event.enemyId)
+    const lootable = this.loots.buildLootable(enemy.loot, enemy.coords)
+    room.removeEnemy(enemy.id)
+    room.addLoot(lootable)
     this.rooms.update(room, roomIndex)
+
     this.server.emitInRoom('enemies', room, { skeletons: room.getEnemies() })
+    this.server.emitInRoom('loots', room, { loots: room.getLoots() })
+
     this.turnAllocator.allocateNextTurn(room, player.id)
   }
 }

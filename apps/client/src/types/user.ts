@@ -8,11 +8,18 @@ export enum Hero {
   Barbarian = 'barbarian'
 }
 
+export enum WeaponType {
+  Axe = 'axe',
+  Sword = 'sword',
+  Dagger = 'dagger'
+}
+
 export type Weapon = {
   readonly id: string
   readonly name: string
   readonly icon: string
   readonly attack: number
+  readonly type: WeaponType
 }
 
 export type Inventory = {

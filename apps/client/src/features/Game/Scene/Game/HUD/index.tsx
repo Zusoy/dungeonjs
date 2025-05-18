@@ -2,7 +2,7 @@ import React from 'react'
 import Enemies from 'features/Game/Scene/Game/HUD/Enemies'
 import MoveCounter from 'features/Game/Scene/Game/HUD/MoveCounter'
 import Players from 'features/Game/Scene/Game/HUD/Players'
-import Fullscreen from 'features/Game/Scene/Game/HUD/Fullscreen'
+import Chests from 'features/Game/Scene/Game/HUD/Chests'
 import TurnAnnounceDialog, { type TurnAnnouncer } from 'widgets/Dialog/TurnAnnounceDialog'
 import FightAnnounceDialog, { type FightAnnouncer } from 'widgets/Dialog/FightAnnounceDialog'
 import { useDispatch, useSelector } from 'react-redux'
@@ -75,7 +75,7 @@ const HUD: React.FC = () => {
         <div className='flex flex-row items-center gap-2'>
           <Enemies />
           <MoveCounter />
-          <Fullscreen />
+          <Chests />
         </div>
       </div>
       <Players />

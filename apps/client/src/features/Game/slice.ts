@@ -1,13 +1,14 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Selector } from 'app/store'
-import { Hero, UserPayload } from 'types/user'
+import { selectId } from 'features/Authentication/slice'
 import { left } from 'features/Rooms/slice'
+import { Hero, WeaponType, type UserPayload } from 'types/user'
+import type { Selector } from 'app/store'
 import type { ScalarCoords } from 'types/coords'
 import type { Chest } from 'types/object'
+import { LootType, type WorldLoot } from 'types/loot'
 import { type Tile, TileType } from 'types/tile'
 import type { Skeleton } from 'types/enemy'
 import { type Nullable, type VectorTuple, Direction } from 'types/utils'
-import { selectId } from 'features/Authentication/slice'
 
 export enum GameStatus {
   Lobby = 'lobby',
@@ -27,6 +28,7 @@ export type State = {
   enemies: Skeleton[]
   tiles: Tile[]
   chests: Chest[]
+  loots: WorldLoot[]
   playerTurn: Nullable<UserPayload['id']>
   status: GameStatus
   fight: Nullable<Fight>
@@ -37,6 +39,7 @@ export const initialState: State = {
   players: [],
   enemies: [],
   chests: [],
+  loots: [],
   fight: null,
   tiles: [
     { id: 'start_01', type: TileType.Room, directions: Direction.All, coords: [0, 0] }
@@ -76,6 +79,10 @@ export type ReceivedPlayersPayload = {
   readonly players: UserPayload[]
 }
 
+export type ReceivedLootsPayload = {
+  readonly loots: WorldLoot[]
+}
+
 export type ReceivedSkeletonsPayload = {
   readonly skeletons: Skeleton[]
 }
@@ -104,6 +111,10 @@ const slice = createSlice({
     receivedPlayers: (state, action: PayloadAction<ReceivedPlayersPayload>) => ({
       ...state,
       players: action.payload.players
+    }),
+    receivedLoots: (state, action: PayloadAction<ReceivedLootsPayload>) => ({
+      ...state,
+      loots: action.payload.loots
     }),
     receivedEnemies: (state, action: PayloadAction<ReceivedSkeletonsPayload>) => ({
       ...state,
@@ -173,6 +184,7 @@ const slice = createSlice({
 export const {
   receivedPlayers,
   receivedEnemies,
+  receivedLoots,
   changeHero,
   startGame,
   playerTurn,
@@ -213,6 +225,34 @@ export const selectTiles: Selector<Tile[]> = state =>
 
 export const selectChests: Selector<Chest[]> = state =>
   state.game.chests
+
+export const selectLoots: Selector<WorldLoot[]> = state =>
+  state.game.loots
+
+export const selectKeyLoots = createSelector(
+  [selectLoots],
+  loots => loots.filter(loot => loot.itemType === LootType.Key)
+)
+
+export const selectWeaponLoots = createSelector(
+  [selectLoots],
+  loots => loots.filter(loot => loot.itemType === LootType.Weapon)
+)
+
+export const selectAxeLoots = createSelector(
+  [selectWeaponLoots],
+  weapons => weapons.filter(weapon => weapon.item.type === WeaponType.Axe)
+)
+
+export const selectSwordLoots = createSelector(
+  [selectWeaponLoots],
+  weapons => weapons.filter(weapon => weapon.item.type === WeaponType.Sword)
+)
+
+export const selectDaggerLoots = createSelector(
+  [selectWeaponLoots],
+  weapons => weapons.filter(weapon => weapon.item.type === WeaponType.Dagger)
+)
 
 export const selectEnemies: Selector<Skeleton[]> = state =>
   state.game.enemies
@@ -257,6 +297,7 @@ export type LobbyActions =
 
 export type GameActions =
   ReturnType<typeof receivedEnemies> |
+  ReturnType<typeof receivedLoots> |
   ReturnType<typeof playerTurn> |
   ReturnType<typeof moveToCoords> |
   ReturnType<typeof discoverTile> |

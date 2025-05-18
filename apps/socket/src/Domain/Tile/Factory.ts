@@ -11,8 +11,7 @@ export class Factory {
   }
 
   build(type: TileType, payload: BuildTilePayload): Tiles {
-    const builders = Array.from(this.builders)
-    const builder = builders.find(b => b.supports(type, payload))
+    const builder = this.builders.find(b => b.supports(type, payload))
 
     if (!builder) {
       throw new Error(`Tile type ${type.toString()} not supported.`)

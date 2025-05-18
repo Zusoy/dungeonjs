@@ -1,9 +1,9 @@
 import React from 'react'
-import PostProcess from 'features/Game/PostProcess'
 import Tile from 'features/Game/GameObject/Tile'
 import HeroCharacter from 'features/Game/GameObject/Character/Hero'
 import SkeletonCharacter from 'features/Game/GameObject/Character/Skeleton'
 import MoveControls from 'features/Game/Scene/Game/Controls/MoveControls'
+import Loots from 'features/Game/Scene/Game/Loots'
 import Camera, { GameCamera } from 'features/Game/Scene/Game/Controls/Camera'
 import { Canvas } from '@react-three/fiber'
 import { Vector3 } from 'three'
@@ -31,7 +31,6 @@ const Scene: React.FC = () => {
   return (
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>
       <Stats />
-      <PostProcess />
       <Grid
         infiniteGrid
         cellSize={8}
@@ -80,6 +79,7 @@ const Scene: React.FC = () => {
         )}
       </Chests>
       <MoveControls />
+      <Loots />
     </Canvas>
   )
 }
