@@ -18,6 +18,7 @@ import { KeyLootBuilder } from 'Domain/Loot/Builder/KeyLootBuilder'
 import { WeaponRandomizer } from 'Domain/Loot/WeaponRandomizer'
 
 // parameters
+container.register('room.maxplayer', { useValue: 4 })
 container.register('chance.enemy', { useValue: 80 })
 container.register('chance.room', { useValue: 36 })
 container.register('chance.loot.key', { useValue: 14 })

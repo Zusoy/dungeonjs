@@ -3,7 +3,7 @@ import { Selector } from 'app/store'
 import type { Nullable } from 'types/utils'
 
 export type LeftRoomReason = 'user_left'|'room_deleted'
-export type JoinRoomErrorCode = 'room_not_found'
+export type JoinRoomErrorCode = 'room_not_found' | 'max_players'
 
 export enum RoomStatus {
   Initial = 'initial',
@@ -16,11 +16,13 @@ export enum RoomStatus {
 export type State = {
   currentRoomId: Nullable<string>
   status: RoomStatus
+  lastErrorReason: Nullable<JoinRoomErrorCode>
 }
 
 export const initialState: State = {
   status: RoomStatus.Initial,
-  currentRoomId: null
+  currentRoomId: null,
+  lastErrorReason: null
 }
 
 export type CreateRoomPayload = {
@@ -74,9 +76,10 @@ const slice = createSlice({
       currentRoomId: null,
       status: RoomStatus.Initial
     }),
-    error: state => ({
+    error: (state, action: PayloadAction<FailedToJoinRoomPayload>) => ({
       ...state,
       currentRoomId: null,
+      lastErrorReason: action.payload.code,
       status: RoomStatus.Error
     })
   }
@@ -96,6 +99,9 @@ export const selectCurrentRoomId: Selector<Nullable<string>> = state =>
 
 export const selectIsInError: Selector<boolean> = state =>
   state.rooms.status === RoomStatus.Error
+
+export const selectLastErrorCode: Selector<Nullable<JoinRoomErrorCode>> = state =>
+  state.rooms.lastErrorReason
 
 export type RoomActions =
   ReturnType<typeof create> |
