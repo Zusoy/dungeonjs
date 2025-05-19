@@ -220,6 +220,11 @@ export const selectIsPlayerTurn: Selector<boolean> = state =>
 export const selectPlayerTurn: Selector<State['playerTurn']> = state =>
   state.game.playerTurn
 
+export const selectCurrentPlayerTurn = createSelector(
+  [selectPlayers, selectPlayerTurn],
+  (players, playerTurnId) => players.find(player => player.id === playerTurnId)
+)
+
 export const selectTiles: Selector<Tile[]> = state =>
   state.game.tiles
 

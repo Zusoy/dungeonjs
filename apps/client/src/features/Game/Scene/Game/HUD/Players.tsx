@@ -9,7 +9,7 @@ const Players: React.FC = () => {
 
   return (
     <div className='absolute bottom-0 max-h-64'>
-      <div className='flex w-full flex-wrap py-4 gap-4'>
+      <div className='hidden flex-wrap py-4 gap-4 w-screen items-center justify-center md:flex'>
         {players.map(player =>
           <PlayerCard
             key={player.id}

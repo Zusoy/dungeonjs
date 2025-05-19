@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentRoomId } from 'features/Rooms/slice'
 import { FaPlusSquare } from 'react-icons/fa'
 import { FaUsers } from 'react-icons/fa6'
+import Fullscreen from 'features/Game/Scene/Game/HUD/Fullscreen'
 
 const Game = React.lazy(() => import('features/Game'))
 
@@ -43,6 +44,7 @@ const Hub: React.FC = () => {
       <div className='navbar bg-neutral shadow-sm'>
         <div className='flex-1'>
           <a className='btn btn-ghost text-xl'>Dungeon'JS <p className='text-sm text-info'>v0.0.1</p></a>
+          <Fullscreen />
         </div>
         <div className='flex gap-2'>
           <button type='button' className='btn btn-success' onClick={openCreateRoomDialog}>

@@ -9,7 +9,7 @@ import { Canvas } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import { Environment, Stats, Grid } from '@react-three/drei'
 import { useSelector } from 'react-redux'
-import { selectChests, selectEnemies, selectFocusedCoords, selectPlayers, selectTiles } from 'features/Game/slice'
+import { selectChests, selectCurrentPlayerTurn, selectEnemies, selectFocusedCoords, selectPlayers, selectTiles } from 'features/Game/slice'
 import { Chest, Instances as Chests } from 'features/Game/GameObject/Prop/Chest'
 
 const Scene: React.FC = () => {
@@ -19,6 +19,7 @@ const Scene: React.FC = () => {
   const enemies = useSelector(selectEnemies)
   const chests = useSelector(selectChests)
   const focusedCoords = useSelector(selectFocusedCoords)
+  const currentPlayerTurn = useSelector(selectCurrentPlayerTurn)
 
   React.useEffect(() => {
     if (!focusedCoords) {
@@ -27,6 +28,14 @@ const Scene: React.FC = () => {
 
     camera.current.focus(focusedCoords)
   }, [focusedCoords, camera])
+
+  React.useEffect(() => {
+    if (!currentPlayerTurn || !camera.current) {
+      return
+    }
+
+    camera.current.focus(currentPlayerTurn.coords)
+  }, [camera, currentPlayerTurn])
 
   return (
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>

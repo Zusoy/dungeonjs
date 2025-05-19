@@ -17,7 +17,7 @@ type Props = {
 
 const PlayerCard: React.FC<Props> = ({ username, avatar, health, weapons, onClick }) => {
   return (
-    <div className='card card-side p-2 bg-base-300 border-base-300 cursor-pointer' onClick={onClick}>
+    <div className='card card-side bg-base-300 border-base-300 cursor-pointer' onClick={onClick}>
       <figure>
         <img src={avatar} alt='avatar' className='w-24 h-24' />
       </figure>
