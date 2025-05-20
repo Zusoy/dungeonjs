@@ -24,6 +24,7 @@ export type Weapon = {
 
 export type Inventory = {
   readonly treasures: number
+  readonly keys: number
   readonly weapons: Weapon[]
 }
 

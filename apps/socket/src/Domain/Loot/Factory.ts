@@ -1,6 +1,6 @@
 import { injectable, injectAll } from 'tsyringe'
 import type { ILootBuilder } from 'Domain/Loot/ILootBuilder'
-import { ILoot, Loot, LootableKey, LootableWeapon, LootType, WorldLoot } from 'Domain/Model/Loot'
+import { Loot, LootableKey, LootableWeapon, LootType, WorldLoot } from 'Domain/Model/Loot'
 import { ScalarCoords } from 'Domain/Geometry/Coords'
 
 @injectable()
@@ -10,7 +10,7 @@ export class Factory {
     private readonly builders: ILootBuilder<any>[]
   ) { }
 
-  build<T>(type: LootType, item: T): ILoot<T> {
+  build<T>(type: LootType, item: T): Loot {
     const builder = this.builders.find(b => b.supports(type, item))
 
     if (!builder) {

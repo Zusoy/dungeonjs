@@ -7,6 +7,7 @@ export type Hero = 'rogue' | 'knight' | 'mage' | 'barbarian'
 
 export type Inventory = {
   readonly treasures: number
+  readonly keys: number
   readonly weapons: Weapon[]
 }
 
@@ -35,7 +36,7 @@ export class Player {
       username,
       color,
       hero,
-      { weapons: [], treasures: 0 },
+      { weapons: [], treasures: 0, keys: 0 },
       [0, 0, 0],
       [0, 0, 0],
       [0, 0],
@@ -77,6 +78,20 @@ export class Player {
     this.inventory = {
       ...this.inventory,
       treasures: this.inventory.treasures + 1
+    }
+  }
+
+  public addKey(): void {
+    this.inventory = {
+      ...this.inventory,
+      keys: this.inventory.keys + 1
+    }
+  }
+
+  public removeKey(): void {
+    this.inventory = {
+      ...this.inventory,
+      keys: Math.max(0, this.inventory.keys - 1)
     }
   }
 

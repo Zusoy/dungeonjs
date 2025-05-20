@@ -2,6 +2,7 @@ import React from 'react'
 import Enemies from 'features/Game/Scene/Game/HUD/Enemies'
 import Loots from 'features/Game/Scene/Game/HUD/Loots'
 import MoveCounter from 'features/Game/Scene/Game/HUD/MoveCounter'
+import PickLoot from 'features/Game/Scene/Game/HUD/PickLoot'
 import Players from 'features/Game/Scene/Game/HUD/Players'
 import TurnAnnounceDialog, { type TurnAnnouncer } from 'widgets/Dialog/TurnAnnounceDialog'
 import FightAnnounceDialog, { type FightAnnouncer } from 'widgets/Dialog/FightAnnounceDialog'
@@ -72,8 +73,9 @@ const HUD: React.FC = () => {
   return (
     <>
       <div className='absolute top-0 flex w-screen justify-center'>
-        <div className='flex flex-row items-center gap-2'>
+        <div className='flex flex-col items-center gap-2'>
           <MoveCounter />
+          <PickLoot />
         </div>
       </div>
       <div className='absolute left-0 flex h-screen items-center justify-center'>

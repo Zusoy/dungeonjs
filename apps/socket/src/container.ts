@@ -24,6 +24,8 @@ container.register('chance.room', { useValue: 36 })
 container.register('chance.loot.key', { useValue: 14 })
 container.register('chance.loot.axe', { useValue: 10 })
 container.register('chance.loot.sword', { useValue: 30 })
+container.register('player.inventory.maxkeys', { useValue: 1 })
+container.register('player.inventory.maxweapons', { useValue: 2 })
 
 // RNG
 container.register<IRandomizer>(
