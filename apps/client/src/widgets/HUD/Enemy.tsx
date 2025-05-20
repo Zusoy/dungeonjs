@@ -10,7 +10,7 @@ type Props = {
 
 const Enemy: React.FC<Props> = ({ type, defense, onClick }) => (
   <div className='flex justify-center items-center indicator cursor-pointer' onClick={onClick}>
-    <span className="indicator-item badge badge-info">
+    <span className="indicator-item badge badge-info relative">
       <FaShieldAlt />
       {defense}
     </span>

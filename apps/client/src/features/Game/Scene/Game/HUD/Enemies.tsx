@@ -13,7 +13,7 @@ const Enemies: React.FC = () => {
   }
 
   return (
-    <div className='flex gap-4 p-4'>
+    <div className='flex flex-col gap-4 p-4 items-center justify-center'>
       {enemies.map(
         enemy =>
           <Enemy

@@ -73,10 +73,14 @@ const HUD: React.FC = () => {
     <>
       <div className='absolute top-0 flex w-screen justify-center'>
         <div className='flex flex-row items-center gap-2'>
-          <Enemies />
           <MoveCounter />
-          <Loots />
         </div>
+      </div>
+      <div className='absolute left-0 flex h-screen items-center justify-center'>
+        <Enemies />
+      </div>
+      <div className='absolute right-0 flex h-screen items-center justify-center'>
+        <Loots />
       </div>
       <Players />
       <TurnAnnounceDialog ref={turnAnnouncer} />
