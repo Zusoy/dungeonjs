@@ -8,6 +8,7 @@ export interface ClientToServer {
   startGame: (event: Events.StartGameEvent) => void
   moveToCoords: (event: Events.MoveEvent) => void
   attack: (event: Events.AttackEvent) => void
+  loot: (event: Events.LootEvent) => void
 }
 
 export const clientToServerEvents: (keyof ClientToServer)[] = [
@@ -17,7 +18,8 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
   'changeHero',
   'startGame',
   'moveToCoords',
-  'attack'
+  'attack',
+  'loot'
 ]
 
 export interface ServerToClients {

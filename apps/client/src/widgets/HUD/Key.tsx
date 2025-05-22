@@ -5,7 +5,7 @@ type Props = {
   readonly onClick?: React.MouseEventHandler<HTMLDivElement>
 }
 
-const Chest: React.FC<Props> = ({ onClick }) => (
+const Key: React.FC<Props> = ({ onClick }) => (
   <motion.div
     className='flex justify-center items-center cursor-pointer'
     onClick={onClick}
@@ -18,9 +18,9 @@ const Chest: React.FC<Props> = ({ onClick }) => (
     }}
   >
     <figure>
-      <img alt='avatar' src="img/chest.png" className='w-12 h-12 rounded-md' />
+      <img alt='avatar' src="img/key.png" className='w-12 h-12 rounded-md' />
     </figure>
   </motion.div>
 )
 
-export default Chest
+export default Key

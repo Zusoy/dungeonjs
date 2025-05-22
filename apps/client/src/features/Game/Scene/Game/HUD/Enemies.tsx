@@ -3,6 +3,7 @@ import Enemy from 'widgets/HUD/Enemy'
 import { focusCoords, selectEnemies } from 'features/Game/slice'
 import { useDispatch, useSelector } from 'react-redux'
 import { ScalarCoords } from 'types/coords'
+import { AnimatePresence } from 'motion/react'
 
 const Enemies: React.FC = () => {
   const dispatch = useDispatch()
@@ -13,15 +14,18 @@ const Enemies: React.FC = () => {
   }
 
   return (
-    <div className='flex gap-4 p-4'>
-      {enemies.map(
-        enemy =>
-          <Enemy
-            onClick={() => focusEnemy(enemy.coords)}
-            defense={enemy.defense}
-            type={enemy.type}
-          />
-      )}
+    <div className='flex flex-col gap-4 p-4 items-center justify-center'>
+      <AnimatePresence>
+        {enemies.map(
+          enemy =>
+            <Enemy
+              key={enemy.id}
+              onClick={() => focusEnemy(enemy.coords)}
+              defense={enemy.defense}
+              type={enemy.type}
+            />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

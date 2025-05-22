@@ -1,6 +1,6 @@
 import { injectable, registry } from 'tsyringe'
 import type { ILootBuilder } from 'Domain/Loot/ILootBuilder'
-import { type ILoot, LootType, WeaponLoot } from 'Domain/Model/Loot'
+import { WeaponLoot, type Loot, LootType } from 'Domain/Model/Loot'
 import type { Weapon } from 'Domain/Model/Weapon'
 
 @injectable()
@@ -10,7 +10,7 @@ export class WeaponLootBuilder implements ILootBuilder<Weapon> {
     return type === LootType.Weapon
   }
 
-  build(_type: LootType, item: Weapon): ILoot<Weapon> {
+  build(_type: LootType, item: Weapon): Loot {
     return new WeaponLoot(item)
   }
 }

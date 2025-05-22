@@ -75,6 +75,10 @@ export type AttackPayload = {
   readonly originCoords: ScalarCoords
 }
 
+export type LootPayload = {
+  readonly lootId: string
+}
+
 export type ReceivedPlayersPayload = {
   readonly players: UserPayload[]
 }
@@ -161,6 +165,9 @@ const slice = createSlice({
     attack: (state, _action: PayloadAction<AttackPayload>) => ({
       ...state
     }),
+    loot: (state, _action: PayloadAction<LootPayload>) => ({
+      ...state
+    }),
     attacked: (state, _action: PayloadAction<AttackResultPayload>) => ({
       ...state,
       fight: null
@@ -195,6 +202,7 @@ export const {
   focusCoords,
   startFight,
   attack,
+  loot,
   attacked,
   error
 } = slice.actions
@@ -219,6 +227,11 @@ export const selectIsPlayerTurn: Selector<boolean> = state =>
 
 export const selectPlayerTurn: Selector<State['playerTurn']> = state =>
   state.game.playerTurn
+
+export const selectCurrentPlayerTurn = createSelector(
+  [selectPlayers, selectPlayerTurn],
+  (players, playerTurnId) => players.find(player => player.id === playerTurnId)
+)
 
 export const selectTiles: Selector<Tile[]> = state =>
   state.game.tiles
@@ -288,6 +301,11 @@ export const selectOriginalFightCoords = createSelector([selectCurrentFight], fi
   return fight?.originCoords
 })
 
+export const selectLootInCurrentCoords = createSelector(
+  [selectCurrentPlayer, selectLoots],
+  (player, loots) => loots.find(loot => loot.coords[0] === player.coords[0] && loot.coords[1] === player.coords[1])
+)
+
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
   ReturnType<typeof changeHero> |
@@ -304,6 +322,7 @@ export type GameActions =
   ReturnType<typeof discoverChest> |
   ReturnType<typeof startFight> |
   ReturnType<typeof attack> |
+  ReturnType<typeof loot> |
   ReturnType<typeof attacked>
 
 export default slice

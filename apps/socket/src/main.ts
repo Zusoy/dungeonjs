@@ -41,6 +41,7 @@ container.register<EventHandlers.CreateRoomHandler>(EventHandlers.CreateRoomHand
 container.register<EventHandlers.JoinRoomHandler>(EventHandlers.JoinRoomHandler, { useClass: EventHandlers.JoinRoomHandler })
 container.register<EventHandlers.LeaveRoomHandler>(EventHandlers.LeaveRoomHandler, { useClass: EventHandlers.LeaveRoomHandler })
 container.register<EventHandlers.AttackHandler>(EventHandlers.AttackHandler, { useClass: EventHandlers.AttackHandler })
+container.register<EventHandlers.LootHandler>(EventHandlers.LootHandler, { useClass: EventHandlers.LootHandler })
 
 const subscriber = container.resolve(EventSubscriber)
 
