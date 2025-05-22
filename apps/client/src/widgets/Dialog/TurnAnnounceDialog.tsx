@@ -2,6 +2,7 @@ import React from 'react'
 import Progress from 'widgets/Time/Progress'
 import { Hero } from 'types/user'
 import { Nullable } from 'types/utils'
+import { AnimatePresence, motion } from 'motion/react'
 
 type UserLite = {
   readonly username: string
@@ -30,26 +31,28 @@ const TurnAnnounceDialog = React.forwardRef<TurnAnnouncer>((_, ref) => {
   }, [dialog])
 
   return (
-    <dialog id={id} ref={dialog} className='modal modal-bottom sm:modal-middle'>
-      <div className='modal-box'>
-        {target && (
-          <div className='flex flex-col w-full items-center'>
-            <div className='flex flex-row gap-4'>
-              <figure>
-                <img src={`/img/hero/${target.hero.toString()}.png`} alt='avatar' className='w-24 h-24' />
-              </figure>
-              <div className='flex flex-col gap-2 justify-center'>
-                <h3 className='font-bold text-lg'>{target.username}</h3>
-                <p className='text-lg'>It's your turn!</p>
+    <AnimatePresence mode='wait' initial={false}>
+      <motion.dialog id={id} ref={dialog} className='modal modal-bottom sm:modal-middle'>
+        <div className='modal-box'>
+          {target && (
+            <div className='flex flex-col w-full items-center'>
+              <div className='flex flex-row gap-4'>
+                <figure>
+                  <img src={`/img/hero/${target.hero.toString()}.png`} alt='avatar' className='w-24 h-24' />
+                </figure>
+                <div className='flex flex-col gap-2 justify-center'>
+                  <h3 className='font-bold text-lg'>{target.username}</h3>
+                  <p className='text-lg'>It's your turn!</p>
+                </div>
+              </div>
+              <div>
+                <Progress max={2000} type='primary' onFinish={close} />
               </div>
             </div>
-            <div>
-              <Progress max={2000} type='primary' onFinish={close} />
-            </div>
-          </div>
-        )}
-      </div>
-    </dialog>
+          )}
+        </div>
+      </motion.dialog>
+    </AnimatePresence>
   )
 })
 

@@ -5,6 +5,7 @@ import Key from 'widgets/HUD/Key'
 import { focusCoords, selectChests, selectKeyLoots, selectWeaponLoots } from 'features/Game/slice'
 import { useDispatch, useSelector } from 'react-redux'
 import { ScalarCoords } from 'types/coords'
+import { AnimatePresence } from 'motion/react'
 
 const Loots: React.FC = () => {
   const dispatch = useDispatch()
@@ -18,25 +19,27 @@ const Loots: React.FC = () => {
 
   return (
     <div className='flex flex-col gap-4 p-4 items-center justify-center'>
-      {weapons.map(
-        loot => (
-          <Weapon
-            icon={loot.item.icon}
-            attack={loot.item.attack}
-            onClick={() => focusObject(loot.coords)}
-          />
-        )
-      )}
-      {chests.map(
-        chest => (
-          <Chest onClick={() => focusObject(chest.coords)} />
-        )
-      )}
-      {keys.map(
-        key => (
-          <Key onClick={() => focusObject(key.coords)} />
-        )
-      )}
+      <AnimatePresence>
+        {weapons.map(
+          loot => (
+            <Weapon
+              icon={loot.item.icon}
+              attack={loot.item.attack}
+              onClick={() => focusObject(loot.coords)}
+            />
+          )
+        )}
+        {chests.map(
+          chest => (
+            <Chest onClick={() => focusObject(chest.coords)} />
+          )
+        )}
+        {keys.map(
+          key => (
+            <Key onClick={() => focusObject(key.coords)} />
+          )
+        )}
+      </AnimatePresence>
     </div>
   )
 }

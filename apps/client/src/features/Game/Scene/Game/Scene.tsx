@@ -39,6 +39,7 @@ const Scene: React.FC = () => {
 
   return (
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>
+      <Stats />
       <Grid
         infiniteGrid
         cellSize={8}
