@@ -58,7 +58,7 @@ const Avatar: React.FC<Props> = ({
         <div className='flex absolute left-[-70px] bottom-0 top-[60px] items-center justify-center'>
           <div className='flex justify-center items-center indicator'>
             <span className="indicator-item badge badge-info relative">
-              {keys.toString()}
+              {treasures.toString()}
             </span>
             <figure>
               <img alt='avatar' src={`/img/chest.png`} className='w-6 h-6 rounded-md md:w-12 md:h-12' />

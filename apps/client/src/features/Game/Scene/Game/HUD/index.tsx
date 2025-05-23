@@ -4,6 +4,7 @@ import Loots from 'features/Game/Scene/Game/HUD/Loots'
 import MoveCounter from 'features/Game/Scene/Game/HUD/MoveCounter'
 import PickLoot from 'features/Game/Scene/Game/HUD/PickLoot'
 import Players from 'features/Game/Scene/Game/HUD/Players'
+import PickChest from 'features/Game/Scene/Game/HUD/PickChest'
 import TurnAnnounceDialog, { type TurnAnnouncer } from 'widgets/Dialog/TurnAnnounceDialog'
 import FightAnnounceDialog, { type FightAnnouncer } from 'widgets/Dialog/FightAnnounceDialog'
 import { useDispatch, useSelector } from 'react-redux'
@@ -76,6 +77,7 @@ const HUD: React.FC = () => {
         <div className='flex flex-col items-center gap-2'>
           <MoveCounter />
           <PickLoot />
+          <PickChest />
         </div>
       </div>
       <div className='absolute left-0 flex h-screen items-center justify-center'>

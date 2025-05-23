@@ -50,7 +50,7 @@ export const Sword: React.FC<JSX.IntrinsicElements['group']> = props => {
 
   return (
     <group {...props} dispose={null} ref={transform} scale={[2, 2, 2]}>
-      <instances.SkeletonBladeCube />
+      <instances.SkeletonBladeCube frustumCulled={false} />
     </group>
   )
 }

@@ -42,6 +42,7 @@ container.register<EventHandlers.JoinRoomHandler>(EventHandlers.JoinRoomHandler,
 container.register<EventHandlers.LeaveRoomHandler>(EventHandlers.LeaveRoomHandler, { useClass: EventHandlers.LeaveRoomHandler })
 container.register<EventHandlers.AttackHandler>(EventHandlers.AttackHandler, { useClass: EventHandlers.AttackHandler })
 container.register<EventHandlers.LootHandler>(EventHandlers.LootHandler, { useClass: EventHandlers.LootHandler })
+container.register<EventHandlers.PickChestHandler>(EventHandlers.PickChestHandler, { useClass: EventHandlers.PickChestHandler })
 
 const subscriber = container.resolve(EventSubscriber)
 

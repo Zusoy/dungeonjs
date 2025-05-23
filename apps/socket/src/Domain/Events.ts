@@ -9,6 +9,7 @@ export interface ClientToServer {
   moveToCoords: (event: Events.MoveEvent) => void
   attack: (event: Events.AttackEvent) => void
   loot: (event: Events.LootEvent) => void
+  pickChest: (event: Events.PickChestEvent) => void
 }
 
 export const clientToServerEvents: (keyof ClientToServer)[] = [
@@ -19,20 +20,21 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
   'startGame',
   'moveToCoords',
   'attack',
-  'loot'
+  'loot',
+  'pickChest'
 ]
 
 export interface ServerToClients {
   players: (event: Events.PlayersEvent) => void
   enemies: (event: Events.SkeletonsEvent) => void
   loots: (event: Events.LootsEvent) => void
+  chests: (event: Events.ChestsEvent) => void
   joinedRoom: (event: Events.JoinedRoomEvent) => void
   failedToJoinRoom: (event: Events.FailedToJoinRoomEvent) => void
   leftRoom: (event: Events.LeftRoomEvent) => void
   gameStarted: (event: Events.GameStartedEvent) => void
   playerTurn: (event: Events.PlayerTurnEvent) => void
   discoverTile: (event: Events.DiscoverTileEvent) => void
-  discoverChest: (event: Events.DiscoverChestEvent) => void
   startFight: (event: Events.StartFightEvent) => void
   attacked: (event: Events.AttackResultEvent) => void
 }

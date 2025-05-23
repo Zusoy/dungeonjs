@@ -12,7 +12,9 @@ import {
   MoveToCoordsPayload,
   AttackPayload,
   LootPayload,
-  loot
+  loot,
+  PickChestPayload,
+  pickChest
 } from 'features/Game/slice'
 
 export function* changeHeroEffect(action: PayloadAction<ChangeHeroPayload>, socket: AppSocket): Generator {
@@ -55,6 +57,14 @@ export function* lootEffect(action: PayloadAction<LootPayload>, socket: AppSocke
   }
 }
 
+export function* pickChestEffect(action: PayloadAction<PickChestPayload>, socket: AppSocket): Generator {
+  try {
+    yield apply(socket, 'emit', ['pickChest', action.payload])
+  } catch {
+    yield put(error())
+  }
+}
+
 export function* subscribeChangeHero(socket: AppSocket): Generator {
   yield takeLatest(changeHero, function* (action: PayloadAction<ChangeHeroPayload>): Generator {
     yield call(changeHeroEffect, action, socket)
@@ -82,5 +92,11 @@ export function* subscribeMoveToCoords(socket: AppSocket): Generator {
 export function* subscribeLoot(socket: AppSocket): Generator {
   yield takeLatest(loot, function* (action: PayloadAction<LootPayload>): Generator {
     yield call(lootEffect, action, socket)
+  })
+}
+
+export function* subscribePickChest(socket: AppSocket): Generator {
+  yield takeLatest(pickChest, function* (action: PayloadAction<PickChestPayload>): Generator {
+    yield call(pickChestEffect, action, socket)
   })
 }
