@@ -79,6 +79,10 @@ export type LootPayload = {
   readonly lootId: string
 }
 
+export type PickChestPayload = {
+  readonly chestId: string
+}
+
 export type ReceivedPlayersPayload = {
   readonly players: UserPayload[]
 }
@@ -87,12 +91,12 @@ export type ReceivedLootsPayload = {
   readonly loots: WorldLoot[]
 }
 
-export type ReceivedSkeletonsPayload = {
-  readonly skeletons: Skeleton[]
+export type ReceivedChestsPayload = {
+  readonly chests: Chest[]
 }
 
-export type DiscoverChestPayload = {
-  readonly chest: Chest
+export type ReceivedSkeletonsPayload = {
+  readonly skeletons: Skeleton[]
 }
 
 export type DiscoverTilePayload = {
@@ -124,6 +128,10 @@ const slice = createSlice({
       ...state,
       enemies: action.payload.skeletons
     }),
+    receivedChests: (state, action: PayloadAction<ReceivedChestsPayload>) => ({
+      ...state,
+      chests: action.payload.chests
+    }),
     playerTurn: (state, action: PayloadAction<PlayerTurnPayload>) => ({
       ...state,
       playerTurn: action.payload.playerId
@@ -146,10 +154,6 @@ const slice = createSlice({
       ...state,
       tiles: [...state.tiles, action.payload.tile]
     }),
-    discoverChest: (state, action: PayloadAction<DiscoverChestPayload>) => ({
-      ...state,
-      chests: [...state.chests, action.payload.chest]
-    }),
     focusCoords: (state, action: PayloadAction<ScalarCoords>) => ({
       ...state,
       focusedCoords: action.payload
@@ -167,6 +171,9 @@ const slice = createSlice({
     }),
     loot: (state, _action: PayloadAction<LootPayload>) => ({
       ...state
+    }),
+    pickChest: (state, _action: PayloadAction<PickChestPayload>) => ({
+      ...state,
     }),
     attacked: (state, _action: PayloadAction<AttackResultPayload>) => ({
       ...state,
@@ -192,17 +199,18 @@ export const {
   receivedPlayers,
   receivedEnemies,
   receivedLoots,
+  receivedChests,
   changeHero,
   startGame,
   playerTurn,
   started,
   moveToCoords,
   discoverTile,
-  discoverChest,
   focusCoords,
   startFight,
   attack,
   loot,
+  pickChest,
   attacked,
   error
 } = slice.actions
@@ -306,6 +314,11 @@ export const selectLootInCurrentCoords = createSelector(
   (player, loots) => loots.find(loot => loot.coords[0] === player.coords[0] && loot.coords[1] === player.coords[1])
 )
 
+export const selectChestInCurrentCoords = createSelector(
+  [selectCurrentPlayer, selectChests],
+  (player, chests) => chests.find(chest => chest.coords[0] === player.coords[0] && chest.coords[1] === player.coords[1])
+)
+
 export type LobbyActions =
   ReturnType<typeof receivedPlayers> |
   ReturnType<typeof changeHero> |
@@ -316,13 +329,14 @@ export type LobbyActions =
 export type GameActions =
   ReturnType<typeof receivedEnemies> |
   ReturnType<typeof receivedLoots> |
+  ReturnType<typeof receivedChests> |
   ReturnType<typeof playerTurn> |
   ReturnType<typeof moveToCoords> |
   ReturnType<typeof discoverTile> |
-  ReturnType<typeof discoverChest> |
   ReturnType<typeof startFight> |
   ReturnType<typeof attack> |
   ReturnType<typeof loot> |
+  ReturnType<typeof pickChest> |
   ReturnType<typeof attacked>
 
 export default slice

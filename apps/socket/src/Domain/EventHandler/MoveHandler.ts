@@ -127,7 +127,10 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
         }
         else {
           const chest: Chest = { id: Date.now().toString(), coords: event.coords }
-          this.server.emitInRoom('discoverChest', room, { chest })
+          room.addChest(chest)
+          this.rooms.update(room, roomIndex)
+
+          this.server.emitInRoom('chests', room, { chests: room.getChests() })
         }
       }
     }

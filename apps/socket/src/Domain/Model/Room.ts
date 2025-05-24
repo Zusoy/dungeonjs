@@ -2,10 +2,12 @@ import { Coords, type ScalarCoords } from 'Domain/Geometry/Coords'
 import type { Skeleton } from 'Domain/Model/Skeleton'
 import type { Nullable } from 'utils'
 import type { WorldLoot } from 'Domain/Model/Loot'
+import type { Chest } from 'Domain/Model/Chest'
 
 export class Room {
   private enemies: Skeleton[] = []
   private loots: WorldLoot[] = []
+  private chests: Chest[] = []
 
   constructor(
     public readonly roomId: string,
@@ -43,6 +45,22 @@ export class Room {
 
   public getLoots(): WorldLoot[] {
     return this.loots
+  }
+
+  public addChest(chest: Chest): void {
+    this.chests = [...this.chests, chest]
+  }
+
+  public removeChest(chestId: Chest['id']): void {
+    this.chests = this.chests.filter(chest => chest.id !== chestId)
+  }
+
+  public findChest(chestId: Chest['id']): Nullable<Chest> {
+    return this.chests.find(chest => chest.id === chestId) || null
+  }
+
+  public getChests(): Chest[] {
+    return this.chests
   }
 
   public findEnemyAtCoords(coords: ScalarCoords): Nullable<Skeleton> {

@@ -5,8 +5,8 @@ import type { ISocket } from 'Domain/ISocket'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
-import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: ChangeHeroHandler }])
@@ -29,7 +29,7 @@ export class ChangeHeroHandler implements IEventHandler<'changeHero'> {
     const roomId = socket.room
 
     if (!roomId) {
-      throw new OperationDeniedError()
+      throw new PlayerNotInRoomError(socket.id)
     }
 
     const room = this.rooms.find(roomId)

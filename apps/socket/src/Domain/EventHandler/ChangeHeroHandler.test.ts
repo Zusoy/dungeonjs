@@ -8,7 +8,7 @@ import { MockedRooms } from 'Application/Repository/MockedRooms'
 import { ChangeHeroEvent } from 'Domain/Event/ChangeHeroEvent'
 import { MockedSocket } from 'Application/Websocket/MockedSocket'
 import { Room } from 'Domain/Model/Room'
-import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/ChangeHero', () => {
   test('throws not authorized in not joined room', () => {
@@ -22,7 +22,7 @@ describe('EventHandler/ChangeHero', () => {
     }
 
     const handler = new ChangeHeroHandler(players, rooms, broadcaster)
-    expect(() => handler.handle('changeHero', socket, event)).toThrow(OperationDeniedError)
+    expect(() => handler.handle('changeHero', socket, event)).toThrow(new PlayerNotInRoomError('player_1'))
   })
 
   test('updates player hero and broadcast changes in room', () => {

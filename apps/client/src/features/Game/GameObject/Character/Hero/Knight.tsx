@@ -1,6 +1,6 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useGLTF, useAnimations, Text } from '@react-three/drei'
+import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useFrame } from '@react-three/fiber'
 
@@ -162,9 +162,6 @@ const Knight: React.FC<Props> = props => {
 
   return (
     <group ref={transform} {...props} dispose={null} position={position}>
-      {props.username &&
-        <Text position={[0, 2.7, 0]} color={props.color ?? 'black'} fontSize={0.3}>{props.username}</Text>
-      }
       <group name="Scene">
         <group name="Rig">
           <skinnedMesh

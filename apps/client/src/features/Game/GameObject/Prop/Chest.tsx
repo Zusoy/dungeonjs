@@ -40,8 +40,8 @@ export const Chest: React.FC<JSX.IntrinsicElements['group']> = props => {
 
   return (
     <group {...props} dispose={null}>
-      <instances.Chest />
-      <instances.Chestgoldlid />
+      <instances.Chest frustumCulled={false} />
+      <instances.Chestgoldlid frustumCulled={false} />
     </group>
   )
 }
