@@ -7,8 +7,8 @@ import type { ILogger } from 'Domain/ILogger'
 import { MockedSocket } from 'Application/Websocket/MockedSocket'
 import { StartGameEvent } from 'Domain/Event/StartGameEvent'
 import { Room } from 'Domain/Model/Room'
-import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/StartGame', () => {
   test('not authorized when not joined room', async () => {
@@ -22,7 +22,7 @@ describe('EventHandler/StartGame', () => {
     }
 
     const handler = new StartGameHandler(rooms, server, logger)
-    await expect(handler.handle('startGame', socket, event)).rejects.toThrow(OperationDeniedError)
+    await expect(handler.handle('startGame', socket, event)).rejects.toThrow(new PlayerNotInRoomError('player_id'))
   })
 
   test('throws when room not found', async () => {

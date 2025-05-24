@@ -12,6 +12,7 @@ import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { Room } from 'Domain/Model/Room'
 import { createLootableKeyMock, createLootableWeaponMock, createPlayerMock } from 'test-utils'
 import { MockedTurnAllocator } from 'Application/Notification/MockedTurnAllocator'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/Loot', () => {
   test('throws denied operation when not joined room', () => {
@@ -36,7 +37,7 @@ describe('EventHandler/Loot', () => {
       4
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(OperationDeniedError)
+    expect(() => handler.handle('loot', socket, event)).toThrow(new PlayerNotInRoomError('player'))
   })
 
   test('throws when room not found', () => {

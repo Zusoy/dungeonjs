@@ -11,6 +11,7 @@ import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IServer } from 'Domain/IServer'
 import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import { Coords } from 'Domain/Geometry/Coords'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: LootHandler }])
@@ -38,7 +39,7 @@ export class LootHandler implements IEventHandler<'loot'> {
 
   handle(_channel: 'loot', socket: ISocket, event: LootEvent): void {
     if (!socket.room) {
-      throw new OperationDeniedError()
+      throw new PlayerNotInRoomError(socket.id)
     }
 
     const room = this.rooms.find(socket.room)

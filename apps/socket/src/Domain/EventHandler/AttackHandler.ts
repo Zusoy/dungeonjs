@@ -11,6 +11,7 @@ import type { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import type { Factory as LootFactory } from 'Domain/Loot/Factory'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: AttackHandler }])
@@ -46,7 +47,7 @@ export class AttackHandler implements IEventHandler<'attack'> {
     }
 
     if (!roomId) {
-      throw new OperationDeniedError()
+      throw new PlayerNotInRoomError(socket.id)
     }
 
     const room = this.rooms.find(roomId)

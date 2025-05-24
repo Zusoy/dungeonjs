@@ -19,6 +19,7 @@ import { WeaponLootBuilder } from 'Domain/Loot/Builder/WeaponLootBuilder'
 import { Player } from 'Domain/Model/Player'
 import { Coords } from 'Domain/Geometry/Coords'
 import { LootableWeapon } from 'Domain/Model/Loot'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/Attack', () => {
   test('throws when player not found', () => {
@@ -72,7 +73,7 @@ describe('EventHandler/Attack', () => {
       loots,
       random
     )
-    expect(() => handler.handle('attack', socket, event)).toThrow(OperationDeniedError)
+    expect(() => handler.handle('attack', socket, event)).toThrow(new PlayerNotInRoomError('player'))
   })
 
   test('throws when room not found', () => {

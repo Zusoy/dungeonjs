@@ -7,6 +7,7 @@ import type { IServer } from 'Domain/IServer'
 import type { ILogger } from 'Domain/ILogger'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: StartGameHandler }])
@@ -28,7 +29,7 @@ export class StartGameHandler implements IEventHandler<'startGame'> {
     const roomId = socket.room
 
     if (!roomId) {
-      throw new OperationDeniedError()
+      throw new PlayerNotInRoomError(socket.id)
     }
 
     const room = this.rooms.find(event.roomId)

@@ -2,6 +2,7 @@ import { inject, injectable, registry } from 'tsyringe'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { Coords } from 'Domain/Geometry/Coords'
+import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 import type { PickChestEvent } from 'Domain/Event/PickChestEvent'
 import type { IEventHandler } from 'Domain/EventHandler/IEventHandler'
 import type { ISocket } from 'Domain/ISocket'
@@ -32,7 +33,7 @@ export class PickChestHandler implements IEventHandler<'pickChest'> {
     const roomId = socket.room
 
     if (!roomId) {
-      throw new OperationDeniedError()
+      throw new PlayerNotInRoomError(socket.id)
     }
 
     const room = this.rooms.find(roomId)
