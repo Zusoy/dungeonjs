@@ -39,7 +39,7 @@ export type SocketChannel<T extends NotUndefined> = (socket: AppSocket) => Event
 
 export const createWebsocketConnection = (username: string): Promise<AppSocket> => {
   return new Promise((resolve, reject) => {
-    const socket: AppSocket = io('http://192.168.1.14:8080', {
+    const socket: AppSocket = io('http://127.0.0.1:8080', {
       transports: ['websocket'],
       autoConnect: false,
       query: {

@@ -1,5 +1,5 @@
 import React from 'react'
-import Progress from 'widgets/Time/Progress'
+import { Countdown } from 'widgets/Time/Countdown'
 import { Hero } from 'types/user'
 import { Nullable } from 'types/utils'
 import { AnimatePresence, motion } from 'motion/react'
@@ -46,7 +46,7 @@ const TurnAnnounceDialog = React.forwardRef<TurnAnnouncer>((_, ref) => {
                 </div>
               </div>
               <div>
-                <Progress max={2000} type='primary' onFinish={close} />
+                <Countdown max={2000} type='primary' onFinish={close} />
               </div>
             </div>
           )}

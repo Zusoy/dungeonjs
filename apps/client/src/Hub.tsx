@@ -2,8 +2,8 @@ import React from 'react'
 import CreateRoom from 'features/Rooms/Create'
 import JoinRoom from 'features/Rooms/Join'
 import Tutorial from 'Tutorial'
-import FullPageLoader from 'widgets/Loader/FullPageLoader'
 import Fullscreen from 'features/Game/Scene/Game/HUD/Fullscreen'
+import { LoadingScreen } from 'features/LoadingScreen'
 import { useSelector } from 'react-redux'
 import { selectCurrentRoomId } from 'features/Rooms/slice'
 import { FaPlusSquare } from 'react-icons/fa'
@@ -35,7 +35,7 @@ const Hub: React.FC = () => {
 
   if (roomId) {
     return (
-      <React.Suspense fallback={<FullPageLoader />}>
+      <React.Suspense fallback={<LoadingScreen />}>
         <Game />
       </React.Suspense>
     )
