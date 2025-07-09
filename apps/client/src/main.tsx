@@ -2,7 +2,7 @@ import React from 'react'
 import { store } from 'app/store'
 import { createRoot } from 'react-dom/client'
 import { Provider as StoreProvider } from 'react-redux'
-import App from 'App'
+import App from 'base/App'
 import 'style.css'
 
 createRoot(document.getElementById('root')!).render(
