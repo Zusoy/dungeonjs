@@ -1,14 +1,14 @@
 import React from 'react'
-import Login from 'features/Authentication'
 import { useSelector } from 'react-redux'
-import { selectIsConnected } from 'features/Authentication/slice'
+import { LoginForm } from 'features/Authentication/presentation/LoginForm'
+import { selectIsConnected } from 'features/Authentication/application/slice'
 
-const Firewall: React.FC<React.PropsWithChildren> = ({ children }) => {
+export const Firewall: React.FC<React.PropsWithChildren> = ({ children }) => {
   const isConnected = useSelector(selectIsConnected)
 
   if (!isConnected) {
     return (
-      <Login />
+      <LoginForm />
     )
   }
 
@@ -18,5 +18,3 @@ const Firewall: React.FC<React.PropsWithChildren> = ({ children }) => {
     </main>
   )
 }
-
-export default Firewall

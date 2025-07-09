@@ -1,5 +1,5 @@
 import { all, fork } from 'redux-saga/effects'
-import auth from 'features/Authentication/effects'
+import auth from 'features/Authentication/infrastructure/effects'
 
 const effects = function* (): Generator {
   yield all([
