@@ -17,9 +17,9 @@ services:
     volumes:
       - ./apps/client:/usr/src/app
 
-  socket:
+  server:
     build:
-      context: apps/socket
+      context: apps/server
       target: dev
     env_file:
       - .env
@@ -28,4 +28,4 @@ services:
     network_mode: bridge
     tty: true
     volumes:
-      - ./apps/socket:/usr/src/app
+      - ./apps/server:/usr/src/app

@@ -9,7 +9,7 @@ COPY . ${SRC_DIR}
 RUN npm install -g npm@9.6.7
 RUN npm install -g pnpm
 
-RUN pnpm install
+RUN pnpm install --force
 
 CMD ["npm", "run", "dev"]
 
