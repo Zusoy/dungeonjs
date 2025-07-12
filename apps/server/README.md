@@ -1,4 +1,4 @@
-# Socket server
+# Server
 
 ### Stack
 

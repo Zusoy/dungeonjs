@@ -39,17 +39,17 @@ client-build:
 	@docker-compose run --rm --no-deps client npm run build
 
 ##########
-# SOCKET #
+# SERVER #
 ##########
 
-.PHONY: socket-shell
-socket-shell:
-	@docker exec -it "$$(docker ps -q -f name=dungeonjs_socket)" sh
+.PHONY: server-shell
+server-shell:
+	@docker exec -it "$$(docker ps -q -f name=dungeonjs_server)" sh
 
-.PHONY: socket-test
-socket-test:
-	@docker-compose run --rm --no-deps socket npm run test
+.PHONY: server-test
+server-test:
+	@docker-compose run --rm --no-deps server npm run test
 
-.PHONY: socket-log
-socket-log:
-	@docker-compose logs -f socket && echo "\n\n"
+.PHONY: server-log
+server-log:
+	@docker-compose logs -f server && echo "\n\n"
