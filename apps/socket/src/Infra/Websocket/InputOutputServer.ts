@@ -1,15 +1,16 @@
-import { injectable, type Disposable as IDisposable } from 'tsyringe'
-import type { Server as IOServer } from 'socket.io'
-import type { ServerToClients, ClientToServer, InterServer } from 'Domain/Events'
+import { injectable } from 'tsyringe'
+import type { Disposable as IDisposable } from 'tsyringe'
+import type { Server } from 'socket.io'
 import type { IServer } from 'Domain/IServer'
+import type { ClientToServer, InterServer, ServerToClients } from 'Domain/Events'
 import type { Room } from 'Domain/Model/Room'
 import type { PlayerPayload } from 'Domain/Model/Player'
 
-export type AppServer = IOServer<ClientToServer, ServerToClients, InterServer>
+export type AppServer = Server<ClientToServer, ServerToClients, InterServer>
 
 @injectable()
-export class Server implements IServer, IDisposable {
-  constructor(private readonly io: AppServer) {}
+export class InputOutputServer implements IServer, IDisposable {
+  constructor(private readonly io: AppServer) { }
 
   emit<T extends keyof ServerToClients>(channel: T, ...args: Parameters<ServerToClients[T]>): void {
     this.io.emit(channel, ...args)
@@ -19,10 +20,9 @@ export class Server implements IServer, IDisposable {
     this.io.in(room.roomId).emit(channel, ...args)
   }
 
-  fetchSocketIds(room: Room): Promise<Iterable<PlayerPayload['id']>> {
-    return this.io.in(room.roomId)
-      .fetchSockets()
-      .then(sockets => sockets.map(socket => socket.id))
+  async fetchSocketIds(room: Room): Promise<Iterable<PlayerPayload['id']>> {
+    const sockets = await this.io.in(room.roomId).fetchSockets()
+    return sockets.map(socket => socket.id)
   }
 
   kickAll(room: Room): void {

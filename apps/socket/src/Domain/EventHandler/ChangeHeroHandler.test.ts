@@ -6,7 +6,7 @@ import { createPlayerMock } from 'test-utils'
 import { MockedPlayerBroadcaster } from 'Application/Notification/MockedPlayerBroadcaster'
 import { MockedRooms } from 'Application/Repository/MockedRooms'
 import { ChangeHeroEvent } from 'Domain/Event/ChangeHeroEvent'
-import { MockedSocket } from 'Application/Websocket/MockedSocket'
+import { MockedSocket } from 'Infra/Websocket/MockedSocket'
 import { Room } from 'Domain/Model/Room'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 

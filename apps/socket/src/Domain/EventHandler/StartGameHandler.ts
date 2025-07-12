@@ -5,7 +5,6 @@ import type { ISocket } from 'Domain/ISocket'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IServer } from 'Domain/IServer'
 import type { ILogger } from 'Domain/ILogger'
-import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 

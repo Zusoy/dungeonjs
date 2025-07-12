@@ -71,9 +71,6 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
       throw new ObjectNotFoundError("Player", socket.id)
     }
 
-    const playerIndex = Array.from(this.players).findIndex(player => player.id === socket.id)
-    const roomIndex = Array.from(this.rooms).findIndex(room => room.roomId === roomId)
-
     const room = this.rooms.find(roomId)
     const originCoords = player.coords
 
@@ -119,7 +116,7 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
           const skeleton = this.skeletons.build(skeletonType, Date.now().toString(), event.coords, loot)
 
           room.addEnemy(skeleton)
-          this.rooms.update(room, roomIndex)
+          this.rooms.update(room)
           this.logger.info('Discovered Skeleton !', skeleton)
 
           this.server.emitInRoom('enemies', room, { skeletons: room.getEnemies() })
@@ -128,7 +125,7 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
         else {
           const chest: Chest = { id: Date.now().toString(), coords: event.coords }
           room.addChest(chest)
-          this.rooms.update(room, roomIndex)
+          this.rooms.update(room)
 
           this.server.emitInRoom('chests', room, { chests: room.getChests() })
         }
@@ -144,7 +141,7 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
     player.coords = event.coords
     player.movesCount = Math.max(0, player.movesCount - 1)
 
-    this.players.update(player, playerIndex)
+    this.players.update(player)
     this.broadcaster.broadcast(room)
 
     const enemyAtCoords = room.findEnemyAtCoords(event.coords)

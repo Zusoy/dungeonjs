@@ -44,10 +44,8 @@ export class ChangeHeroHandler implements IEventHandler<'changeHero'> {
       throw new ObjectNotFoundError("Player", socket.id)
     }
 
-    const index = Array.from(this.players).findIndex(({ id }) => id === socket.id)
-
     player.hero = event.hero
-    this.players.update(player, index)
+    this.players.update(player)
     this.broadcaster.broadcast(room)
   }
 }

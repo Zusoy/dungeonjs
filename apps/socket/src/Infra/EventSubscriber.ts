@@ -1,5 +1,5 @@
 import { injectable, injectAll } from 'tsyringe'
-import { Socket, type AppSocket } from 'Application/Websocket/Socket'
+import { InputOutputSocket, type AppSocket } from 'Infra/Websocket/InputOutputSocket'
 import { type ClientToServer, clientToServerEvents } from 'Domain/Events'
 import type { IEventHandler } from 'Domain/EventHandler/IEventHandler'
 
@@ -13,7 +13,7 @@ export class EventSubscriber {
 
   subscribe(socket: AppSocket): void {
     const handlers = Array.from(this.handlers)
-    const appSocket = new Socket(socket)
+    const appSocket = new InputOutputSocket(socket)
 
     for (const event of clientToServerEvents) {
       // @ts-expect-error

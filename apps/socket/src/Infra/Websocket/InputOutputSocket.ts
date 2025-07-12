@@ -1,12 +1,12 @@
-import type { Socket as IOSocket } from 'socket.io'
+import type { Socket } from 'socket.io'
 import type { EventsMap, ClientToServer, ServerToClients, InterServer } from 'Domain/Events'
 import type { ISocket } from 'Domain/ISocket'
 import type { Room } from 'Domain/Model/Room'
 import type { Nullable } from 'utils'
 
-export type AppSocket = IOSocket<ClientToServer, ServerToClients, InterServer>
+export type AppSocket = Socket<ClientToServer, ServerToClients, InterServer>
 
-export class Socket implements ISocket {
+export class InputOutputSocket implements ISocket {
   public readonly id: string
 
   constructor(private readonly io: AppSocket) {

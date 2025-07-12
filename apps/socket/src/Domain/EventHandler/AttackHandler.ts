@@ -9,7 +9,6 @@ import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
-import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import type { Factory as LootFactory } from 'Domain/Loot/Factory'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
@@ -56,7 +55,6 @@ export class AttackHandler implements IEventHandler<'attack'> {
       throw new ObjectNotFoundError("Room", roomId)
     }
 
-    const roomIndex = Array.from(this.rooms).findIndex(r => r.roomId === room.roomId)
     const enemy = room.findEnemy(event.enemyId)
 
     if (!enemy) {
@@ -72,7 +70,6 @@ export class AttackHandler implements IEventHandler<'attack'> {
     this.server.emitInRoom('attacked', room, { succeed , attack })
 
     if (!succeed) {
-      const playerIndex = Array.from(this.players).findIndex(player => player.id === socket.id)
       player.health = Math.max(0, player.health - 1)
       player.coords = event.originCoords
       player.position = [
@@ -81,7 +78,7 @@ export class AttackHandler implements IEventHandler<'attack'> {
         event.originCoords[1] * 8
       ]
 
-      this.players.update(player, playerIndex)
+      this.players.update(player)
       this.broadcaster.broadcast(room)
       this.turnAllocator.allocateNextTurn(room, player.id)
       return
@@ -90,7 +87,7 @@ export class AttackHandler implements IEventHandler<'attack'> {
     const lootable = this.loots.buildLootable(enemy.loot, enemy.coords)
     room.removeEnemy(enemy.id)
     room.addLoot(lootable)
-    this.rooms.update(room, roomIndex)
+    this.rooms.update(room)
 
     this.server.emitInRoom('enemies', room, { skeletons: room.getEnemies() })
     this.server.emitInRoom('loots', room, { loots: room.getLoots() })

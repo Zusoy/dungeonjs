@@ -1,7 +1,7 @@
 import type { IServer } from 'Domain/IServer'
-import { ServerToClients } from 'Domain/Events'
-import { PlayerPayload } from 'Domain/Model/Player'
-import { Room } from 'Domain/Model/Room'
+import type { ServerToClients } from 'Domain/Events'
+import type { PlayerPayload } from 'Domain/Model/Player'
+import type { Room } from 'Domain/Model/Room'
 
 export class MockedServer implements IServer {
   public readonly kickedRooms: string[] = []

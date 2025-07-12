@@ -13,7 +13,8 @@ export class MockedPlayers implements IPlayers {
     this.players = this.players.filter(p => p.id !== player.id)
   }
 
-  update(item: Player, index: number): void {
+  update(item: Player): void {
+    const index = this.players.findIndex(player => player.id === item.id)
     this.players = this.players.map((player, i) => i === index ? item : player)
   }
 

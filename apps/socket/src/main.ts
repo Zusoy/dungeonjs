@@ -6,7 +6,7 @@ import * as EventHandlers from 'Domain/EventHandler'
 import { IPlayers } from 'Domain/Repository/IPlayers'
 import { IRooms } from 'Domain/Repository/IRooms'
 import { ILogger } from 'Domain/ILogger'
-import { Server } from 'Application/Websocket/Server'
+import { InputOutputServer } from 'Infra/Websocket/InputOutputServer'
 import { PlayerBroadcaster } from 'Application/Notification/PlayerBroadcaster'
 import { TurnAllocator } from 'Application/Notification/TurnAllocator'
 import { IServer } from 'Domain/IServer'
@@ -29,7 +29,7 @@ const players = container.resolve<IPlayers>('players')
 const rooms = container.resolve<IRooms>('rooms')
 const logger = container.resolve<ILogger>('logger')
 
-const server = new Server(io)
+const server = new InputOutputServer(io)
 container.register<IServer>('server', { useValue: server })
 container.register<IPlayerBroadcaster>('players.broadcaster', { useClass: PlayerBroadcaster })
 container.register<ITurnAllocator>('turn_allocator', { useClass: TurnAllocator })

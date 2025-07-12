@@ -15,7 +15,8 @@ export class Rooms implements IRooms, IDisposable {
     this.rooms = this.rooms.filter(r => r.roomId !== room.roomId)
   }
 
-  update(item: Room, index: number): void {
+  update(item: Room): void {
+    const index = this.rooms.findIndex(room => room.roomId === item.roomId)
     this.rooms = this.rooms.map((room, i) => i === index ? item : room)
   }
 

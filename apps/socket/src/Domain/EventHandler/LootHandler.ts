@@ -43,9 +43,7 @@ export class LootHandler implements IEventHandler<'loot'> {
     }
 
     const room = this.rooms.find(socket.room)
-    const roomIndex = Array.from(this.rooms).findIndex(r => r.roomId === socket.room)
     const player = this.players.find(socket.id)
-    const playerIndex = Array.from(this.players).findIndex(p => p.id === socket.id)
 
     if (!room) {
       throw new ObjectNotFoundError('Room', socket.room)
@@ -87,9 +85,9 @@ export class LootHandler implements IEventHandler<'loot'> {
       }
     }
 
-    this.players.update(player, playerIndex)
+    this.players.update(player)
     room.removeLoot(loot.id)
-    this.rooms.update(room, roomIndex)
+    this.rooms.update(room)
 
     this.broadcaster.broadcast(room)
     this.server.emitInRoom('loots', room, { loots: room.getLoots() })

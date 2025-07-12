@@ -4,10 +4,10 @@ import { JoinRoomHandler } from 'Domain/EventHandler/JoinRoomHandler'
 import { MockedRooms } from 'Application/Repository/MockedRooms'
 import { MockedPlayerBroadcaster } from 'Application/Notification/MockedPlayerBroadcaster'
 import { JoinRoomEvent } from 'Domain/Event/JoinRoomEvent'
-import { MockedSocket } from 'Application/Websocket/MockedSocket'
+import { MockedSocket } from 'Infra/Websocket/MockedSocket'
+import { MockedServer } from 'Infra/Websocket/MockedServer'
 import { Room } from 'Domain/Model/Room'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
-import { MockedServer } from 'Application/Websocket/MockedServer'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 
 describe('EventHandler/JoinRoom', () => {

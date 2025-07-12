@@ -37,10 +37,7 @@ export class PickChestHandler implements IEventHandler<'pickChest'> {
     }
 
     const room = this.rooms.find(roomId)
-    const roomIndex = Array.from(this.rooms).findIndex(room => room.roomId === roomId)
-
     const player = this.players.find(socket.id)
-    const playerIndex = Array.from(this.players).findIndex(p => p.id === socket.id)
 
     if (!room) {
       throw new ObjectNotFoundError('Room', roomId)
@@ -68,12 +65,12 @@ export class PickChestHandler implements IEventHandler<'pickChest'> {
     }
 
     room.removeChest(chest.id)
-    this.rooms.update(room, roomIndex)
+    this.rooms.update(room)
 
     player.removeKey()
     player.addTreasure()
 
-    this.players.update(player, playerIndex)
+    this.players.update(player)
     this.broadcaster.broadcast(room)
 
     this.server.emitInRoom('chests', room, { chests: room.getChests() })
