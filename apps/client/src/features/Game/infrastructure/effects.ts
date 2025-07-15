@@ -1,7 +1,15 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { AppSocket } from 'services/socket'
 import { apply, call, takeLatest } from 'redux-saga/effects'
-import slice, { AttackPayload, LootPayload, MoveToCoordsPayload, PickChestPayload } from 'features/Game/application/slice'
+import slice, { AttackPayload, EndTurnPayload, LootPayload, MoveToCoordsPayload, PickChestPayload } from 'features/Game/application/slice'
+
+export function* endTurnEffect(action: PayloadAction<EndTurnPayload>, socket: AppSocket): Generator {
+  try {
+    yield apply(socket, 'emit', ['endTurn', action.payload])
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 export function* attackEffect(action: PayloadAction<AttackPayload>, socket: AppSocket): Generator {
   try {
@@ -33,6 +41,12 @@ export function* pickChestEffect(action: PayloadAction<PickChestPayload>, socket
   } catch (e) {
     console.error(e)
   }
+}
+
+export function* subscribeEndTurn(socket: AppSocket): Generator {
+  yield takeLatest(slice.actions.endTurn, function* (action: PayloadAction<EndTurnPayload>): Generator {
+    yield call(endTurnEffect, action, socket)
+  })
 }
 
 export function* subscribeAttack(socket: AppSocket): Generator {
