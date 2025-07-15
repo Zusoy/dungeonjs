@@ -33,7 +33,7 @@ export class TurnAllocator implements ITurnAllocator {
         }
 
         user.movesCount = 4
-        this.players.update(user, index)
+        this.players.update(user)
         this.broadcaster.broadcast(room)
 
         const nextPlayerIndex = index === playerIds.length - 1 ? 0 : index + 1
@@ -45,7 +45,7 @@ export class TurnAllocator implements ITurnAllocator {
 
         if (nextPlayer.health <= 0) {
           nextPlayer.health = 1
-          this.players.update(nextPlayer, nextPlayerIndex)
+          this.players.update(nextPlayer)
           this.broadcaster.broadcast(room)
           this.allocateNextTurn(room, nextPlayer.id)
           return

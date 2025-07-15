@@ -7,7 +7,6 @@ import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IServer } from 'Domain/IServer'
 import type { ILogger } from 'Domain/ILogger'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
-import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import type { Factory as TileFactory } from 'Domain/Tile/Factory'
 import type { Factory as SkeletonFactory } from 'Domain/Skeleton/Factory'
 import type { Factory as LootFactory } from 'Domain/Loot/Factory'
@@ -34,8 +33,6 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
     private readonly logger: ILogger,
     @inject('players.broadcaster')
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('turn_allocator')
-    private readonly turnAllocator: ITurnAllocator,
     @inject('factory.loots')
     private readonly loots: LootFactory,
     @inject('factory.skeletons')
@@ -149,10 +146,6 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
     if (enemyAtCoords) {
       this.server.emit('startFight', { playerId: socket.id, enemyId: enemyAtCoords.id, originCoords })
       return
-    }
-
-    if (player.movesCount === 0) {
-      this.turnAllocator.allocateNextTurn(room, player.id)
     }
   }
 }

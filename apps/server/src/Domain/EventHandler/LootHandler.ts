@@ -1,7 +1,4 @@
 import { inject, injectable, registry } from 'tsyringe'
-import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
-import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
-import { LootType } from 'Domain/Model/Loot'
 import type { ISocket } from 'Domain/ISocket'
 import type { LootEvent } from 'Domain/Event/LootEvent'
 import type { IEventHandler } from 'Domain/EventHandler/IEventHandler'
@@ -9,7 +6,9 @@ import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IServer } from 'Domain/IServer'
-import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
+import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { LootType } from 'Domain/Model/Loot'
 import { Coords } from 'Domain/Geometry/Coords'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
@@ -23,8 +22,6 @@ export class LootHandler implements IEventHandler<'loot'> {
     private readonly players: IPlayers,
     @inject('players.broadcaster')
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('turn_allocator')
-    private readonly turnAllocator: ITurnAllocator,
     @inject('server')
     private readonly server: IServer,
     @inject('player.inventory.maxkeys')
@@ -91,6 +88,5 @@ export class LootHandler implements IEventHandler<'loot'> {
 
     this.broadcaster.broadcast(room)
     this.server.emitInRoom('loots', room, { loots: room.getLoots() })
-    this.turnAllocator.allocateNextTurn(room, player.id)
   }
 }
