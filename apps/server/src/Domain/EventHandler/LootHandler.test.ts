@@ -189,7 +189,7 @@ describe('EventHandler/Loot', () => {
     expect(() => handler.handle('loot', socket, event)).toThrow(OperationDeniedError)
   })
 
-  test('loots an item in a room and broadcast updates and allocates next turn', () => {
+  test('loots an item in a room and broadcast updates', () => {
     const room = new Room('roomId', 'playerId')
     const loot = createLootableWeaponMock('lootId', [2, 2])
     room.addLoot(loot)
@@ -225,6 +225,7 @@ describe('EventHandler/Loot', () => {
     expect(updatedRoom).not.toBeNull()
     expect(updatedPlayer!.inventory.weapons).toHaveLength(1)
     expect(updatedPlayer!.inventory.weapons[0]!.id).toBe('lootId')
+    expect(updatedPlayer!.movesCount).toBe(0)
     expect(updatedRoom!.getLoots()).toHaveLength(0)
     expect(broadcaster.broadcastedRooms.includes('roomId')).toBeTruthy()
     expect(server.roomEmittedEvents['roomId'].includes('loots')).toBeTruthy()

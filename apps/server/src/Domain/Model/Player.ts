@@ -1,4 +1,4 @@
-import type { AppSocket } from 'Application/Websocket/Socket'
+import type { AppSocket } from 'Infra/Websocket/InputOutputSocket'
 import type { Weapon } from 'Domain/Model/Weapon'
 import type { VectorTuple } from 'Domain/Geometry/Vector'
 import type { ScalarCoords } from 'Domain/Geometry/Coords'

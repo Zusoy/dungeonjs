@@ -7,6 +7,7 @@ import {
   selectCurrentPlayer,
   selectIsPlayerTurn
 } from 'features/Game/application/slice'
+import { GiOpenTreasureChest } from 'react-icons/gi'
 
 export const PickChestButton: React.FC = () => {
   const dispatch = useDispatch()
@@ -25,7 +26,13 @@ export const PickChestButton: React.FC = () => {
   return (
     <AnimatePresence>
       {(isLocalPlayerTurn && chestInCurrentCoord && currentPlayer.inventory.keys > 0)
-        ? <motion.button type='button' className='btn btn-primary' onClick={pickChestHandler}>Pick Chest</motion.button>
+        ? <motion.button
+            type='button'
+            className='btn btn-primary rounded-b-full h-20 border-transparent bg-gradient-to-b from-amber-100 to-amber-500 hover:border-transparent'
+            onClick={pickChestHandler}
+          >
+            <GiOpenTreasureChest className='w-8 h-8' />
+          </motion.button>
         : null
       }
     </AnimatePresence>

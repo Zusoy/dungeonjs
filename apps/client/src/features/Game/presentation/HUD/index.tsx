@@ -78,13 +78,13 @@ export const GameHUD: React.FC = () => {
         <div className='w-full px-12 h-14 bg-slate-800 border border-transparent flex justify-between items-center md:px-32'>
           <div />
           <div />
-          <Tooltip content={<p>Ends your turn</p>} horizontalPlacement='left' verticalPlacement='bottom'>
-            <EndTurnButton />
-          </Tooltip>
-        </div>
-        <div className='flex flex-col items-center gap-2'>
-          <PickLootButton />
-          <PickChestButton />
+          <div className='flex gap-1 items-center'>
+            <PickChestButton />
+            <PickLootButton />
+            <Tooltip content={<p>Ends your turn</p>} horizontalPlacement='left' verticalPlacement='bottom'>
+              <EndTurnButton />
+            </Tooltip>
+          </div>
         </div>
       </div>
       <div className='absolute left-0 flex h-screen items-center justify-center'>

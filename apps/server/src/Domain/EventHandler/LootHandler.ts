@@ -82,7 +82,9 @@ export class LootHandler implements IEventHandler<'loot'> {
       }
     }
 
+    player.movesCount = 0
     this.players.update(player)
+
     room.removeLoot(loot.id)
     this.rooms.update(room)
 
