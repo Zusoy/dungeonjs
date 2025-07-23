@@ -1,8 +1,9 @@
 import React from 'react'
+import { Tooltip } from 'widgets/HUD/Tooltip'
+import { EndTurnButton } from 'features/Game/presentation/HUD/EndTurnButton'
 import { PlayerList } from 'features/Game/presentation/HUD/PlayerList'
 import { EnemyList } from 'features/Game/presentation/HUD/EnemyList'
 import { LootList } from 'features/Game/presentation/HUD/LootList'
-import { MoveCounter } from 'features/Game/presentation/HUD/MoveCounter'
 import { PickChestButton } from 'features/Game/presentation/HUD/PickChestButton'
 import { PickLootButton } from 'features/Game/presentation/HUD/PickLootButton'
 import TurnAnnounceDialog, { type TurnAnnouncer } from 'widgets/Dialog/TurnAnnounceDialog'
@@ -73,17 +74,23 @@ export const GameHUD: React.FC = () => {
 
   return (
     <>
-      <div className='absolute top-0 flex w-screen justify-center'>
-        <div className='flex flex-col items-center gap-2'>
-          <MoveCounter />
-          <PickLootButton />
-          <PickChestButton />
+      <div className='absolute top-0 flex w-screen'>
+        <div className='w-full px-12 h-14 bg-slate-800 border border-transparent flex justify-between items-center md:px-32'>
+          <div />
+          <div />
+          <div className='flex gap-1 items-center'>
+            <PickChestButton />
+            <PickLootButton />
+            <Tooltip content={<p>Ends your turn</p>} horizontalPlacement='left' verticalPlacement='bottom'>
+              <EndTurnButton />
+            </Tooltip>
+          </div>
         </div>
       </div>
       <div className='absolute left-0 flex h-screen items-center justify-center'>
         <EnemyList />
       </div>
-      <div className='absolute right-0 flex h-screen items-center justify-center'>
+      <div className='absolute right-0 flex h-screen items-center justify-center pointer-events-none'>
         <LootList />
       </div>
       <PlayerList />

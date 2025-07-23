@@ -7,7 +7,7 @@ import { Loots } from 'features/Game/presentation/Instance/Loots'
 import { Camera, type GameCamera } from 'features/Game/presentation/Controller/Camera'
 import { Canvas } from '@react-three/fiber'
 import { Vector3 } from 'three'
-import { Environment, Stats, Grid } from '@react-three/drei'
+import { Environment, Grid } from '@react-three/drei'
 import { useSelector } from 'react-redux'
 import {
   selectCurrentPlayerTurn,
@@ -43,7 +43,6 @@ export const Scene: React.FC = () => {
 
   return (
     <Canvas style={{ position: 'absolute', top: 0, zIndex: 99, backgroundColor: '#1D232A' }}>
-      <Stats />
       <Grid
         infiniteGrid
         cellSize={8}

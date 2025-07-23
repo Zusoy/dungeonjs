@@ -43,6 +43,7 @@ container.register<EventHandlers.LeaveRoomHandler>(EventHandlers.LeaveRoomHandle
 container.register<EventHandlers.AttackHandler>(EventHandlers.AttackHandler, { useClass: EventHandlers.AttackHandler })
 container.register<EventHandlers.LootHandler>(EventHandlers.LootHandler, { useClass: EventHandlers.LootHandler })
 container.register<EventHandlers.PickChestHandler>(EventHandlers.PickChestHandler, { useClass: EventHandlers.PickChestHandler })
+container.register<EventHandlers.EndTurnHandler>(EventHandlers.EndTurnHandler, { useClass: EventHandlers.EndTurnHandler })
 
 const subscriber = container.resolve(EventSubscriber)
 

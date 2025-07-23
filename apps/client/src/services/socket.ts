@@ -1,7 +1,30 @@
 import { EventChannel } from 'redux-saga'
 import { io, type Socket } from 'socket.io-client'
-import { CreateRoomPayload, FailedToJoinRoomPayload, JoinedRoomPayload, JoinRoomPayload, LeaveRoomPayload, LeftRoomPayload } from 'features/Rooms/slice'
-import type { ChangeHeroPayload, StartGamePayload, MoveToCoordsPayload, BeginFightPayload, AttackPayload, AttackResultPayload, ReceivedPlayersPayload, DiscoverTilePayload, PlayerTurnPayload, ReceivedSkeletonsPayload, ReceivedLootsPayload, LootPayload, ReceivedChestsPayload, PickChestPayload } from 'features/Game/slice'
+import type {
+  CreateRoomPayload,
+  FailedToJoinRoomPayload,
+  JoinedRoomPayload,
+  JoinRoomPayload,
+  LeaveRoomPayload,
+  LeftRoomPayload
+} from 'features/Rooms/application/slice'
+import type {
+  ChangeHeroPayload,
+  StartGamePayload,
+  MoveToCoordsPayload,
+  BeginFightPayload,
+  AttackPayload,
+  AttackResultPayload,
+  ReceivedPlayersPayload,
+  DiscoverTilePayload,
+  PlayerTurnPayload,
+  ReceivedSkeletonsPayload,
+  ReceivedLootsPayload,
+  LootPayload,
+  ReceivedChestsPayload,
+  PickChestPayload,
+  EndTurnPayload
+} from 'features/Game/application/slice'
 
 export interface ServerToClients {
   pong: () => void
@@ -30,6 +53,7 @@ export interface ClientToServer {
   attack: (payload: AttackPayload) => void
   loot: (payload: LootPayload) => void
   pickChest: (payload: PickChestPayload) => void
+  endTurn: (payload: EndTurnPayload) => void
 }
 
 export type AppSocket = Socket<ServerToClients, ClientToServer>

@@ -5,7 +5,6 @@ import { MockedServer } from 'Infra/Websocket/MockedServer'
 import { MockedSocket } from 'Infra/Websocket/MockedSocket'
 import { MockedPlayers } from 'Application/Repository/MockedPlayers'
 import { MockedRooms } from 'Application/Repository/MockedRooms'
-import { MockedTurnAllocator } from 'Application/Notification/MockedTurnAllocator'
 import { MockedPlayerBroadcaster } from 'Application/Notification/MockedPlayerBroadcaster'
 import { AttackEvent } from 'Domain/Event/AttackEvent'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
@@ -25,7 +24,6 @@ describe('EventHandler/Attack', () => {
     const server = new MockedServer()
     const players = new MockedPlayers([])
     const rooms = new MockedRooms([])
-    const turnAllocator = new MockedTurnAllocator()
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer()
@@ -40,7 +38,6 @@ describe('EventHandler/Attack', () => {
       server,
       players,
       rooms,
-      turnAllocator,
       broadcaster,
       loots,
       random
@@ -52,7 +49,6 @@ describe('EventHandler/Attack', () => {
     const server = new MockedServer()
     const players = new MockedPlayers([createPlayerMock('player', 'username')])
     const rooms = new MockedRooms([new Room('room', 'player')])
-    const turnAllocator = new MockedTurnAllocator()
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', null)
     const random = new MockedRandomizer()
@@ -67,7 +63,6 @@ describe('EventHandler/Attack', () => {
       server,
       players,
       rooms,
-      turnAllocator,
       broadcaster,
       loots,
       random
@@ -79,7 +74,6 @@ describe('EventHandler/Attack', () => {
     const server = new MockedServer()
     const players = new MockedPlayers([createPlayerMock('player', 'username')])
     const rooms = new MockedRooms([])
-    const turnAllocator = new MockedTurnAllocator()
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer()
@@ -94,7 +88,6 @@ describe('EventHandler/Attack', () => {
       server,
       players,
       rooms,
-      turnAllocator,
       broadcaster,
       loots,
       random
@@ -107,7 +100,6 @@ describe('EventHandler/Attack', () => {
     const server = new MockedServer()
     const players = new MockedPlayers([createPlayerMock('player', 'username')])
     const rooms = new MockedRooms([new Room('room', 'player')])
-    const turnAllocator = new MockedTurnAllocator()
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer()
@@ -122,7 +114,6 @@ describe('EventHandler/Attack', () => {
       server,
       players,
       rooms,
-      turnAllocator,
       broadcaster,
       loots,
       random
@@ -154,7 +145,6 @@ describe('EventHandler/Attack', () => {
     room.addEnemy(skeleton)
 
     const rooms = new MockedRooms([room])
-    const turnAllocator = new MockedTurnAllocator()
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer({ diceResult: 1 })
@@ -168,7 +158,6 @@ describe('EventHandler/Attack', () => {
       server,
       players,
       rooms,
-      turnAllocator,
       broadcaster,
       loots,
       random
@@ -188,7 +177,6 @@ describe('EventHandler/Attack', () => {
     expect(server.roomEmittedEvents['room']?.includes('attacked')).toBeTruthy()
     expect(server.roomEmittedEvents['room']?.includes('loots')).toBeFalsy()
     expect(broadcaster.broadcastedRooms.includes('room')).toBeTruthy()
-    expect(turnAllocator.turnRoomAllocated.includes('room')).toBeTruthy()
   })
 
   test('handles succeed attack', () => {
@@ -214,7 +202,6 @@ describe('EventHandler/Attack', () => {
     room.addEnemy(skeleton)
 
     const rooms = new MockedRooms([room])
-    const turnAllocator = new MockedTurnAllocator()
     const broadcaster = new MockedPlayerBroadcaster()
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer({ diceResult: 6 })
@@ -228,7 +215,6 @@ describe('EventHandler/Attack', () => {
       server,
       players,
       rooms,
-      turnAllocator,
       broadcaster,
       loots,
       random
@@ -250,7 +236,6 @@ describe('EventHandler/Attack', () => {
     expect(server.roomEmittedEvents['room']?.includes('enemies')).toBeTruthy()
     expect(server.roomEmittedEvents['room']?.includes('loots')).toBeTruthy()
     expect(broadcaster.broadcastedRooms.includes('room')).toBeFalsy()
-    expect(turnAllocator.turnRoomAllocated.includes('room')).toBeTruthy()
     expect(updatedRoom!.getEnemies().length).toBe(0)
   })
 })

@@ -105,6 +105,10 @@ export type AttackResultPayload = {
   readonly succeed: boolean
 }
 
+export type EndTurnPayload = {
+  readonly timestamp: number
+}
+
 const slice = createSlice({
   name: 'game',
   initialState,
@@ -157,6 +161,9 @@ const slice = createSlice({
       ...state,
       fight: null
     }),
+    endTurn: (state, _action: PayloadAction<EndTurnPayload>) => ({
+      ...state,
+    })
   }
 })
 
@@ -172,7 +179,8 @@ export const {
   attack,
   loot,
   pickChest,
-  attacked
+  attacked,
+  endTurn
 } = slice.actions
 
 export const selectIsPlayerTurn: Selector<boolean> = state =>

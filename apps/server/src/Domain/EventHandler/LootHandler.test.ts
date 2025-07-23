@@ -1,6 +1,6 @@
 import 'reflect-metadata'
-import { describe, test, expect } from 'vitest'
 import type { LootEvent } from 'Domain/Event/LootEvent'
+import { describe, test, expect } from 'vitest'
 import { LootHandler } from 'Domain/EventHandler/LootHandler'
 import { MockedRooms } from 'Application/Repository/MockedRooms'
 import { MockedPlayers } from 'Application/Repository/MockedPlayers'
@@ -11,7 +11,6 @@ import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { Room } from 'Domain/Model/Room'
 import { createLootableKeyMock, createLootableWeaponMock, createPlayerMock } from 'test-utils'
-import { MockedTurnAllocator } from 'Application/Notification/MockedTurnAllocator'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/Loot', () => {
@@ -21,7 +20,6 @@ describe('EventHandler/Loot', () => {
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer([])
     const socket = new MockedSocket('player', null)
-    const turnAllocator = new MockedTurnAllocator()
 
     const event: LootEvent = {
       lootId: 'lootId'
@@ -31,7 +29,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       4,
       4
@@ -44,7 +41,6 @@ describe('EventHandler/Loot', () => {
     const rooms = new MockedRooms([])
     const players = new MockedPlayers([])
     const broadcaster = new MockedPlayerBroadcaster()
-    const turnAllocator = new MockedTurnAllocator()
     const server = new MockedServer([])
     const socket = new MockedSocket('player', 'notFoundRoomId')
 
@@ -56,7 +52,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       4,
       4
@@ -69,7 +64,6 @@ describe('EventHandler/Loot', () => {
     const rooms = new MockedRooms([ new Room('roomId', 'playerId') ])
     const players = new MockedPlayers([])
     const broadcaster = new MockedPlayerBroadcaster()
-    const turnAllocator = new MockedTurnAllocator()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
@@ -81,7 +75,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       4,
       4
@@ -94,7 +87,6 @@ describe('EventHandler/Loot', () => {
     const rooms = new MockedRooms([ new Room('roomId', 'playerId') ])
     const players = new MockedPlayers([ createPlayerMock('playerId', 'player') ])
     const broadcaster = new MockedPlayerBroadcaster()
-    const turnAllocator = new MockedTurnAllocator()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
@@ -106,7 +98,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       4,
       4
@@ -122,7 +113,6 @@ describe('EventHandler/Loot', () => {
     const rooms = new MockedRooms([ room ])
     const players = new MockedPlayers([ createPlayerMock('playerId', 'player', [1, 0]) ])
     const broadcaster = new MockedPlayerBroadcaster()
-    const turnAllocator = new MockedTurnAllocator()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
@@ -134,7 +124,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       4,
       4
@@ -150,7 +139,6 @@ describe('EventHandler/Loot', () => {
     const rooms = new MockedRooms([ room ])
     const players = new MockedPlayers([ createPlayerMock('playerId', 'player', [2, 2]) ])
     const broadcaster = new MockedPlayerBroadcaster()
-    const turnAllocator = new MockedTurnAllocator()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
@@ -164,7 +152,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       maxKeyCount,
       4
@@ -180,7 +167,6 @@ describe('EventHandler/Loot', () => {
     const rooms = new MockedRooms([ room ])
     const players = new MockedPlayers([ createPlayerMock('playerId', 'player', [2, 2]) ])
     const broadcaster = new MockedPlayerBroadcaster()
-    const turnAllocator = new MockedTurnAllocator()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
@@ -195,7 +181,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       maxKeyCount,
       maxWeaponCount
@@ -204,7 +189,7 @@ describe('EventHandler/Loot', () => {
     expect(() => handler.handle('loot', socket, event)).toThrow(OperationDeniedError)
   })
 
-  test('loots an item in a room and broadcast updates and allocates next turn', () => {
+  test('loots an item in a room and broadcast updates', () => {
     const room = new Room('roomId', 'playerId')
     const loot = createLootableWeaponMock('lootId', [2, 2])
     room.addLoot(loot)
@@ -212,7 +197,6 @@ describe('EventHandler/Loot', () => {
     const rooms = new MockedRooms([ room ])
     const players = new MockedPlayers([ createPlayerMock('playerId', 'player', [2, 2]) ])
     const broadcaster = new MockedPlayerBroadcaster()
-    const turnAllocator = new MockedTurnAllocator()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
@@ -227,7 +211,6 @@ describe('EventHandler/Loot', () => {
       rooms,
       players,
       broadcaster,
-      turnAllocator,
       server,
       maxKeyCount,
       maxWeaponCount
@@ -242,9 +225,9 @@ describe('EventHandler/Loot', () => {
     expect(updatedRoom).not.toBeNull()
     expect(updatedPlayer!.inventory.weapons).toHaveLength(1)
     expect(updatedPlayer!.inventory.weapons[0]!.id).toBe('lootId')
+    expect(updatedPlayer!.movesCount).toBe(0)
     expect(updatedRoom!.getLoots()).toHaveLength(0)
     expect(broadcaster.broadcastedRooms.includes('roomId')).toBeTruthy()
     expect(server.roomEmittedEvents['roomId'].includes('loots')).toBeTruthy()
-    expect(turnAllocator.turnRoomAllocated.includes('roomId')).toBeTruthy()
   })
 })

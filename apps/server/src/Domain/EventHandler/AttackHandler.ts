@@ -5,7 +5,6 @@ import type { IServer } from 'Domain/IServer'
 import type { ISocket } from 'Domain/ISocket'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IRooms } from 'Domain/Repository/IRooms'
-import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
@@ -22,8 +21,6 @@ export class AttackHandler implements IEventHandler<'attack'> {
     private readonly players: IPlayers,
     @inject('rooms')
     private readonly rooms: IRooms,
-    @inject('turn_allocator')
-    private readonly turnAllocator: ITurnAllocator,
     @inject('players.broadcaster')
     private readonly broadcaster: IPlayerBroadcaster,
     @inject('factory.loots')
@@ -80,7 +77,6 @@ export class AttackHandler implements IEventHandler<'attack'> {
 
       this.players.update(player)
       this.broadcaster.broadcast(room)
-      this.turnAllocator.allocateNextTurn(room, player.id)
       return
     }
 
@@ -91,7 +87,5 @@ export class AttackHandler implements IEventHandler<'attack'> {
 
     this.server.emitInRoom('enemies', room, { skeletons: room.getEnemies() })
     this.server.emitInRoom('loots', room, { loots: room.getLoots() })
-
-    this.turnAllocator.allocateNextTurn(room, player.id)
   }
 }

@@ -2,6 +2,7 @@ import * as Events from 'Domain/Event'
 
 export interface ClientToServer {
   createRoom: (event: Events.CreateRoomEvent) => void
+  endTurn: (event: Events.EndTurnEvent) => void
   joinRoom: (event: Events.JoinRoomEvent) => void
   leaveRoom: (event: Events.LeaveRoomEvent) => void
   changeHero: (event: Events.ChangeHeroEvent) => void
@@ -14,6 +15,7 @@ export interface ClientToServer {
 
 export const clientToServerEvents: (keyof ClientToServer)[] = [
   'createRoom',
+  'endTurn',
   'joinRoom',
   'leaveRoom',
   'changeHero',

@@ -69,6 +69,7 @@ export class PickChestHandler implements IEventHandler<'pickChest'> {
 
     player.removeKey()
     player.addTreasure()
+    player.movesCount = 0
 
     this.players.update(player)
     this.broadcaster.broadcast(room)

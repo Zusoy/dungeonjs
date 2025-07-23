@@ -38,7 +38,7 @@ export const Direction: React.FC = () => {
   }, [currentPlayer.coords, tiles])
 
   const dispatchMove = React.useCallback((direction: VectorTuple) => {
-    if (!currentTile || !controlsEnabled) {
+    if (!currentTile || !controlsEnabled || currentPlayer.movesCount <= 0) {
       return
     }
 
@@ -70,19 +70,19 @@ export const Direction: React.FC = () => {
       neighborTiles,
       uncharted
     }))
-  }, [dispatch, currentTile, controlsEnabled, tiles])
+  }, [dispatch, currentTile, controlsEnabled, tiles, currentPlayer])
 
   const tilePosition = React.useMemo<Vector3>(
     () => currentTile ? new Vector3(currentTile.coords[0] * 8, 0, currentTile.coords[1] * 8) : new Vector3(0, 0, 0),
     [currentTile]
   )
 
-  if (!playerTurn || !currentTile) {
+  if (!playerTurn || !currentTile || currentPlayer.movesCount <= 0) {
     return null
   }
 
   return (
-    <>
+    <group>
       {currentTile.directions.map(
         direction =>
           <arrowHelper
@@ -100,6 +100,6 @@ export const Direction: React.FC = () => {
             }}
           />
       )}
-    </>
+    </group>
   )
 }
