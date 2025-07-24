@@ -37,8 +37,8 @@ export interface ServerToClients {
   gameStarted: (event: Events.GameStartedEvent) => void
   playerTurn: (event: Events.PlayerTurnEvent) => void
   discoverTile: (event: Events.DiscoverTileEvent) => void
-  startFight: (event: Events.StartFightEvent) => void
-  attacked: (event: Events.AttackResultEvent) => void
+  engageCombat: (event: Events.EngageCombatEvent) => void
+  combatResolved: (event: Events.CombatResolvedEvent) => void
 }
 
 export interface InterServer {

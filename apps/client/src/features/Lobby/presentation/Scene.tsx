@@ -1,5 +1,5 @@
 import React from 'react'
-import HeroCharacter from 'features/Game/presentation/GameObject/Character/Hero'
+import HeroCharacter from 'features/Game/Dungeon/presentation/GameObject/Character/Hero'
 import { LobbySpace } from 'features/Lobby/presentation/GameObject/LobbySpace'
 import { selectPlayers } from 'features/Lobby/application/slice'
 import { Canvas } from '@react-three/fiber'

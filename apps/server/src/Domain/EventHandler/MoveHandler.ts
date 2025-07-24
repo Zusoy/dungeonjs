@@ -10,9 +10,9 @@ import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { Factory as TileFactory } from 'Domain/Tile/Factory'
 import type { Factory as SkeletonFactory } from 'Domain/Skeleton/Factory'
 import type { Factory as LootFactory } from 'Domain/Loot/Factory'
-import { WeaponRandomizer } from 'Domain/Loot/WeaponRandomizer'
 import type { Chest } from 'Domain/Model/Chest'
 import type { IRandomizer } from 'Domain/RNG/IRandomizer'
+import { WeaponRandomizer } from 'Domain/Loot/WeaponRandomizer'
 import { TileType } from 'Domain/Model/Tile'
 import { SkeletonType } from 'Domain/Model/Skeleton'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
@@ -117,7 +117,7 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
           this.logger.info('Discovered Skeleton !', skeleton)
 
           this.server.emitInRoom('enemies', room, { skeletons: room.getEnemies() })
-          this.server.emitInRoom('startFight', room, { enemyId: skeleton.id, playerId: socket.id, originCoords })
+          this.server.emitInRoom('engageCombat', room, { enemyId: skeleton.id, playerId: socket.id, originCoords })
         }
         else {
           const chest: Chest = { id: Date.now().toString(), coords: event.coords }
@@ -144,7 +144,7 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
     const enemyAtCoords = room.findEnemyAtCoords(event.coords)
 
     if (enemyAtCoords) {
-      this.server.emit('startFight', { playerId: socket.id, enemyId: enemyAtCoords.id, originCoords })
+      this.server.emit('engageCombat', { playerId: socket.id, enemyId: enemyAtCoords.id, originCoords })
       return
     }
   }
