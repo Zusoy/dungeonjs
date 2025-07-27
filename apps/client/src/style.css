@@ -1,3 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.perspective {
+  perspective: 600px;
+}
+
+.dice {
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.face {
+  @apply absolute w-full h-full flex items-center justify-center text-white text-3xl font-bold bg-gray-800 border border-gray-700;
+  transform: translateZ(0);
+  /* overwritten below */
+}
+
+.face-1 {
+  transform: rotateY(0deg) translateZ(48px);
+}
+
+.face-2 {
+  transform: rotateY(90deg) translateZ(48px);
+}
+
+.face-3 {
+  transform: rotateY(180deg) translateZ(48px);
+}
+
+.face-4 {
+  transform: rotateY(-90deg) translateZ(48px);
+}
+
+.face-5 {
+  transform: rotateX(90deg) translateZ(48px);
+}
+
+.face-6 {
+  transform: rotateX(-90deg) translateZ(48px);
+}

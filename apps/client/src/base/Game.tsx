@@ -1,6 +1,6 @@
 import React from 'react'
 import LobbyScene from 'features/Lobby/presentation'
-import GameScene from 'features/Game/presentation'
+import GameScene from 'features/Game/Dungeon/presentation'
 import FullPageLoader from 'widgets/Loader/FullPageLoader'
 import { selectIsGameStarted, selectIsWaitingForPlayers } from 'features/Lobby/application/slice'
 import { useSelector } from 'react-redux'

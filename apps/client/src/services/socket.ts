@@ -12,9 +12,6 @@ import type {
   ChangeHeroPayload,
   StartGamePayload,
   MoveToCoordsPayload,
-  BeginFightPayload,
-  AttackPayload,
-  AttackResultPayload,
   ReceivedPlayersPayload,
   DiscoverTilePayload,
   PlayerTurnPayload,
@@ -24,7 +21,8 @@ import type {
   ReceivedChestsPayload,
   PickChestPayload,
   EndTurnPayload
-} from 'features/Game/application/slice'
+} from 'features/Game/Dungeon/application/slice'
+import type { EngageCombatPayload, CombatResolvedPayload, AttackPayload } from 'features/Game/Combat/application/slice'
 
 export interface ServerToClients {
   pong: () => void
@@ -38,8 +36,8 @@ export interface ServerToClients {
   gameStarted: (roomId: string) => void
   playerTurn: (payload: PlayerTurnPayload) => void
   discoverTile: (payload: DiscoverTilePayload) => void
-  startFight: (payload: BeginFightPayload) => void
-  attacked: (payload: AttackResultPayload) => void
+  engageCombat: (payload: EngageCombatPayload) => void
+  combatResolved: (event: CombatResolvedPayload) => void
 }
 
 export interface ClientToServer {
@@ -50,10 +48,10 @@ export interface ClientToServer {
   changeHero: (payload: ChangeHeroPayload) => void
   startGame: (payload: StartGamePayload) => void
   moveToCoords: (payload: MoveToCoordsPayload) => void
-  attack: (payload: AttackPayload) => void
   loot: (payload: LootPayload) => void
   pickChest: (payload: PickChestPayload) => void
   endTurn: (payload: EndTurnPayload) => void
+  attack: (payload: AttackPayload) => void
 }
 
 export type AppSocket = Socket<ServerToClients, ClientToServer>

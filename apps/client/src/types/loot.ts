@@ -1,5 +1,5 @@
 import type { ScalarCoords } from 'types/coords'
-import type { Weapon } from 'types/user'
+import type { Weapon } from 'types/weapon'
 import type { Key } from 'types/object'
 
 export enum LootType {

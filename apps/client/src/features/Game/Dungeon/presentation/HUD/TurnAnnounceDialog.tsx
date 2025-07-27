@@ -1,0 +1,57 @@
+import React from 'react'
+import { Countdown } from 'widgets/Time/Countdown'
+import { Hero } from 'types/user'
+import { Nullable } from 'types/utils'
+import { AnimatePresence, motion } from 'motion/react'
+
+type UserLite = {
+  readonly username: string
+  readonly hero: Hero
+}
+
+export type TurnAnnouncer = {
+  readonly announce: (user: UserLite) => void
+}
+
+export const TurnAnnounceDialog = React.forwardRef<TurnAnnouncer>((_, ref) => {
+  const id = React.useId()
+  const dialog = React.useRef<HTMLDialogElement>(null!)
+  const [target, setTarget] = React.useState<Nullable<UserLite>>(null)
+
+  React.useImperativeHandle<TurnAnnouncer, TurnAnnouncer>(ref, () => ({
+    announce: (user: UserLite) => {
+      setTarget(user)
+      dialog.current.showModal()
+    }
+  }), [dialog])
+
+  const close = React.useCallback(() => {
+    setTarget(null)
+    dialog.current.close()
+  }, [dialog])
+
+  return (
+    <AnimatePresence mode='wait' initial={false}>
+      <motion.dialog id={id} ref={dialog} className='modal modal-bottom sm:modal-middle'>
+        <div className='modal-box'>
+          {target && (
+            <div className='flex flex-col w-full items-center'>
+              <div className='flex flex-row gap-4'>
+                <figure>
+                  <img src={`/img/hero/${target.hero.toString()}.png`} alt='avatar' className='w-24 h-24' />
+                </figure>
+                <div className='flex flex-col gap-2 justify-center'>
+                  <h3 className='font-bold text-lg'>{target.username}</h3>
+                  <p className='text-lg'>It's your turn!</p>
+                </div>
+              </div>
+              <div>
+                <Countdown delay={2000} type='primary' onFinish={close} />
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.dialog>
+    </AnimatePresence>
+  )
+})

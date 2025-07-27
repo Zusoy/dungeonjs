@@ -58,13 +58,13 @@ export class AttackHandler implements IEventHandler<'attack'> {
       throw new ObjectNotFoundError("Enemy", event.enemyId)
     }
 
-    const attackBonus = player.inventory.weapons.reduce((acc, curr) => acc + curr.attack, 0)
-    const firstDiceRoll = this.rng.diceRoll()
-    const secondDiceRoll = this.rng.diceRoll()
-    const attack = firstDiceRoll + secondDiceRoll + attackBonus
+    const inventoryBonus = player.inventory.weapons.reduce((acc, curr) => acc + curr.attack, 0)
+    const firstDiceResult = this.rng.diceRoll()
+    const secondDiceResult = this.rng.diceRoll()
+    const attack = firstDiceResult + secondDiceResult + inventoryBonus
     const succeed = attack > enemy.defense
 
-    this.server.emitInRoom('attacked', room, { succeed , attack })
+    this.server.emitInRoom('combatResolved', room, { succeed , firstDiceResult, secondDiceResult, inventoryBonus })
 
     if (!succeed) {
       player.health = Math.max(0, player.health - 1)
