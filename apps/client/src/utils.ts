@@ -2,3 +2,7 @@
 export function isEnumValue<T extends object>(value: any, enumObject: T): value is T[keyof T] {
   return Object.values(enumObject).includes(value)
 }
+
+export function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}

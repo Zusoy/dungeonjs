@@ -10,6 +10,7 @@ import { TurnAnnounceDialog, type TurnAnnouncer } from 'features/Game/Dungeon/pr
 import { useSelector } from 'react-redux'
 import { selectPlayerTurn } from 'features/Game/Dungeon/application/slice'
 import { selectPlayers } from 'features/Lobby/application/slice'
+import { CombatHUD } from 'features/Game/Combat/presentation/HUD'
 
 export const GameHUD: React.FC = () => {
   const turnAnnouncer = React.useRef<TurnAnnouncer>(null!)
@@ -54,6 +55,7 @@ export const GameHUD: React.FC = () => {
         <LootList />
       </div>
       <PlayerList />
+      <CombatHUD />
       <TurnAnnounceDialog ref={turnAnnouncer} />
     </>
   )

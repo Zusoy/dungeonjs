@@ -2,12 +2,12 @@ import React from 'react'
 
 type Props = {
   readonly type: 'primary' | 'secondary' | 'neutral'
-  readonly max: number
+  readonly delay: number
   readonly onFinish: () => void
 }
 
-const Progress: React.FC<Props> = ({ type, max, onFinish }) => {
-  const [value, setValue] = React.useState<number>(max)
+export const Countdown: React.FC<Props> = ({ type, delay, onFinish }) => {
+  const [value, setValue] = React.useState<number>(delay)
 
   React.useEffect(() => {
     if (Math.max(0, value) === 0) {
@@ -26,8 +26,6 @@ const Progress: React.FC<Props> = ({ type, max, onFinish }) => {
   }, [])
 
   return (
-    <progress className={`progress progress-${type} w-56`} max={max} value={value}></progress>
+    <progress className={`progress progress-${type} w-56`} max={delay} value={value}></progress>
   )
 }
-
-export default Progress

@@ -1,25 +1,12 @@
 import type { ScalarCoords } from 'types/coords'
 import type { VectorTuple } from 'types/utils'
+import type { Weapon } from 'types/weapon'
 
 export enum Hero {
   Rogue = 'rogue',
   Knight = 'knight',
   Mage = 'mage',
   Barbarian = 'barbarian'
-}
-
-export enum WeaponType {
-  Axe = 'axe',
-  Sword = 'sword',
-  Dagger = 'dagger'
-}
-
-export type Weapon = {
-  readonly id: string
-  readonly name: string
-  readonly icon: string
-  readonly attack: number
-  readonly type: WeaponType
 }
 
 export type Inventory = {

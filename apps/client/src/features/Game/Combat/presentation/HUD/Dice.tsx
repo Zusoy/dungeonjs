@@ -1,10 +1,11 @@
 import React from 'react'
 import clsx from 'clsx'
+import { delay } from 'utils'
 
 export type DiceFace = 1 | 2 | 3 | 4 | 5 | 6
 
 export type DiceRef = {
-  rollTo: (value: DiceFace) => void
+  rollTo: (value: DiceFace) => Promise<DiceFace>
 }
 
 const faceRotation: Record<number, string> = {
@@ -14,31 +15,27 @@ const faceRotation: Record<number, string> = {
   4: "rotateX(0deg) rotateY(90deg)",
   5: "rotateX(-90deg) rotateY(0deg)",
   6: "rotateX(90deg) rotateY(0deg)",
-};
+}
 
 export const Dice = React.forwardRef<DiceRef>((_, ref) => {
-  const diceRef = React.useRef<HTMLDivElement>(null);
+  const diceRef = React.useRef<HTMLDivElement>(null!)
 
   React.useImperativeHandle(ref, () => ({
-    rollTo(value: DiceFace) {
-      if (!diceRef.current) return;
+    rollTo: async (value: DiceFace): Promise<DiceFace> => {
+      const rollX = 720 + Math.random() * 360
+      const rollY = 720 + Math.random() * 360
+      const final = faceRotation[value]
 
-      const rollX = 720 + Math.random() * 360;
-      const rollY = 720 + Math.random() * 360;
-      const final = faceRotation[value];
+      diceRef.current.style.transition = "transform 1s ease-out"
+      diceRef.current.style.transform = `rotateX(${rollX}deg) rotateY(${rollY}deg)`
 
-      // First fast spin
-      diceRef.current.style.transition = "transform 1s ease-out";
-      diceRef.current.style.transform = `rotateX(${rollX}deg) rotateY(${rollY}deg)`;
+      await delay(1000)
+      diceRef.current.style.transition = "transform 0.3s ease-in"
+      diceRef.current.style.transform = final
 
-      // Then snap to target
-      setTimeout(() => {
-        if (!diceRef.current) return;
-        diceRef.current.style.transition = "transform 0.3s ease-in";
-        diceRef.current.style.transform = final;
-      }, 1000);
+      return value
     },
-  }))
+  }), [diceRef])
 
   return (
     <div className='w-24 h-24 perspective'>

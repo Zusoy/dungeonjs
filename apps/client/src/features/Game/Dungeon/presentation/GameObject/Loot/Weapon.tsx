@@ -1,8 +1,8 @@
 import React from 'react'
-import { WeaponType } from 'types/user'
-import { Sword } from 'features/Game/GameObject/Prop/Sword'
-import { Axe } from 'features/Game/GameObject/Prop/Axe'
-import { Dagger } from 'features/Game/GameObject/Prop/Dagger'
+import { WeaponType } from 'types/weapon'
+import { Sword } from 'features/Game/Dungeon/presentation/GameObject/Prop/Sword'
+import { Axe } from 'features/Game/Dungeon/presentation/GameObject/Prop/Axe'
+import { Dagger } from 'features/Game/Dungeon/presentation/GameObject/Prop/Dagger'
 import type { ScalarCoords } from 'types/coords'
 
 type Props = {
