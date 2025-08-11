@@ -11,16 +11,14 @@ import { createPlayerMock } from 'test-utils'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 
 describe('EventHandler/CreateRoom', () => {
-  test('should throws when user not found', () => {
+  test('should throws when user not found', async () => {
     const players = new MockedPlayers([])
     const rooms = new MockedRooms([])
     const broadcaster = new MockedPlayerBroadcaster()
     const logger = {} as ILogger
     const socket = new MockedSocket("player_1", null)
 
-    const event: CreateRoomEvent = {
-      roomId: 'test'
-    }
+    const event = new CreateRoomEvent('test')
 
     const handler = new CreateRoomHandler(
       players,
@@ -29,19 +27,17 @@ describe('EventHandler/CreateRoom', () => {
       logger
     )
 
-    expect(() => handler.handle('createRoom', socket, event)).toThrowError(new ObjectNotFoundError("Player", "player_1"))
+    await expect(handler.handle('createRoom', socket, event)).rejects.toThrow(new ObjectNotFoundError("Player", "player_1"))
   })
 
-  test('should create the room and join it and broadcast players', () => {
+  test('should create the room and join it and broadcast players', async () => {
     const players = new MockedPlayers([ createPlayerMock('player_1', 'test') ])
     const rooms = new MockedRooms([])
     const broadcaster = new MockedPlayerBroadcaster()
     const logger = { info: () => {}, error: () => {} } as ILogger
     const socket = new MockedSocket("player_1", null)
 
-    const event: CreateRoomEvent = {
-      roomId: 'test'
-    }
+    const event = new CreateRoomEvent('test')
 
     const handler = new CreateRoomHandler(
       players,
@@ -50,7 +46,7 @@ describe('EventHandler/CreateRoom', () => {
       logger
     )
 
-    handler.handle('createRoom', socket, event)
+    await handler.handle('createRoom', socket, event)
     const room = rooms.find('test')
 
     expect(room).not.toBeNull()

@@ -7,6 +7,8 @@ import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IServer } from 'Domain/IServer'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
+import { FailedToJoinRoomEvent } from 'Domain/Event/FailedToJoinRoomEvent'
+import { JoinedRoomEvent } from 'Domain/Event/JoinedRoomEvent'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: JoinRoomHandler }])
@@ -30,19 +32,23 @@ export class JoinRoomHandler implements IEventHandler<'joinRoom'> {
     const room = this.rooms.find(event.roomId)
 
     if (!room) {
-      socket.emit('failedToJoinRoom', { roomId: event.roomId, code: 'room_not_found' })
+      const failedEvent = new FailedToJoinRoomEvent(event.roomId, 'room_not_found')
+      socket.emit('failedToJoinRoom', failedEvent)
       throw new ObjectNotFoundError("Room", event.roomId)
     }
 
     const currentPlayers = await this.server.fetchSocketIds(room)
 
     if (Array.from(currentPlayers).length >= this.maxPlayer) {
-      socket.emit('failedToJoinRoom', { roomId: room.roomId, code: 'max_players' })
+      const failedEvent = new FailedToJoinRoomEvent(room.roomId, 'max_players')
+      socket.emit('failedToJoinRoom', failedEvent)
       throw new OperationDeniedError()
     }
 
+    const joinedEvent = new JoinedRoomEvent(event.roomId)
+
     socket.join(room)
-    socket.emit('joinedRoom', { roomId: event.roomId })
+    socket.emit('joinedRoom', joinedEvent)
     this.broadcaster.broadcast(room)
   }
 }

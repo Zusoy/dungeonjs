@@ -8,6 +8,7 @@ import type { ILogger } from 'Domain/ILogger'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { LeftRoomEvent } from 'Domain/Event/LeftRoomEvent'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: LeaveRoomHandler }])
@@ -27,7 +28,7 @@ export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
     return channel === 'leaveRoom'
   }
 
-  handle(_channel: 'leaveRoom', socket: ISocket, event: LeaveRoomEvent): void {
+  async handle(_channel: 'leaveRoom', socket: ISocket, event: LeaveRoomEvent): Promise<void> {
     const room = this.rooms.find(event.roomId)
 
     if (socket.room !== event.roomId) {
@@ -42,13 +43,13 @@ export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
       this.rooms.remove(room)
 
       this.server.kickAll(room)
-      this.server.emitInRoom('leftRoom', room, { reason: 'room_deleted' })
+      this.server.emitInRoom('leftRoom', room, new LeftRoomEvent('room_deleted'))
 
       this.logger.info('Room author leave, cleaned room', room.roomId)
     }
 
     socket.leave(room)
-    socket.emit('leftRoom', { reason: 'user_left' })
+    socket.emit('leftRoom', new LeftRoomEvent('user_left'))
     this.broadcaster.broadcast(room)
     this.logger.info('User leave room', socket.id, room.roomId)
   }

@@ -14,6 +14,8 @@ import { EventSubscriber } from 'Infra/EventSubscriber'
 import { Player } from 'Domain/Model/Player'
 import { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
+import { PlayersEvent } from 'Domain/Event/PlayersEvent'
+import { LeftRoomEvent } from 'Domain/Event/LeftRoomEvent'
 
 const httpServer = createServer((_, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -73,7 +75,7 @@ io.on('connect', socket => {
         .filter(p => !!p)
         .map(p => p.getRoomPayload(p.id === room.createdById))
 
-      server.emitInRoom('players', room, { players: roomsPlayers })
+      server.emitInRoom('players', room, new PlayersEvent(roomsPlayers))
     }
   })
 
@@ -82,7 +84,7 @@ io.on('connect', socket => {
 
     createdRooms.forEach(createdRoom => {
       rooms.remove(createdRoom)
-      server.emitInRoom('leftRoom', createdRoom, { reason: 'room_deleted' })
+      server.emitInRoom('leftRoom', createdRoom, new LeftRoomEvent('room_deleted'))
       io.in(createdRoom.roomId).socketsLeave(createdRoom.roomId)
       logger.info('Room author disconnec, clean room', createdRoom.roomId)
     })

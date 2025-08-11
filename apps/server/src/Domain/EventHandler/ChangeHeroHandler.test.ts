@@ -11,32 +11,28 @@ import { Room } from 'Domain/Model/Room'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/ChangeHero', () => {
-  test('throws not authorized in not joined room', () => {
+  test('throws not authorized in not joined room', async () => {
     const players = new MockedPlayers([ createPlayerMock('player_1', 'username') ])
     const rooms = new MockedRooms([])
     const socket = new MockedSocket('player_1', null)
     const broadcaster = new MockedPlayerBroadcaster()
 
-    const event: ChangeHeroEvent = {
-      hero: 'knight'
-    }
+    const event = new ChangeHeroEvent('knight')
 
     const handler = new ChangeHeroHandler(players, rooms, broadcaster)
-    expect(() => handler.handle('changeHero', socket, event)).toThrow(new PlayerNotInRoomError('player_1'))
+    await expect(handler.handle('changeHero', socket, event)).rejects.toThrow(new PlayerNotInRoomError('player_1'))
   })
 
-  test('updates player hero and broadcast changes in room', () => {
+  test('updates player hero and broadcast changes in room', async () => {
     const players = new MockedPlayers([ createPlayerMock('player_1', 'username') ])
     const rooms = new MockedRooms([new Room('game', 'player_1')])
     const socket = new MockedSocket('player_1', 'game')
     const broadcaster = new MockedPlayerBroadcaster()
 
-    const event: ChangeHeroEvent = {
-      hero: 'knight'
-    }
+    const event = new ChangeHeroEvent('knight')
 
     const handler = new ChangeHeroHandler(players, rooms, broadcaster)
-    handler.handle('changeHero', socket, event)
+    await handler.handle('changeHero', socket, event)
 
     const player = players.find('player_1')
 

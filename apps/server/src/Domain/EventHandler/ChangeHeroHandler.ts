@@ -25,7 +25,7 @@ export class ChangeHeroHandler implements IEventHandler<'changeHero'> {
     return channel === 'changeHero'
   }
 
-  handle(_channel: 'changeHero', socket: ISocket, event: ChangeHeroEvent): void {
+  async handle(_channel: 'changeHero', socket: ISocket, event: ChangeHeroEvent): Promise<void> {
     const roomId = socket.room
 
     if (!roomId) {

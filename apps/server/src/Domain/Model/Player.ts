@@ -81,6 +81,13 @@ export class Player {
     }
   }
 
+  public addTreasures(treasures: number): void {
+    this.inventory = {
+      ...this.inventory,
+      treasures: this.inventory.treasures + treasures
+    }
+  }
+
   public addKey(): void {
     this.inventory = {
       ...this.inventory,

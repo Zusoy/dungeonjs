@@ -24,7 +24,7 @@ export class EndTurnHandler implements IEventHandler<'endTurn'> {
     return channel === 'endTurn'
   }
 
-  handle(_channel: 'endTurn', socket: ISocket, _event: EndTurnEvent): void {
+  async handle(_channel: 'endTurn', socket: ISocket, _event: EndTurnEvent): Promise<void> {
     const player = this.players.find(socket.id)
     const roomId = socket.room
 

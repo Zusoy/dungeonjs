@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe'
+import { PlayersEvent } from 'Domain/Event/PlayersEvent'
 import type { Room } from 'Domain/Model/Room'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IServer } from 'Domain/IServer'
@@ -13,15 +14,13 @@ export class PlayerBroadcaster implements IPlayerBroadcaster {
     private readonly players: IPlayers
   ) { }
 
-  broadcast(room: Room): void {
-    this.server.fetchSocketIds(room)
-      .then(ids => {
-        const players = Array.from(ids)
-          .map(id => this.players.find(id))
-          .filter(p => !!p)
-          .map(p => p.getRoomPayload(p.id === room.createdById))
+  async broadcast(room: Room): Promise<void> {
+    const ids = await this.server.fetchSocketIds(room)
+    const players = Array.from(ids)
+      .map(id => this.players.find(id))
+      .filter(p => !!p)
+      .map(p => p.getRoomPayload(p.id === room.createdById))
 
-        this.server.emitInRoom('players', room, { players })
-      })
+    this.server.emitInRoom('players', room, new PlayersEvent(players))
   }
 }

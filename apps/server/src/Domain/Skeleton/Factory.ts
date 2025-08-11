@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe'
 import type { ScalarCoords } from 'Domain/Geometry/Coords'
 import type { Loot } from 'Domain/Model/Loot'
-import { MageSkeleton, MinionSkeleton, RogueSkeleton, type Skeleton, SkeletonType, WarriorSkeleton } from 'Domain/Model/Skeleton'
+import { Golem, MageSkeleton, MinionSkeleton, RogueSkeleton, type Skeleton, SkeletonType, WarriorSkeleton } from 'Domain/Model/Skeleton'
 
 @injectable()
 export class Factory {
@@ -18,6 +18,9 @@ export class Factory {
 
       case SkeletonType.Warrior:
         return new WarriorSkeleton(id, coords, loot)
+
+      case SkeletonType.Golem:
+        return new Golem(id, coords, loot)
     }
   }
 }

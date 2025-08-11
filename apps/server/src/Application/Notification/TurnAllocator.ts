@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe'
+import { PlayerTurnEvent } from 'Domain/Event/PlayerTurnEvent'
 import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import type { PlayerPayload } from 'Domain/Model/Player'
 import type { Room } from 'Domain/Model/Room'
@@ -51,7 +52,8 @@ export class TurnAllocator implements ITurnAllocator {
           return
         }
 
-        this.server.emitInRoom('playerTurn', room, { playerId: playerIds[nextPlayerIndex] })
+        const turnEvent = new PlayerTurnEvent(playerIds[nextPlayerIndex])
+        this.server.emitInRoom('playerTurn', room, turnEvent)
       })
   }
 }

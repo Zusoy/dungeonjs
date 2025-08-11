@@ -1,5 +1,7 @@
+import type { IGameEvent } from 'Domain/GameEvent'
 import type { Skeleton } from 'Domain/Model/Skeleton'
 
-export type SkeletonsEvent = {
-  readonly skeletons: Iterable<Skeleton>
+export class SkeletonsEvent implements IGameEvent {
+  public readonly tag = 'skeletons'
+  constructor(public readonly skeletons: Iterable<Skeleton>) {}
 }

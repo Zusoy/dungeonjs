@@ -19,6 +19,7 @@ import { WeaponRandomizer } from 'Domain/Loot/WeaponRandomizer'
 
 // parameters
 container.register('room.maxplayer', { useValue: 4 })
+container.register('chance.golem', { useValue: 2 })
 container.register('chance.enemy', { useValue: 80 })
 container.register('chance.room', { useValue: 36 })
 container.register('chance.loot.key', { useValue: 30 })
@@ -26,6 +27,7 @@ container.register('chance.loot.axe', { useValue: 10 })
 container.register('chance.loot.sword', { useValue: 30 })
 container.register('player.inventory.maxkeys', { useValue: 1 })
 container.register('player.inventory.maxweapons', { useValue: 2 })
+container.register('player.golem.reward', { useValue: 2 })
 
 // RNG
 container.register<IRandomizer>(

@@ -21,6 +21,7 @@ export type State = {
   loots: WorldLoot[]
   playerTurn: Nullable<UserPayload['id']>
   focusedCoords: Nullable<ScalarCoords>
+  golemKilled: boolean
 }
 
 export const initialState: State = {
@@ -31,7 +32,8 @@ export const initialState: State = {
   chests: [],
   loots: [],
   playerTurn: null,
-  focusedCoords: null
+  focusedCoords: null,
+  golemKilled: false
 }
 
 export type ChangeHeroPayload = {

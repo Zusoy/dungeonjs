@@ -3,6 +3,7 @@ import MageSkeleton from 'features/Game/Dungeon/presentation/GameObject/Characte
 import MinionSkeleton from 'features/Game/Dungeon/presentation/GameObject/Character/Skeleton/Minion'
 import RogueSkeleton from 'features/Game/Dungeon/presentation/GameObject/Character/Skeleton/Rogue'
 import WarriorSkeleton from 'features/Game/Dungeon/presentation/GameObject/Character/Skeleton/Warrior'
+import GolemSkeleton from 'features/Game/Dungeon/presentation/GameObject/Character/Skeleton/Golem'
 import { Vector3 } from 'three'
 import { SkeletonType } from 'types/enemy'
 
@@ -33,6 +34,12 @@ const Skeleton: React.FC<Props> = props => {
   if (props.type === SkeletonType.Warrior) {
     return (
       <WarriorSkeleton {...props} />
+    )
+  }
+
+  if (props.type === SkeletonType.Golem) {
+    return (
+      <GolemSkeleton {...props} />
     )
   }
 

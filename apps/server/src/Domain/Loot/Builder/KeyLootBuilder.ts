@@ -1,6 +1,6 @@
 import { injectable, registry } from 'tsyringe'
-import type { ILootBuilder } from 'Domain/Loot/ILootBuilder'
 import { KeyLoot, type Loot, LootType } from 'Domain/Model/Loot'
+import type { ILootBuilder } from 'Domain/Loot/ILootBuilder'
 import type { Key } from 'Domain/Model/Key'
 
 @injectable()

@@ -39,6 +39,7 @@ export interface ServerToClients {
   discoverTile: (event: Events.DiscoverTileEvent) => void
   engageCombat: (event: Events.EngageCombatEvent) => void
   combatResolved: (event: Events.CombatResolvedEvent) => void
+  gameEnded: (event: Events.GameEndedEvent) => void
 }
 
 export interface InterServer {

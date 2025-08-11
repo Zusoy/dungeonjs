@@ -1,5 +1,5 @@
 import { Coords, type ScalarCoords } from 'Domain/Geometry/Coords'
-import type { Skeleton } from 'Domain/Model/Skeleton'
+import { SkeletonType, type Skeleton } from 'Domain/Model/Skeleton'
 import type { Nullable } from 'utils'
 import type { WorldLoot } from 'Domain/Model/Loot'
 import type { Chest } from 'Domain/Model/Chest'
@@ -29,6 +29,10 @@ export class Room {
 
   public getEnemies(): Skeleton[] {
     return this.enemies
+  }
+
+  public hasGolem(): boolean {
+    return !!this.enemies.find(enemy => enemy.type === SkeletonType.Golem)
   }
 
   public addLoot(loot: WorldLoot): void {

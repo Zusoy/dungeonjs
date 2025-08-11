@@ -20,7 +20,7 @@ import { LootableWeapon } from 'Domain/Model/Loot'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/Attack', () => {
-  test('throws when player not found', () => {
+  test('throws when player not found', async () => {
     const server = new MockedServer()
     const players = new MockedPlayers([])
     const rooms = new MockedRooms([])
@@ -29,10 +29,7 @@ describe('EventHandler/Attack', () => {
     const random = new MockedRandomizer()
     const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
-    const event: AttackEvent = {
-      enemyId: 'enemy',
-      originCoords: [0, 0]
-    }
+    const event = new AttackEvent('enemy', [0, 0])
 
     const handler = new AttackHandler(
       server,
@@ -40,12 +37,14 @@ describe('EventHandler/Attack', () => {
       rooms,
       broadcaster,
       loots,
-      random
+      random,
+      2
     )
-    expect(() => handler.handle('attack', socket, event)).toThrow(new ObjectNotFoundError("Player", "player"))
+
+    await expect(handler.handle('attack', socket, event)).rejects.toThrow(new ObjectNotFoundError("Player", "player"))
   })
 
-  test('throws not authorized when not joined room', () => {
+  test('throws not authorized when not joined room', async () => {
     const server = new MockedServer()
     const players = new MockedPlayers([createPlayerMock('player', 'username')])
     const rooms = new MockedRooms([new Room('room', 'player')])
@@ -54,10 +53,7 @@ describe('EventHandler/Attack', () => {
     const random = new MockedRandomizer()
     const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
-    const event: AttackEvent = {
-      enemyId: 'enemy',
-      originCoords: [0, 0]
-    }
+    const event = new AttackEvent('enemy', [0, 0])
 
     const handler = new AttackHandler(
       server,
@@ -65,12 +61,14 @@ describe('EventHandler/Attack', () => {
       rooms,
       broadcaster,
       loots,
-      random
+      random,
+      2
     )
-    expect(() => handler.handle('attack', socket, event)).toThrow(new PlayerNotInRoomError('player'))
+
+    await expect(handler.handle('attack', socket, event)).rejects.toThrow(new PlayerNotInRoomError('player'))
   })
 
-  test('throws when room not found', () => {
+  test('throws when room not found', async () => {
     const server = new MockedServer()
     const players = new MockedPlayers([createPlayerMock('player', 'username')])
     const rooms = new MockedRooms([])
@@ -79,10 +77,7 @@ describe('EventHandler/Attack', () => {
     const random = new MockedRandomizer()
     const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
-    const event: AttackEvent = {
-      enemyId: 'enemy',
-      originCoords: [0, 0]
-    }
+    const event = new AttackEvent('enemy', [0, 0])
 
     const handler = new AttackHandler(
       server,
@@ -90,13 +85,14 @@ describe('EventHandler/Attack', () => {
       rooms,
       broadcaster,
       loots,
-      random
+      random,
+      2
     )
 
-    expect(() => handler.handle('attack', socket, event)).toThrow(new ObjectNotFoundError("Room", "room"))
+    await expect(handler.handle('attack', socket, event)).rejects.toThrow(new ObjectNotFoundError("Room", "room"))
   })
 
-  test('throws when enemy not found', () => {
+  test('throws when enemy not found', async () => {
     const server = new MockedServer()
     const players = new MockedPlayers([createPlayerMock('player', 'username')])
     const rooms = new MockedRooms([new Room('room', 'player')])
@@ -105,10 +101,7 @@ describe('EventHandler/Attack', () => {
     const random = new MockedRandomizer()
     const loots = new LootFactory([ new KeyLootBuilder(), new WeaponLootBuilder() ])
 
-    const event: AttackEvent = {
-      enemyId: 'enemy',
-      originCoords: [0, 0]
-    }
+    const event = new AttackEvent('enemy', [0, 0])
 
     const handler = new AttackHandler(
       server,
@@ -116,13 +109,14 @@ describe('EventHandler/Attack', () => {
       rooms,
       broadcaster,
       loots,
-      random
+      random,
+      2
     )
 
-    expect(() => handler.handle('attack', socket, event)).toThrow(new ObjectNotFoundError("Enemy", "enemy"))
+    await expect(handler.handle('attack', socket, event)).rejects.toThrow(new ObjectNotFoundError("Enemy", "enemy"))
   })
 
-  test('handles not succeed attack', () => {
+  test('handles not succeed attack', async () => {
     const server = new MockedServer()
     const player = new Player(
       'player',
@@ -149,10 +143,7 @@ describe('EventHandler/Attack', () => {
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer({ diceResult: 1 })
 
-    const event: AttackEvent = {
-      enemyId: 'enemy',
-      originCoords: [0, 0]
-    }
+    const event = new AttackEvent('enemy', [0, 0])
 
     const handler = new AttackHandler(
       server,
@@ -160,10 +151,11 @@ describe('EventHandler/Attack', () => {
       rooms,
       broadcaster,
       loots,
-      random
+      random,
+      2
     )
 
-    handler.handle('attack', socket, event)
+    await handler.handle('attack', socket, event)
 
     const updatedPlayer = players.find('player')
     const updatedRoom = rooms.find('room')
@@ -179,7 +171,7 @@ describe('EventHandler/Attack', () => {
     expect(broadcaster.broadcastedRooms.includes('room')).toBeTruthy()
   })
 
-  test('handles succeed attack', () => {
+  test('handles succeed attack', async () => {
     const server = new MockedServer()
     const player = new Player(
       'player',
@@ -206,10 +198,7 @@ describe('EventHandler/Attack', () => {
     const socket = new MockedSocket('player', 'room')
     const random = new MockedRandomizer({ diceResult: 6 })
 
-    const event: AttackEvent = {
-      enemyId: 'enemy',
-      originCoords: [0, 0]
-    }
+    const event = new AttackEvent('enemy', [0, 0])
 
     const handler = new AttackHandler(
       server,
@@ -217,10 +206,11 @@ describe('EventHandler/Attack', () => {
       rooms,
       broadcaster,
       loots,
-      random
+      random,
+      2
     )
 
-    handler.handle('attack', socket, event)
+    await handler.handle('attack', socket, event)
 
     const updatedPlayer = players.find('player')
     const updatedRoom = rooms.find('room')

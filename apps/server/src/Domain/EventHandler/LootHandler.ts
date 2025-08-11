@@ -11,6 +11,7 @@ import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { LootType } from 'Domain/Model/Loot'
 import { Coords } from 'Domain/Geometry/Coords'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
+import { LootsEvent } from 'Domain/Event/LootsEvent'
 
 @injectable()
 @registry([{ token: 'handlers', useClass: LootHandler }])
@@ -34,7 +35,7 @@ export class LootHandler implements IEventHandler<'loot'> {
     return channel === 'loot'
   }
 
-  handle(_channel: 'loot', socket: ISocket, event: LootEvent): void {
+  async handle(_channel: 'loot', socket: ISocket, event: LootEvent): Promise<void> {
     if (!socket.room) {
       throw new PlayerNotInRoomError(socket.id)
     }
@@ -89,6 +90,6 @@ export class LootHandler implements IEventHandler<'loot'> {
     this.rooms.update(room)
 
     this.broadcaster.broadcast(room)
-    this.server.emitInRoom('loots', room, { loots: room.getLoots() })
+    this.server.emitInRoom('loots', room, new LootsEvent(room.getLoots()))
   }
 }
