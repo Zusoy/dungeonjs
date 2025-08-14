@@ -9,7 +9,7 @@ import { MockedPlayerBroadcaster } from 'Application/Notification/MockedPlayerBr
 import { AttackEvent } from 'Domain/Event/AttackEvent'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { Room } from 'Domain/Model/Room'
-import { createMinionSkeletonMock, createPlayerMock, createWeaponLootMock } from 'test-utils'
+import { createMinionSkeletonMock, createPlayerMock, createWeaponLootMock, createGolemSkeletonMock } from 'test-utils'
 import { MockedRandomizer } from 'Application/RNG/MockedRandomizer'
 import { Factory as LootFactory } from 'Domain/Loot/Factory'
 import { KeyLootBuilder } from 'Domain/Loot/Builder/KeyLootBuilder'
@@ -18,6 +18,7 @@ import { Player } from 'Domain/Model/Player'
 import { Coords } from 'Domain/Geometry/Coords'
 import { LootableWeapon } from 'Domain/Model/Loot'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
+import { GameEndedEvent } from 'Domain/Event/GameEndedEvent'
 
 describe('EventHandler/Attack', () => {
   test('throws when player not found', async () => {
@@ -227,5 +228,80 @@ describe('EventHandler/Attack', () => {
     expect(server.roomEmittedEvents['room']?.includes('loots')).toBeTruthy()
     expect(broadcaster.broadcastedRooms.includes('room')).toBeFalsy()
     expect(updatedRoom!.getEnemies().length).toBe(0)
+  })
+
+  test('handles golem attack and emits gameEnded with correct winner', async () => {
+    const combatPlayer = new Player(
+      'combat-player',
+      'combatant',
+      '#ffff',
+      'barbarian',
+      { weapons: [], treasures: 5, keys: 0 },
+      [0, 0, 0],
+      [0, 0, 0],
+      [1, 1],
+      4
+    )
+
+    const otherPlayer = new Player(
+      'other-player',
+      'other',
+      '#0000',
+      'mage',
+      { weapons: [], treasures: 10, keys: 0 },
+      [0, 0, 0],
+      [0, 0, 0],
+      [2, 2],
+      4
+    )
+
+    const server = new MockedServer(['combat-player', 'other-player'])
+    const players = new MockedPlayers([combatPlayer, otherPlayer])
+    const loots = new LootFactory([new KeyLootBuilder(), new WeaponLootBuilder()])
+
+    const room = new Room('room', 'combat-player')
+    const loot = createWeaponLootMock('weapon_loot')
+    const golem = createGolemSkeletonMock('golem', loot)
+    room.addEnemy(golem)
+
+    const rooms = new MockedRooms([room])
+    const broadcaster = new MockedPlayerBroadcaster()
+    const socket = new MockedSocket('combat-player', 'room')
+    const random = new MockedRandomizer({ diceResult: 12 })
+
+    const event = new AttackEvent('golem', [0, 0])
+    const golemReward = 3
+
+    const handler = new AttackHandler(
+      server,
+      players,
+      rooms,
+      broadcaster,
+      loots,
+      random,
+      golemReward
+    )
+
+    await handler.handle('attack', socket, event)
+
+    const updatedCombatPlayer = players.find('combat-player')
+    const updatedOtherPlayer = players.find('other-player')
+    const updatedRoom = rooms.find('room')
+
+    expect(updatedCombatPlayer).not.toBeNull()
+    expect(updatedOtherPlayer).not.toBeNull()
+    expect(updatedRoom).not.toBeNull()
+
+    expect(updatedCombatPlayer!.inventory.treasures).toBe(8)
+    expect(updatedOtherPlayer!.inventory.treasures).toBe(10)
+
+    expect(server.roomEmittedEvents['room']?.includes('gameEnded')).toBeTruthy()
+
+    const gameEndedPayload = server.roomEmittedEventPayloads['room']
+      ?.find(event => event.event === 'gameEnded')?.payload as GameEndedEvent
+
+    expect(gameEndedPayload).toBeDefined()
+    expect(gameEndedPayload.combatPlayerId).toBe('combat-player')
+    expect(gameEndedPayload.winnerPlayerId).toBe('other-player')
   })
 })

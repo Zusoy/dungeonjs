@@ -1,7 +1,7 @@
 import { ScalarCoords } from 'Domain/Geometry/Coords'
 import { Loot, LootableKey, LootableWeapon, WeaponLoot, WorldLoot } from 'Domain/Model/Loot'
 import { Player } from 'Domain/Model/Player'
-import { MinionSkeleton, Skeleton } from 'Domain/Model/Skeleton'
+import { MinionSkeleton, Skeleton, Golem } from 'Domain/Model/Skeleton'
 import { Dagger } from 'Domain/Model/Weapon'
 
 export const createPlayerMock = (id: string, username: string, coords: ScalarCoords = [0, 0]): Player => {
@@ -40,4 +40,8 @@ export const createLootableKeyMock = (id: string, coords: ScalarCoords): WorldLo
 
 export const createMinionSkeletonMock = (id: string, loot: Loot): Skeleton => {
   return new MinionSkeleton(id, [0, 0], loot)
+}
+
+export const createGolemSkeletonMock = (id: string, loot: Loot): Skeleton => {
+  return new Golem(id, [0, 0], loot)
 }
