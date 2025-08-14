@@ -19,7 +19,7 @@ import { WeaponRandomizer } from 'Domain/Loot/WeaponRandomizer'
 
 // parameters
 container.register('room.maxplayer', { useValue: 4 })
-container.register('chance.golem', { useValue: 2 })
+container.register('chance.golem', { useValue: 100 })
 container.register('chance.enemy', { useValue: 80 })
 container.register('chance.room', { useValue: 36 })
 container.register('chance.loot.key', { useValue: 30 })

@@ -20,7 +20,8 @@ import type {
   LootPayload,
   ReceivedChestsPayload,
   PickChestPayload,
-  EndTurnPayload
+  EndTurnPayload,
+  GameEndedPayload
 } from 'features/Game/Dungeon/application/slice'
 import type { EngageCombatPayload, CombatResolvedPayload, AttackPayload } from 'features/Game/Combat/application/slice'
 
@@ -37,7 +38,8 @@ export interface ServerToClients {
   playerTurn: (payload: PlayerTurnPayload) => void
   discoverTile: (payload: DiscoverTilePayload) => void
   engageCombat: (payload: EngageCombatPayload) => void
-  combatResolved: (event: CombatResolvedPayload) => void
+  combatResolved: (payload: CombatResolvedPayload) => void
+  gameEnded: (payload: GameEndedPayload) => void
 }
 
 export interface ClientToServer {
