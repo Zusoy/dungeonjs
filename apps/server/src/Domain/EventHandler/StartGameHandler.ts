@@ -9,16 +9,17 @@ import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 import { GameStartedEvent } from 'Domain/Event/GameStartedEvent'
 import { PlayerTurnEvent } from 'Domain/Event/PlayerTurnEvent'
+import { HANDLERS, LOGGER, ROOMS, SERVER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: StartGameHandler }])
+@registry([{ token: HANDLERS, useClass: StartGameHandler }])
 export class StartGameHandler implements IEventHandler<'startGame'> {
   constructor(
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger
   ) {}
 

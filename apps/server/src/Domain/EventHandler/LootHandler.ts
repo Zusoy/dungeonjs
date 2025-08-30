@@ -12,22 +12,23 @@ import { LootType } from 'Domain/Model/Loot'
 import { Coords } from 'Domain/Geometry/Coords'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 import { LootsEvent } from 'Domain/Event/LootsEvent'
+import { BROADCASTER, HANDLERS, INVENTORY_MAX_KEY_PARAMETER, INVENTORY_MAX_WEAPON_PARAMETER, PLAYERS, ROOMS, SERVER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: LootHandler }])
+@registry([{ token: HANDLERS, useClass: LootHandler }])
 export class LootHandler implements IEventHandler<'loot'> {
   constructor(
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('player.inventory.maxkeys')
+    @inject(INVENTORY_MAX_KEY_PARAMETER)
     private readonly maxPlayerInventoryKeyCount: number,
-    @inject('player.inventory.maxweapons')
+    @inject(INVENTORY_MAX_WEAPON_PARAMETER)
     private readonly maxPlayerInventoryWeaponCount: number
   ) {}
 

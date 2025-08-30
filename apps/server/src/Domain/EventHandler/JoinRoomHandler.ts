@@ -9,18 +9,19 @@ import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { FailedToJoinRoomEvent } from 'Domain/Event/FailedToJoinRoomEvent'
 import { JoinedRoomEvent } from 'Domain/Event/JoinedRoomEvent'
+import { BROADCASTER, HANDLERS, MAX_PLAYER_PARAMETER, ROOMS, SERVER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: JoinRoomHandler }])
+@registry([{ token: HANDLERS, useClass: JoinRoomHandler }])
 export class JoinRoomHandler implements IEventHandler<'joinRoom'> {
   constructor (
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('room.maxplayer')
+    @inject(MAX_PLAYER_PARAMETER)
     private readonly maxPlayer: number
   ) {}
 

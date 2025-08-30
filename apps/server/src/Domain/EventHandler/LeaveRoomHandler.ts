@@ -9,18 +9,19 @@ import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { LeftRoomEvent } from 'Domain/Event/LeftRoomEvent'
+import { BROADCASTER, HANDLERS, LOGGER, ROOMS, SERVER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: LeaveRoomHandler }])
+@registry([{ token: HANDLERS, useClass: LeaveRoomHandler }])
 export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
   constructor (
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger
   ) {}
 

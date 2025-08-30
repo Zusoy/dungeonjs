@@ -7,16 +7,17 @@ import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
+import { BROADCASTER, HANDLERS, PLAYERS, ROOMS } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: ChangeHeroHandler }])
+@registry([{ token: HANDLERS, useClass: ChangeHeroHandler }])
 export class ChangeHeroHandler implements IEventHandler<'changeHero'> {
   constructor(
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster
   ) {
   }

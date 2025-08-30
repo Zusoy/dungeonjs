@@ -1,15 +1,16 @@
 import { injectable, inject } from 'tsyringe'
 import type { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { Axe, Dagger, Sword, type Weapon } from 'Domain/Model/Weapon'
+import { LOOT_AXE_CHANCE_PARAMETER, LOOT_SWORD_CHANCE_PARAMETER, RNG } from 'Domain/tokens'
 
 @injectable()
 export class WeaponRandomizer {
   constructor(
-    @inject('rng')
+    @inject(RNG)
     private readonly rng: IRandomizer,
-    @inject('chance.loot.axe')
+    @inject(LOOT_AXE_CHANCE_PARAMETER)
     private readonly axeLootChance: number,
-    @inject('chance.loot.sword')
+    @inject(LOOT_SWORD_CHANCE_PARAMETER)
     private readonly swordLootChance: number
   ) {}
 

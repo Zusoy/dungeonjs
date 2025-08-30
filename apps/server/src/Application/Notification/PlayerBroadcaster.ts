@@ -4,13 +4,14 @@ import type { Room } from 'Domain/Model/Room'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IServer } from 'Domain/IServer'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
+import { PLAYERS, SERVER } from 'Domain/tokens'
 
 @injectable()
 export class PlayerBroadcaster implements IPlayerBroadcaster {
   constructor(
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers
   ) { }
 

@@ -7,17 +7,18 @@ import type { IServer } from 'Domain/IServer'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { ILogger } from 'Domain/ILogger'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
+import { BROADCASTER, LOGGER, PLAYERS, SERVER } from 'Domain/tokens'
 
 @injectable()
 export class TurnAllocator implements ITurnAllocator {
   constructor(
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger
   ) { }
 

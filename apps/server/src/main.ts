@@ -16,6 +16,7 @@ import { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import { PlayersEvent } from 'Domain/Event/PlayersEvent'
 import { LeftRoomEvent } from 'Domain/Event/LeftRoomEvent'
+import * as Tokens from 'Domain/tokens'
 
 const httpServer = createServer((_, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -27,14 +28,14 @@ const httpServer = createServer((_, res) => {
 })
 
 const io = new IOServer<ClientToServer, ServerToClients, InterServer>(httpServer)
-const players = container.resolve<IPlayers>('players')
-const rooms = container.resolve<IRooms>('rooms')
-const logger = container.resolve<ILogger>('logger')
+const players = container.resolve<IPlayers>(Tokens.PLAYERS)
+const rooms = container.resolve<IRooms>(Tokens.ROOMS)
+const logger = container.resolve<ILogger>(Tokens.LOGGER)
 
 const server = new InputOutputServer(io)
-container.register<IServer>('server', { useValue: server })
-container.register<IPlayerBroadcaster>('players.broadcaster', { useClass: PlayerBroadcaster })
-container.register<ITurnAllocator>('turn_allocator', { useClass: TurnAllocator })
+container.register<IServer>(Tokens.SERVER, { useValue: server })
+container.register<IPlayerBroadcaster>(Tokens.BROADCASTER, { useClass: PlayerBroadcaster })
+container.register<ITurnAllocator>(Tokens.TURN_ALLOCATOR, { useClass: TurnAllocator })
 
 container.register<EventHandlers.ChangeHeroHandler>(EventHandlers.ChangeHeroHandler, { useClass: EventHandlers.ChangeHeroHandler })
 container.register<EventHandlers.MoveHandler>(EventHandlers.MoveHandler, { useClass: EventHandlers.MoveHandler })

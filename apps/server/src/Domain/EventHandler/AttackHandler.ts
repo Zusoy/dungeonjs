@@ -15,24 +15,25 @@ import { GameEndedEvent } from 'Domain/Event/GameEndedEvent'
 import { CombatResolvedEvent } from 'Domain/Event/CombatResolvedEvent'
 import { SkeletonsEvent } from 'Domain/Event/SkeletonsEvent'
 import { LootsEvent } from 'Domain/Event/LootsEvent'
+import { SERVER, PLAYERS, ROOMS, BROADCASTER, LOOTS_FACTORY, RNG, GOLEM_REWARD_PARAMETER, HANDLERS } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: AttackHandler }])
+@registry([{ token: HANDLERS, useClass: AttackHandler }])
 export class AttackHandler implements IEventHandler<'attack'> {
   constructor(
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('factory.loots')
+    @inject(LOOTS_FACTORY)
     private readonly loots: LootFactory,
-    @inject('rng')
+    @inject(RNG)
     private readonly rng: IRandomizer,
-    @inject('player.golem.reward')
+    @inject(GOLEM_REWARD_PARAMETER)
     private readonly golemReward: number
   ) {
   }

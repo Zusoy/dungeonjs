@@ -8,18 +8,19 @@ import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IServer } from 'Domain/IServer'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { HANDLERS, PLAYERS, ROOMS, SERVER, TURN_ALLOCATOR } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: NewGameHandler }])
+@registry([{ token: HANDLERS, useClass: NewGameHandler }])
 export class NewGameHandler implements IEventHandler<'newGame'> {
   constructor(
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('turn_allocator')
+    @inject(TURN_ALLOCATOR)
     private readonly turnAllocator: ITurnAllocator
   ) {}
 

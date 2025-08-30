@@ -16,47 +16,48 @@ import { Randomizer } from 'Application/RNG/Randomizer'
 import { WeaponLootBuilder } from 'Domain/Loot/Builder/WeaponLootBuilder'
 import { KeyLootBuilder } from 'Domain/Loot/Builder/KeyLootBuilder'
 import { WeaponRandomizer } from 'Domain/Loot/WeaponRandomizer'
+import * as Tokens from 'Domain/tokens'
 
 // parameters
-container.register('room.maxplayer', { useValue: 4 })
-container.register('chance.golem', { useValue: 100 })
-container.register('chance.enemy', { useValue: 80 })
-container.register('chance.room', { useValue: 36 })
-container.register('chance.loot.key', { useValue: 30 })
-container.register('chance.loot.axe', { useValue: 10 })
-container.register('chance.loot.sword', { useValue: 30 })
-container.register('player.inventory.maxkeys', { useValue: 1 })
-container.register('player.inventory.maxweapons', { useValue: 2 })
-container.register('player.golem.reward', { useValue: 2 })
+container.register(Tokens.MAX_PLAYER_PARAMETER, { useValue: 4 })
+container.register(Tokens.GOLEM_DISCOVERY_CHANCE_PARAMETER, { useValue: 2 })
+container.register(Tokens.ENEMY_DISCOVERY_CHANCE_PARAMETER, { useValue: 80 })
+container.register(Tokens.ROOM_DISCOVERY_CHANCE_PARAMETER, { useValue: 36 })
+container.register(Tokens.LOOT_KEY_CHANCE_PARAMETER, { useValue: 30 })
+container.register(Tokens.LOOT_AXE_CHANCE_PARAMETER, { useValue: 10 })
+container.register(Tokens.LOOT_SWORD_CHANCE_PARAMETER, { useValue: 30 })
+container.register(Tokens.INVENTORY_MAX_KEY_PARAMETER, { useValue: 1 })
+container.register(Tokens.INVENTORY_MAX_WEAPON_PARAMETER, { useValue: 2 })
+container.register(Tokens.GOLEM_REWARD_PARAMETER, { useValue: 2 })
 
 // RNG
 container.register<IRandomizer>(
-  'rng',
+  Tokens.RNG,
   { useClass: Randomizer },
   { lifecycle: Lifecycle.Singleton }
 )
 
 container.register<WeaponRandomizer>(
-  'weapon.randomizer',
+  Tokens.WEAPON_RANDOMIZER,
   { useClass: WeaponRandomizer },
   { lifecycle: Lifecycle.Singleton }
 )
 
 // repositories
 container.register<IPlayers>(
-  'players',
+  Tokens.PLAYERS,
   { useClass: Players },
   { lifecycle: Lifecycle.Singleton }
 )
 container.register<IRooms>(
-  'rooms',
+  Tokens.ROOMS,
   { useClass: Rooms },
   { lifecycle: Lifecycle.Singleton }
 )
 
 // logger
 container.register<ILogger>(
-  'logger',
+  Tokens.LOGGER,
   { useClass: ConsoleLogger },
   { lifecycle: Lifecycle.Singleton }
 )
@@ -65,13 +66,13 @@ container.register<ILogger>(
 container.register<CorridorBuilder>(CorridorBuilder, { useClass: CorridorBuilder })
 container.register<RoomBuilder>(RoomBuilder, { useClass: RoomBuilder })
 container.register<TileFactory>(
-  'factory.tiles',
+  Tokens.TILES_FACTORY,
   { useClass: TileFactory }
 )
 
 // skeletons factory
 container.register<SkeletonFactory>(
-  'factory.skeletons',
+  Tokens.SKELETONS_FACTORY,
   { useClass: SkeletonFactory },
   { lifecycle: Lifecycle.Singleton }
 )
@@ -80,7 +81,7 @@ container.register<SkeletonFactory>(
 container.register<WeaponLootBuilder>(WeaponLootBuilder, { useClass: WeaponLootBuilder })
 container.register<KeyLootBuilder>(KeyLootBuilder, { useClass: KeyLootBuilder })
 container.register<LootFactory>(
-  'factory.loots',
+  Tokens.LOOTS_FACTORY,
   { useClass: LootFactory },
   { lifecycle: Lifecycle.Singleton }
 )

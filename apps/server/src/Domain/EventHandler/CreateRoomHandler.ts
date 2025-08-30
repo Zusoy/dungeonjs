@@ -9,18 +9,19 @@ import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { ILogger } from 'Domain/ILogger'
 import { JoinedRoomEvent } from 'Domain/Event/JoinedRoomEvent'
+import { BROADCASTER, HANDLERS, LOGGER, PLAYERS, ROOMS } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: CreateRoomHandler }])
+@registry([{ token: HANDLERS, useClass: CreateRoomHandler }])
 export class CreateRoomHandler implements IEventHandler<'createRoom'> {
   constructor(
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger
   ) { }
 

@@ -22,38 +22,39 @@ import { DiscoverTileEvent } from 'Domain/Event/DiscoverTileEvent'
 import { SkeletonsEvent } from 'Domain/Event/SkeletonsEvent'
 import { EngageCombatEvent } from 'Domain/Event/EngageCombatEvent'
 import { ChestsEvent } from 'Domain/Event/ChestsEvent'
+import { BROADCASTER, ENEMY_DISCOVERY_CHANCE_PARAMETER, GOLEM_DISCOVERY_CHANCE_PARAMETER, HANDLERS, LOGGER, LOOT_KEY_CHANCE_PARAMETER, LOOTS_FACTORY, PLAYERS, RNG, ROOM_DISCOVERY_CHANCE_PARAMETER, ROOMS, SERVER, SKELETONS_FACTORY, TILES_FACTORY, WEAPON_RANDOMIZER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: MoveHandler }])
+@registry([{ token: HANDLERS, useClass: MoveHandler }])
 export class MoveHandler implements IEventHandler<'moveToCoords'> {
   constructor(
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('factory.loots')
+    @inject(LOOTS_FACTORY)
     private readonly loots: LootFactory,
-    @inject('factory.skeletons')
+    @inject(SKELETONS_FACTORY)
     private readonly skeletons: SkeletonFactory,
-    @inject('factory.tiles')
+    @inject(TILES_FACTORY)
     private readonly tiles: TileFactory,
-    @inject('rng')
+    @inject(RNG)
     private readonly rng: IRandomizer,
-    @inject('weapon.randomizer')
+    @inject(WEAPON_RANDOMIZER)
     private readonly weaponRandomizer: WeaponRandomizer,
-    @inject('chance.room')
+    @inject(ROOM_DISCOVERY_CHANCE_PARAMETER)
     private readonly roomDiscoveryChance: number,
-    @inject('chance.enemy')
+    @inject(ENEMY_DISCOVERY_CHANCE_PARAMETER)
     private readonly enemyDiscoveryChance: number,
-    @inject('chance.loot.key')
+    @inject(LOOT_KEY_CHANCE_PARAMETER)
     private readonly keyLootChance: number,
-    @inject('chance.golem')
+    @inject(GOLEM_DISCOVERY_CHANCE_PARAMETER)
     private readonly golemDiscoveryChance: number
   ) { }
 

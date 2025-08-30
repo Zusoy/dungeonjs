@@ -2,11 +2,12 @@ import { injectable, injectAll } from 'tsyringe'
 import type { ILootBuilder } from 'Domain/Loot/ILootBuilder'
 import { Loot, LootableKey, LootableWeapon, LootType, WorldLoot } from 'Domain/Model/Loot'
 import { ScalarCoords } from 'Domain/Geometry/Coords'
+import { LOOT_BUILDER } from 'Domain/tokens'
 
 @injectable()
 export class Factory {
   constructor(
-    @injectAll('loot.builder')
+    @injectAll(LOOT_BUILDER)
     private readonly builders: ILootBuilder<any>[]
   ) { }
 
