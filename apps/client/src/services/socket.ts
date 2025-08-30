@@ -21,7 +21,8 @@ import type {
   ReceivedChestsPayload,
   PickChestPayload,
   EndTurnPayload,
-  GameEndedPayload
+  GameEndedPayload,
+  NewGamePayload
 } from 'features/Game/Dungeon/application/slice'
 import type { EngageCombatPayload, CombatResolvedPayload, AttackPayload } from 'features/Game/Combat/application/slice'
 
@@ -40,6 +41,7 @@ export interface ServerToClients {
   engageCombat: (payload: EngageCombatPayload) => void
   combatResolved: (payload: CombatResolvedPayload) => void
   gameEnded: (payload: GameEndedPayload) => void
+  gameRestarted: () => void
 }
 
 export interface ClientToServer {
@@ -54,6 +56,7 @@ export interface ClientToServer {
   pickChest: (payload: PickChestPayload) => void
   endTurn: (payload: EndTurnPayload) => void
   attack: (payload: AttackPayload) => void
+  newGame: (payload: NewGamePayload) => void
 }
 
 export type AppSocket = Socket<ServerToClients, ClientToServer>

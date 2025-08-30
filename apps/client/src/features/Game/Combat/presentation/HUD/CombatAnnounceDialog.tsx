@@ -90,7 +90,6 @@ export const CombatAnnounceDialog = React.forwardRef<CombatAnnouncer, Props>(({ 
       dialog.current.showModal()
     },
     resolve: async ({ firstDiceResult, secondDiceResult, inventoryBonus, succeed }: ResolvePayload): Promise<void> => {
-      console.log(firstDiceResult, secondDiceResult, succeed)
       await Promise.all([
         firstDice.current.rollTo(firstDiceResult as DiceFace),
         secondDice.current.rollTo(secondDiceResult as DiceFace)

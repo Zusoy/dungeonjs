@@ -95,6 +95,10 @@ export type GameEndedPayload = {
   readonly winnerPlayerId: string
 }
 
+export type NewGamePayload = {
+  readonly timestamp: number
+}
+
 const slice = createSlice({
   name: 'dungeon',
   initialState,
@@ -139,6 +143,14 @@ const slice = createSlice({
       ...state,
       gameEnded: true,
       winnerPlayerId: action.payload.winnerPlayerId
+    }),
+    restartNewGame: (state, _action: PayloadAction<NewGamePayload>) => ({
+      ...state,
+    }),
+    gameRestarted: (state) => ({
+      ...state,
+      gameEnded: false,
+      winnerPlayerId: null
     })
   }
 })
@@ -154,7 +166,9 @@ export const {
   loot,
   pickChest,
   endTurn,
-  gameEnded
+  gameEnded,
+  gameRestarted,
+  restartNewGame
 } = slice.actions
 
 export const selectIsPlayerTurn: Selector<boolean> = state =>
@@ -245,6 +259,7 @@ export type GameActions =
   ReturnType<typeof slice.actions.receivedChests> |
   ReturnType<typeof slice.actions.receivedEnemies> |
   ReturnType<typeof slice.actions.receivedLoots> |
-  ReturnType<typeof slice.actions.gameEnded>
+  ReturnType<typeof slice.actions.gameEnded> |
+  ReturnType<typeof slice.actions.gameRestarted>
 
 export default slice

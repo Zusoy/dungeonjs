@@ -11,6 +11,7 @@ export interface ClientToServer {
   attack: (event: Events.AttackEvent) => void
   loot: (event: Events.LootEvent) => void
   pickChest: (event: Events.PickChestEvent) => void
+  newGame: (event: Events.NewGameEvent) => void
 }
 
 export const clientToServerEvents: (keyof ClientToServer)[] = [
@@ -23,7 +24,8 @@ export const clientToServerEvents: (keyof ClientToServer)[] = [
   'moveToCoords',
   'attack',
   'loot',
-  'pickChest'
+  'pickChest',
+  'newGame'
 ]
 
 export interface ServerToClients {
@@ -40,6 +42,7 @@ export interface ServerToClients {
   engageCombat: (event: Events.EngageCombatEvent) => void
   combatResolved: (event: Events.CombatResolvedEvent) => void
   gameEnded: (event: Events.GameEndedEvent) => void
+  gameRestarted: () => void
 }
 
 export interface InterServer {

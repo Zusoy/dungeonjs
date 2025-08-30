@@ -4,7 +4,7 @@ import { connect, connected, error, type ConnectPayload } from 'features/Authent
 import { createWebsocketConnection } from 'services/socket'
 import { subscribeCreateRoom, subscribeJoinRoom, subscribeLeaveRoom } from 'features/Rooms/infrastructure/effects'
 import { subscribeChangeHero, subscribeStartGame } from 'features/Lobby/infrastructure/effects'
-import { subscribeMoveToCoords, subscribeLoot, subscribePickChest, subscribeEndTurn } from 'features/Game/Dungeon/infrastructure/effects'
+import { subscribeMoveToCoords, subscribeLoot, subscribePickChest, subscribeEndTurn, subscribeRestartGame } from 'features/Game/Dungeon/infrastructure/effects'
 import { subscribeAttack } from 'features/Game/Combat/infrastructure/effects'
 import roomChannel from 'features/Rooms/infrastructure/channel'
 import lobbyChannel from 'features/Lobby/infrastructure/channel'
@@ -60,6 +60,7 @@ export function* connectAndSubscribeWebsocketEffect(action: PayloadAction<Connec
       fork(subscribePickChest, socket),
       fork(subscribeEndTurn, socket),
       fork(subscribeAttack, socket),
+      fork(subscribeRestartGame, socket),
     ])
   } catch {
     yield put(error())

@@ -8,12 +8,13 @@ import { PickChestButton } from 'features/Game/Dungeon/presentation/HUD/PickChes
 import { PickLootButton } from 'features/Game/Dungeon/presentation/HUD/PickLootButton'
 import { TurnAnnounceDialog, type TurnAnnouncer } from 'features/Game/Dungeon/presentation/HUD/TurnAnnounceDialog'
 import { GameEndDialog, type GameEndDialogRef } from 'features/Game/Dungeon/presentation/HUD/GameEndDialog'
-import { useSelector } from 'react-redux'
-import { selectPlayerTurn, selectGameEnded, selectWinnerPlayer, selectPlayersWithScores } from 'features/Game/Dungeon/application/slice'
-import { selectPlayers } from 'features/Lobby/application/slice'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectPlayerTurn, selectGameEnded, selectWinnerPlayer, selectPlayersWithScores, restartNewGame } from 'features/Game/Dungeon/application/slice'
+import { selectPlayers, selectIsHost } from 'features/Lobby/application/slice'
 import { CombatHUD } from 'features/Game/Combat/presentation/HUD'
 
 export const GameHUD: React.FC = () => {
+  const dispatch = useDispatch()
   const turnAnnouncer = React.useRef<TurnAnnouncer>(null!)
   const gameEndDialog = React.useRef<GameEndDialogRef>(null!)
   const playerTurnId = useSelector(selectPlayerTurn)
@@ -21,6 +22,7 @@ export const GameHUD: React.FC = () => {
   const gameEnded = useSelector(selectGameEnded)
   const winnerPlayer = useSelector(selectWinnerPlayer)
   const playersWithScores = useSelector(selectPlayersWithScores)
+  const isHost = useSelector(selectIsHost)
 
   const playerTurn = React.useMemo(
     () => players.find((player) => player.id === playerTurnId),
@@ -46,8 +48,12 @@ export const GameHUD: React.FC = () => {
     gameEndDialog.current.show({
       winner: winnerPlayer,
       players: playersWithScores
-    })
-  }, [gameEnded, winnerPlayer, playersWithScores])
+    }, isHost)
+  }, [gameEnded, winnerPlayer, playersWithScores, isHost])
+
+  const requestNewGame = React.useCallback(() => {
+    dispatch(restartNewGame({ timestamp: Date.now() }))
+  }, [dispatch])
 
   return (
     <>
@@ -73,7 +79,10 @@ export const GameHUD: React.FC = () => {
       <PlayerList />
       <CombatHUD />
       <TurnAnnounceDialog ref={turnAnnouncer} />
-      <GameEndDialog ref={gameEndDialog} />
+      <GameEndDialog
+        ref={gameEndDialog}
+        onRestart={requestNewGame}
+      />
     </>
   )
 }

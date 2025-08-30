@@ -63,7 +63,7 @@ export class WarriorSkeleton implements Skeleton {
 
 export class Golem implements Skeleton {
   public readonly type: SkeletonType = SkeletonType.Golem
-  public readonly defense: number = 15
+  public readonly defense: number = 5
 
   constructor(
     public readonly id: string,

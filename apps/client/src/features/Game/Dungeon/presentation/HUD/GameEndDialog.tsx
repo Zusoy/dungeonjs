@@ -9,42 +9,37 @@ type GameEndData = {
 }
 
 export type GameEndDialogRef = {
-  readonly show: (data: GameEndData) => void
+  readonly show: (data: GameEndData, host: boolean) => void
 }
 
-export const GameEndDialog = React.forwardRef<GameEndDialogRef>((_, ref) => {
+type Props = {
+  readonly onRestart: React.MouseEventHandler<HTMLButtonElement>
+}
+
+export const GameEndDialog = React.forwardRef<GameEndDialogRef, Props>(({ onRestart }, ref) => {
   const id = React.useId()
   const dialog = React.useRef<HTMLDialogElement>(null!)
   const [gameEndData, setGameEndData] = React.useState<Nullable<GameEndData>>(null)
+  const [isHost, setIsHost] = React.useState<boolean>(false)
 
   React.useImperativeHandle<GameEndDialogRef, GameEndDialogRef>(ref, () => ({
-    show: (data: GameEndData) => {
+    show: (data: GameEndData, host: boolean) => {
       setGameEndData(data)
+      setIsHost(host)
       dialog.current.showModal()
     }
   }), [dialog])
 
-  const close = React.useCallback(() => {
-    setGameEndData(null)
-    dialog.current.close()
-  }, [dialog])
-
   return (
     <AnimatePresence mode='wait' initial={false}>
       <motion.dialog id={id} ref={dialog} className='modal modal-bottom sm:modal-middle'>
-        <div className='modal-box max-w-md'>
-          <form method='dialog'>
-            <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2' onClick={close}>
-              ✕
-            </button>
-          </form>
+        <div className='modal-box'>
           {gameEndData && (
             <div className='flex flex-col w-full items-center gap-6'>
               <div className='text-center'>
                 <h2 className='text-2xl font-bold mb-2'>Game Over!</h2>
                 <p className='text-lg text-success font-semibold'>The Golem has been defeated!</p>
               </div>
-
               <div className='flex flex-col items-center gap-4 p-4 bg-success/10 rounded-lg border border-success/20'>
                 <h3 className='text-xl font-bold text-success'>🏆 Winner</h3>
                 <div className='flex flex-col items-center gap-2'>
@@ -70,8 +65,8 @@ export const GameEndDialog = React.forwardRef<GameEndDialogRef>((_, ref) => {
                     <div
                       key={player.id}
                       className={`flex items-center justify-between p-3 rounded-lg ${player.id === gameEndData.winner.id
-                          ? 'bg-success/20 border border-success/30'
-                          : 'bg-base-200'
+                        ? 'bg-success/20 border border-success/30'
+                        : 'bg-base-200'
                         }`}
                     >
                       <div className='flex items-center gap-3'>
@@ -95,12 +90,14 @@ export const GameEndDialog = React.forwardRef<GameEndDialogRef>((_, ref) => {
                   ))}
                 </div>
               </div>
-              <button
-                className='btn btn-primary btn-wide'
-                onClick={close}
-              >
-                Close
-              </button>
+              {isHost
+                ? (
+                  <button className='btn btn-primary btn-wide' onClick={onRestart}>
+                    Restart new game !
+                  </button>
+                )
+                : null
+              }
             </div>
           )}
         </div>

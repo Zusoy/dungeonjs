@@ -46,6 +46,7 @@ container.register<EventHandlers.AttackHandler>(EventHandlers.AttackHandler, { u
 container.register<EventHandlers.LootHandler>(EventHandlers.LootHandler, { useClass: EventHandlers.LootHandler })
 container.register<EventHandlers.PickChestHandler>(EventHandlers.PickChestHandler, { useClass: EventHandlers.PickChestHandler })
 container.register<EventHandlers.EndTurnHandler>(EventHandlers.EndTurnHandler, { useClass: EventHandlers.EndTurnHandler })
+container.register<EventHandlers.NewGameHandler>(EventHandlers.NewGameHandler, { useClass: EventHandlers.NewGameHandler })
 
 const subscriber = container.resolve(EventSubscriber)
 

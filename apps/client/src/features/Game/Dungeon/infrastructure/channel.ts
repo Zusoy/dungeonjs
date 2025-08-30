@@ -15,7 +15,8 @@ import {
   receivedChests,
   receivedEnemies,
   receivedLoots,
-  gameEnded
+  gameEnded,
+  gameRestarted
 } from 'features/Game/Dungeon/application/slice'
 
 const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
@@ -44,12 +45,17 @@ const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
       emitter(gameEnded(payload))
     }
 
+    const onGameRestartedListener = () => {
+      emitter(gameRestarted())
+    }
+
     socket.on('playerTurn', onPlayerTurnListener)
     socket.on('discoverTile', onDiscoverTileListener)
     socket.on('chests', onChestsListener)
     socket.on('enemies', onEnemiesListener)
     socket.on('loots', onLootsListener)
     socket.on('gameEnded', onGameEndedListener)
+    socket.on('gameRestarted', onGameRestartedListener)
 
     return () => {
       socket.off('playerTurn', onPlayerTurnListener)
@@ -58,6 +64,7 @@ const gameChannel: SocketChannel<GameActions> = (socket: AppSocket) => {
       socket.off('enemies', onEnemiesListener)
       socket.off('loots', onLootsListener)
       socket.off('gameEnded', onGameEndedListener)
+      socket.off('gameRestarted', onGameRestartedListener)
     }
   })
 }

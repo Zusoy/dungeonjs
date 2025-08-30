@@ -15,6 +15,12 @@ export class Room {
   ) {
   }
 
+  public reset(): void {
+    this.enemies = []
+    this.chests = []
+    this.loots = []
+  }
+
   public addEnemy(enemy: Skeleton): void {
     this.enemies = [...this.enemies, enemy]
   }

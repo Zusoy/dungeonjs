@@ -42,6 +42,6 @@ export class EndTurnHandler implements IEventHandler<'endTurn'> {
       throw new ObjectNotFoundError('Room', roomId)
     }
 
-    this.turnAllocator.allocateNextTurn(room, player.id)
+    await this.turnAllocator.allocateNextTurn(room, player.id)
   }
 }
