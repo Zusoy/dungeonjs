@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'motion/react'
 
-const Tutorial: React.FC = () => {
+export const Tutorial: React.FC = () => {
   const [expandedSection, setExpandedSection] = React.useState<string | null>(null)
 
   const toggleSection = (section: string) => {
@@ -275,5 +275,3 @@ const Tutorial: React.FC = () => {
     </div>
   )
 }
-
-export default Tutorial

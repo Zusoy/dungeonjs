@@ -1,7 +1,7 @@
 import React from 'react'
-import Tutorial from 'Tutorial'
 import FullPageLoader from 'widgets/Loader/FullPageLoader'
 import { useSelector } from 'react-redux'
+import { Tutorial } from 'Tutorial'
 import { CreateDialog } from 'features/Rooms/presentation/CreateDialog'
 import { JoinDialog } from 'features/Rooms/presentation/JoinDialog'
 import { selectCurrentRoomId } from 'features/Rooms/application/slice'
