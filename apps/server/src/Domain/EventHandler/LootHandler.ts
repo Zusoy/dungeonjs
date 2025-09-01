@@ -11,22 +11,24 @@ import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { LootType } from 'Domain/Model/Loot'
 import { Coords } from 'Domain/Geometry/Coords'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
+import { LootsEvent } from 'Domain/Event/LootsEvent'
+import { BROADCASTER, HANDLERS, INVENTORY_MAX_KEY_PARAMETER, INVENTORY_MAX_WEAPON_PARAMETER, PLAYERS, ROOMS, SERVER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: LootHandler }])
+@registry([{ token: HANDLERS, useClass: LootHandler }])
 export class LootHandler implements IEventHandler<'loot'> {
   constructor(
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('player.inventory.maxkeys')
+    @inject(INVENTORY_MAX_KEY_PARAMETER)
     private readonly maxPlayerInventoryKeyCount: number,
-    @inject('player.inventory.maxweapons')
+    @inject(INVENTORY_MAX_WEAPON_PARAMETER)
     private readonly maxPlayerInventoryWeaponCount: number
   ) {}
 
@@ -34,7 +36,7 @@ export class LootHandler implements IEventHandler<'loot'> {
     return channel === 'loot'
   }
 
-  handle(_channel: 'loot', socket: ISocket, event: LootEvent): void {
+  async handle(_channel: 'loot', socket: ISocket, event: LootEvent): Promise<void> {
     if (!socket.room) {
       throw new PlayerNotInRoomError(socket.id)
     }
@@ -89,6 +91,6 @@ export class LootHandler implements IEventHandler<'loot'> {
     this.rooms.update(room)
 
     this.broadcaster.broadcast(room)
-    this.server.emitInRoom('loots', room, { loots: room.getLoots() })
+    this.server.emitInRoom('loots', room, new LootsEvent(room.getLoots()))
   }
 }

@@ -7,16 +7,19 @@ import type { IServer } from 'Domain/IServer'
 import type { ILogger } from 'Domain/ILogger'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
+import { GameStartedEvent } from 'Domain/Event/GameStartedEvent'
+import { PlayerTurnEvent } from 'Domain/Event/PlayerTurnEvent'
+import { HANDLERS, LOGGER, ROOMS, SERVER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: StartGameHandler }])
+@registry([{ token: HANDLERS, useClass: StartGameHandler }])
 export class StartGameHandler implements IEventHandler<'startGame'> {
   constructor(
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger
   ) {}
 
@@ -37,11 +40,11 @@ export class StartGameHandler implements IEventHandler<'startGame'> {
       throw new ObjectNotFoundError("Room", event.roomId)
     }
 
-    this.server.emitInRoom('gameStarted', room, { roomId: room.roomId })
+    this.server.emitInRoom('gameStarted', room, new GameStartedEvent(room.roomId))
     const socketIds = await this.server.fetchSocketIds(room)
 
     const playerId = Array.from(socketIds)[0]
-    this.server.emitInRoom('playerTurn', room, { playerId })
+    this.server.emitInRoom('playerTurn', room, new PlayerTurnEvent(playerId))
 
     this.logger.info('Game starting', event.roomId)
   }

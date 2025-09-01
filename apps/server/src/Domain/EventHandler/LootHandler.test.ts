@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import type { LootEvent } from 'Domain/Event/LootEvent'
+import { LootEvent } from 'Domain/Event/LootEvent'
 import { describe, test, expect } from 'vitest'
 import { LootHandler } from 'Domain/EventHandler/LootHandler'
 import { MockedRooms } from 'Application/Repository/MockedRooms'
@@ -14,16 +14,14 @@ import { createLootableKeyMock, createLootableWeaponMock, createPlayerMock } fro
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 
 describe('EventHandler/Loot', () => {
-  test('throws denied operation when not joined room', () => {
+  test('throws denied operation when not joined room', async () => {
     const rooms = new MockedRooms([])
     const players = new MockedPlayers([])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer([])
     const socket = new MockedSocket('player', null)
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const handler = new LootHandler(
       rooms,
@@ -34,19 +32,17 @@ describe('EventHandler/Loot', () => {
       4
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(new PlayerNotInRoomError('player'))
+    await expect(handler.handle('loot', socket, event)).rejects.toThrow(new PlayerNotInRoomError('player'))
   })
 
-  test('throws when room not found', () => {
+  test('throws when room not found', async () => {
     const rooms = new MockedRooms([])
     const players = new MockedPlayers([])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer([])
     const socket = new MockedSocket('player', 'notFoundRoomId')
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const handler = new LootHandler(
       rooms,
@@ -57,19 +53,17 @@ describe('EventHandler/Loot', () => {
       4
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(new ObjectNotFoundError('Room', 'notFoundRoomId'))
+    await expect(handler.handle('loot', socket, event)).rejects.toThrow(new ObjectNotFoundError('Room', 'notFoundRoomId'))
   })
 
-  test('throws when player not found', () => {
+  test('throws when player not found', async () => {
     const rooms = new MockedRooms([ new Room('roomId', 'playerId') ])
     const players = new MockedPlayers([])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const handler = new LootHandler(
       rooms,
@@ -80,19 +74,17 @@ describe('EventHandler/Loot', () => {
       4
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(new ObjectNotFoundError('Player', 'playerId'))
+    await expect(handler.handle('loot', socket, event)).rejects.toThrow(new ObjectNotFoundError('Player', 'playerId'))
   })
 
-  test('throws when loot not found in room', () => {
+  test('throws when loot not found in room', async () => {
     const rooms = new MockedRooms([ new Room('roomId', 'playerId') ])
     const players = new MockedPlayers([ createPlayerMock('playerId', 'player') ])
     const broadcaster = new MockedPlayerBroadcaster()
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const handler = new LootHandler(
       rooms,
@@ -103,10 +95,10 @@ describe('EventHandler/Loot', () => {
       4
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(new ObjectNotFoundError('Loot', 'lootId'))
+    await expect(handler.handle('loot', socket, event)).rejects.toThrow(new ObjectNotFoundError('Loot', 'lootId'))
   })
 
-  test('throws when player is not in correct coords', () => {
+  test('throws when player is not in correct coords', async () => {
     const room = new Room('roomId', 'playerId')
     room.addLoot(createLootableWeaponMock('lootId', [2, 2]))
 
@@ -116,9 +108,7 @@ describe('EventHandler/Loot', () => {
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const handler = new LootHandler(
       rooms,
@@ -129,10 +119,10 @@ describe('EventHandler/Loot', () => {
       4
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(OperationDeniedError)
+    await expect(handler.handle('loot', socket, event)).rejects.toThrow(OperationDeniedError)
   })
 
-  test('throws when player keys inventory is full', () => {
+  test('throws when player keys inventory is full', async () => {
     const room = new Room('roomId', 'playerId')
     room.addLoot(createLootableKeyMock('lootId', [2, 2]))
 
@@ -142,9 +132,7 @@ describe('EventHandler/Loot', () => {
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const maxKeyCount = 0
 
@@ -157,10 +145,10 @@ describe('EventHandler/Loot', () => {
       4
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(OperationDeniedError)
+    await expect(handler.handle('loot', socket, event)).rejects.toThrow(OperationDeniedError)
   })
 
-  test('throws when player weapons inventory is full', () => {
+  test('throws when player weapons inventory is full', async () => {
     const room = new Room('roomId', 'playerId')
     room.addLoot(createLootableWeaponMock('lootId', [2, 2]))
 
@@ -170,9 +158,7 @@ describe('EventHandler/Loot', () => {
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const maxKeyCount = 0
     const maxWeaponCount = 0
@@ -186,10 +172,10 @@ describe('EventHandler/Loot', () => {
       maxWeaponCount
     )
 
-    expect(() => handler.handle('loot', socket, event)).toThrow(OperationDeniedError)
+    await expect(handler.handle('loot', socket, event)).rejects.toThrow(OperationDeniedError)
   })
 
-  test('loots an item in a room and broadcast updates', () => {
+  test('loots an item in a room and broadcast updates', async () => {
     const room = new Room('roomId', 'playerId')
     const loot = createLootableWeaponMock('lootId', [2, 2])
     room.addLoot(loot)
@@ -200,9 +186,7 @@ describe('EventHandler/Loot', () => {
     const server = new MockedServer([])
     const socket = new MockedSocket('playerId', 'roomId')
 
-    const event: LootEvent = {
-      lootId: 'lootId'
-    }
+    const event = new LootEvent('lootId')
 
     const maxKeyCount = 4
     const maxWeaponCount = 4
@@ -216,7 +200,7 @@ describe('EventHandler/Loot', () => {
       maxWeaponCount
     )
 
-    handler.handle('loot', socket, event)
+    await handler.handle('loot', socket, event)
 
     const updatedPlayer = players.find('playerId')
     const updatedRoom = rooms.find('roomId')

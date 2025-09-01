@@ -17,9 +17,7 @@ describe('EventHandler/JoinRoom', () => {
     const socket = new MockedSocket('player_1', null)
     const server = new MockedServer([])
 
-    const event: JoinRoomEvent = {
-      roomId: 'test'
-    }
+    const event = new JoinRoomEvent('test')
 
     const handler = new JoinRoomHandler(rooms, broadcaster, server, 5)
     await expect(handler.handle('joinRoom', socket, event)).rejects.toThrow(new ObjectNotFoundError("Room", "test"))
@@ -33,9 +31,7 @@ describe('EventHandler/JoinRoom', () => {
     const socket = new MockedSocket('player_1', null)
     const server = new MockedServer(['player_1', 'player_2'])
 
-    const event: JoinRoomEvent = {
-      roomId: 'test'
-    }
+    const event = new JoinRoomEvent('test')
 
     const handler = new JoinRoomHandler(rooms, broadcaster, server, 2)
     await expect(handler.handle('joinRoom', socket, event)).rejects.toThrow(OperationDeniedError)
@@ -50,9 +46,7 @@ describe('EventHandler/JoinRoom', () => {
     const socket = new MockedSocket('player_1', null)
     const server = new MockedServer([])
 
-    const event: JoinRoomEvent = {
-      roomId: 'test'
-    }
+    const event = new JoinRoomEvent('test')
 
     const handler = new JoinRoomHandler(rooms, broadcaster, server, 5)
     await handler.handle('joinRoom', socket, event)

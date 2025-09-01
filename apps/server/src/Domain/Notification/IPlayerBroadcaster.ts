@@ -1,5 +1,8 @@
 import type { Room } from 'Domain/Model/Room'
 
 export interface IPlayerBroadcaster {
-  broadcast(room: Room): void
+  /**
+   * Broadcast players changes in the room
+   */
+  broadcast(room: Room): Promise<void>
 }

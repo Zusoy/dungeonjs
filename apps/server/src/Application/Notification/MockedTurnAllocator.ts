@@ -4,8 +4,13 @@ import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 
 export class MockedTurnAllocator implements ITurnAllocator {
   public readonly turnRoomAllocated: string[] = []
+  public readonly allocatedTurns: string[] = []
 
-  allocateNextTurn(room: Room, _currentPlayerId: PlayerPayload['id']): void {
+  async allocateNextTurn(room: Room, _currentPlayerId: PlayerPayload['id']): Promise<void> {
     this.turnRoomAllocated.push(room.roomId)
+  }
+
+  async allocateTurn(_room: Room, playerId: PlayerPayload['id']): Promise<void> {
+    this.allocatedTurns.push(playerId)
   }
 }

@@ -5,7 +5,8 @@ export enum SkeletonType {
   Mage = 'mage',
   Minion = 'minion',
   Rogue = 'rogue',
-  Warrior = 'warrior'
+  Warrior = 'warrior',
+  Golem = 'golem'
 }
 
 export interface Skeleton {
@@ -58,4 +59,15 @@ export class WarriorSkeleton implements Skeleton {
     public readonly coords: ScalarCoords,
     public readonly loot: Loot
   ) { }
+}
+
+export class Golem implements Skeleton {
+  public readonly type: SkeletonType = SkeletonType.Golem
+  public readonly defense: number = 15
+
+  constructor(
+    public readonly id: string,
+    public readonly coords: ScalarCoords,
+    public readonly loot: Loot
+  ) {}
 }

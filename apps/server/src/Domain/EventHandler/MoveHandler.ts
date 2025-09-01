@@ -18,44 +18,51 @@ import { SkeletonType } from 'Domain/Model/Skeleton'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { LootObject, LootType } from 'Domain/Model/Loot'
+import { DiscoverTileEvent } from 'Domain/Event/DiscoverTileEvent'
+import { SkeletonsEvent } from 'Domain/Event/SkeletonsEvent'
+import { EngageCombatEvent } from 'Domain/Event/EngageCombatEvent'
+import { ChestsEvent } from 'Domain/Event/ChestsEvent'
+import { BROADCASTER, ENEMY_DISCOVERY_CHANCE_PARAMETER, GOLEM_DISCOVERY_CHANCE_PARAMETER, HANDLERS, LOGGER, LOOT_KEY_CHANCE_PARAMETER, LOOTS_FACTORY, PLAYERS, RNG, ROOM_DISCOVERY_CHANCE_PARAMETER, ROOMS, SERVER, SKELETONS_FACTORY, TILES_FACTORY, WEAPON_RANDOMIZER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: MoveHandler }])
+@registry([{ token: HANDLERS, useClass: MoveHandler }])
 export class MoveHandler implements IEventHandler<'moveToCoords'> {
   constructor(
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('factory.loots')
+    @inject(LOOTS_FACTORY)
     private readonly loots: LootFactory,
-    @inject('factory.skeletons')
+    @inject(SKELETONS_FACTORY)
     private readonly skeletons: SkeletonFactory,
-    @inject('factory.tiles')
+    @inject(TILES_FACTORY)
     private readonly tiles: TileFactory,
-    @inject('rng')
+    @inject(RNG)
     private readonly rng: IRandomizer,
-    @inject('weapon.randomizer')
+    @inject(WEAPON_RANDOMIZER)
     private readonly weaponRandomizer: WeaponRandomizer,
-    @inject('chance.room')
+    @inject(ROOM_DISCOVERY_CHANCE_PARAMETER)
     private readonly roomDiscoveryChance: number,
-    @inject('chance.enemy')
+    @inject(ENEMY_DISCOVERY_CHANCE_PARAMETER)
     private readonly enemyDiscoveryChance: number,
-    @inject('chance.loot.key')
+    @inject(LOOT_KEY_CHANCE_PARAMETER)
     private readonly keyLootChance: number,
+    @inject(GOLEM_DISCOVERY_CHANCE_PARAMETER)
+    private readonly golemDiscoveryChance: number
   ) { }
 
   supports(channel: 'moveToCoords', _socket: ISocket, _event: MoveEvent): boolean {
     return channel === 'moveToCoords'
   }
 
-  handle(_channel: 'moveToCoords', socket: ISocket, event: MoveEvent): void {
+  async handle(_channel: 'moveToCoords', socket: ISocket, event: MoveEvent): Promise<void> {
     const roomId = socket.room
 
     if (!roomId) {
@@ -93,7 +100,7 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
         }
       )
 
-      this.server.emitInRoom('discoverTile', room, { tile })
+      this.server.emitInRoom('discoverTile', room, new DiscoverTileEvent(tile))
       this.logger.info('Discover tile', tile)
 
       if (tile.type === TileType.Room) {
@@ -109,22 +116,25 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
             : this.weaponRandomizer.randomWeapon(lootId)
 
           const loot = this.loots.build(lootType, lootItem)
-          const skeletonType = this.rng.enumValue(SkeletonType)
+          const isGolem = this.rng.boolean(this.golemDiscoveryChance) && !room.hasGolem()
+          const skeletonType = isGolem ? SkeletonType.Golem : this.rng.enumValue(SkeletonType, [SkeletonType.Golem])
           const skeleton = this.skeletons.build(skeletonType, Date.now().toString(), event.coords, loot)
 
           room.addEnemy(skeleton)
           this.rooms.update(room)
           this.logger.info('Discovered Skeleton !', skeleton)
 
-          this.server.emitInRoom('enemies', room, { skeletons: room.getEnemies() })
-          this.server.emitInRoom('engageCombat', room, { enemyId: skeleton.id, playerId: socket.id, originCoords })
+          this.server.emitInRoom('enemies', room, new SkeletonsEvent(room.getEnemies()))
+
+          const engageEvent = new EngageCombatEvent(socket.id, skeleton.id, originCoords)
+          this.server.emitInRoom('engageCombat', room, engageEvent)
         }
         else {
           const chest: Chest = { id: Date.now().toString(), coords: event.coords }
           room.addChest(chest)
           this.rooms.update(room)
 
-          this.server.emitInRoom('chests', room, { chests: room.getChests() })
+          this.server.emitInRoom('chests', room, new ChestsEvent(room.getChests()))
         }
       }
     }
@@ -144,7 +154,8 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
     const enemyAtCoords = room.findEnemyAtCoords(event.coords)
 
     if (enemyAtCoords) {
-      this.server.emit('engageCombat', { playerId: socket.id, enemyId: enemyAtCoords.id, originCoords })
+      const engageEvent = new EngageCombatEvent(socket.id, enemyAtCoords.id, originCoords)
+      this.server.emit('engageCombat', engageEvent)
       return
     }
   }

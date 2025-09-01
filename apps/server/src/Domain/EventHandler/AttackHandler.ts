@@ -7,26 +7,34 @@ import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IRandomizer } from 'Domain/RNG/IRandomizer'
-import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import type { Factory as LootFactory } from 'Domain/Loot/Factory'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
+import { SkeletonType } from 'Domain/Model/Skeleton'
+import { GameEndedEvent } from 'Domain/Event/GameEndedEvent'
+import { CombatResolvedEvent } from 'Domain/Event/CombatResolvedEvent'
+import { SkeletonsEvent } from 'Domain/Event/SkeletonsEvent'
+import { LootsEvent } from 'Domain/Event/LootsEvent'
+import { SERVER, PLAYERS, ROOMS, BROADCASTER, LOOTS_FACTORY, RNG, GOLEM_REWARD_PARAMETER, HANDLERS } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: AttackHandler }])
+@registry([{ token: HANDLERS, useClass: AttackHandler }])
 export class AttackHandler implements IEventHandler<'attack'> {
   constructor(
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('factory.loots')
+    @inject(LOOTS_FACTORY)
     private readonly loots: LootFactory,
-    @inject('rng')
-    private readonly rng: IRandomizer
+    @inject(RNG)
+    private readonly rng: IRandomizer,
+    @inject(GOLEM_REWARD_PARAMETER)
+    private readonly golemReward: number
   ) {
   }
 
@@ -34,7 +42,7 @@ export class AttackHandler implements IEventHandler<'attack'> {
     return channel === 'attack'
   }
 
-  handle(_channel: 'attack', socket: ISocket, event: AttackEvent): void {
+  async handle(_channel: 'attack', socket: ISocket, event: AttackEvent): Promise<void> {
     const player = this.players.find(socket.id)
     const roomId = socket.room
 
@@ -64,7 +72,8 @@ export class AttackHandler implements IEventHandler<'attack'> {
     const attack = firstDiceResult + secondDiceResult + inventoryBonus
     const succeed = attack > enemy.defense
 
-    this.server.emitInRoom('combatResolved', room, { succeed , firstDiceResult, secondDiceResult, inventoryBonus })
+    const resolvedEvent = new CombatResolvedEvent(succeed, firstDiceResult, secondDiceResult, inventoryBonus)
+    this.server.emitInRoom('combatResolved', room, resolvedEvent)
 
     if (!succeed) {
       player.health = Math.max(0, player.health - 1)
@@ -80,12 +89,35 @@ export class AttackHandler implements IEventHandler<'attack'> {
       return
     }
 
+    if (enemy.type === SkeletonType.Golem) {
+      player.addTreasures(this.golemReward)
+      this.players.update(player)
+
+      const playerIds = await this.server.fetchSocketIds(room)
+      const players = Array.from(playerIds)
+        .map(id => this.players.find(id))
+        .filter(player => !!player)
+
+      const winnerPlayer = [...players].sort((pA, pB) => pB.inventory.treasures - pA.inventory.treasures)[0]
+      const endGameEvent = new GameEndedEvent(
+        Date.now(),
+        player.id,
+        winnerPlayer.id
+      )
+
+      await this.broadcaster.broadcast(room)
+      this.server.emitInRoom('gameEnded', room, endGameEvent)
+    }
+
     const lootable = this.loots.buildLootable(enemy.loot, enemy.coords)
     room.removeEnemy(enemy.id)
     room.addLoot(lootable)
     this.rooms.update(room)
 
-    this.server.emitInRoom('enemies', room, { skeletons: room.getEnemies() })
-    this.server.emitInRoom('loots', room, { loots: room.getLoots() })
+    const enemiesEvent = new SkeletonsEvent(room.getEnemies())
+    const lootsEvent = new LootsEvent(room.getLoots())
+
+    this.server.emitInRoom('enemies', room, enemiesEvent)
+    this.server.emitInRoom('loots', room, lootsEvent)
   }
 }

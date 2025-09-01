@@ -10,18 +10,20 @@ import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IServer } from 'Domain/IServer'
+import { ChestsEvent } from 'Domain/Event/ChestsEvent'
+import { BROADCASTER, HANDLERS, PLAYERS, ROOMS, SERVER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: PickChestHandler }])
+@registry([{ token: HANDLERS, useClass: PickChestHandler }])
 export class PickChestHandler implements IEventHandler<'pickChest'> {
   constructor(
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('server')
+    @inject(SERVER)
     private readonly server: IServer
   ) {}
 
@@ -29,7 +31,7 @@ export class PickChestHandler implements IEventHandler<'pickChest'> {
     return channel === 'pickChest'
   }
 
-  handle(_channel: 'pickChest', socket: ISocket, event: PickChestEvent): void {
+  async handle(_channel: 'pickChest', socket: ISocket, event: PickChestEvent): Promise<void> {
     const roomId = socket.room
 
     if (!roomId) {
@@ -74,6 +76,6 @@ export class PickChestHandler implements IEventHandler<'pickChest'> {
     this.players.update(player)
     this.broadcaster.broadcast(room)
 
-    this.server.emitInRoom('chests', room, { chests: room.getChests() })
+    this.server.emitInRoom('chests', room, new ChestsEvent(room.getChests()))
   }
 }

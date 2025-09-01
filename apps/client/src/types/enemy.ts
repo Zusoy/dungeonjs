@@ -5,7 +5,8 @@ export enum SkeletonType {
   Mage = 'mage',
   Minion = 'minion',
   Rogue = 'rogue',
-  Warrior = 'warrior'
+  Warrior = 'warrior',
+  Golem = 'golem'
 }
 
 export interface Skeleton {

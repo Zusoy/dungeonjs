@@ -2,11 +2,12 @@ import { injectable, injectAll } from 'tsyringe'
 import { InputOutputSocket, type AppSocket } from 'Infra/Websocket/InputOutputSocket'
 import { type ClientToServer, clientToServerEvents } from 'Domain/Events'
 import type { IEventHandler } from 'Domain/EventHandler/IEventHandler'
+import { HANDLERS } from 'Domain/tokens'
 
 @injectable()
 export class EventSubscriber {
   constructor(
-    @injectAll('handlers')
+    @injectAll(HANDLERS)
     private readonly handlers: IEventHandler<keyof ClientToServer>[]
   ) {
   }

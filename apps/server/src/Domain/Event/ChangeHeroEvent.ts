@@ -1,5 +1,7 @@
 import { Hero } from 'Domain/Model/Player'
+import type { IGameEvent } from 'Domain/GameEvent'
 
-export type ChangeHeroEvent = {
-  readonly hero: Hero
+export class ChangeHeroEvent implements IGameEvent {
+  public readonly tag = 'change_hero'
+  constructor(public readonly hero: Hero) {}
 }

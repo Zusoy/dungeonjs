@@ -7,16 +7,17 @@ import type { ISocket } from 'Domain/ISocket'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
+import { HANDLERS, PLAYERS, ROOMS, TURN_ALLOCATOR } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: EndTurnHandler }])
+@registry([{ token: HANDLERS, useClass: EndTurnHandler }])
 export class EndTurnHandler implements IEventHandler<'endTurn'> {
   constructor(
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('turn_allocator')
+    @inject(TURN_ALLOCATOR)
     private readonly turnAllocator: ITurnAllocator
   ) {}
 
@@ -24,7 +25,7 @@ export class EndTurnHandler implements IEventHandler<'endTurn'> {
     return channel === 'endTurn'
   }
 
-  handle(_channel: 'endTurn', socket: ISocket, _event: EndTurnEvent): void {
+  async handle(_channel: 'endTurn', socket: ISocket, _event: EndTurnEvent): Promise<void> {
     const player = this.players.find(socket.id)
     const roomId = socket.room
 
@@ -42,6 +43,6 @@ export class EndTurnHandler implements IEventHandler<'endTurn'> {
       throw new ObjectNotFoundError('Room', roomId)
     }
 
-    this.turnAllocator.allocateNextTurn(room, player.id)
+    await this.turnAllocator.allocateNextTurn(room, player.id)
   }
 }

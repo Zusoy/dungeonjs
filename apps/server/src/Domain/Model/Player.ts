@@ -57,6 +57,14 @@ export class Player {
   ) {
   }
 
+  public reset(): void {
+    this.position = [0, 0, 0]
+    this.coords = [0, 0]
+    this.health = 5
+    this.inventory = { treasures: 0, weapons: [], keys: 0 }
+    this.movesCount = 4
+  }
+
   public addWeapon(weapon: Weapon): void {
     this.inventory = {
       ...this.inventory,
@@ -78,6 +86,13 @@ export class Player {
     this.inventory = {
       ...this.inventory,
       treasures: this.inventory.treasures + 1
+    }
+  }
+
+  public addTreasures(treasures: number): void {
+    this.inventory = {
+      ...this.inventory,
+      treasures: this.inventory.treasures + treasures
     }
   }
 

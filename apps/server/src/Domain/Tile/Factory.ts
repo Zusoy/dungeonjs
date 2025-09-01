@@ -1,11 +1,12 @@
 import { injectable, injectAll } from 'tsyringe'
 import type { Tiles, TileType } from 'Domain/Model/Tile'
 import type { ITileBuilder, BuildTilePayload } from 'Domain/Tile/ITileBuilder'
+import { TILE_BUILDER } from 'Domain/tokens'
 
 @injectable()
 export class Factory {
   constructor(
-    @injectAll('tile.builder')
+    @injectAll(TILE_BUILDER)
     private readonly builders: ITileBuilder<TileType>[]
   ) {
   }

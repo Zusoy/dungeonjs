@@ -1,5 +1,6 @@
 import { inject, injectable, registry } from 'tsyringe'
 import { Room } from 'Domain/Model/Room'
+import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
 import type { CreateRoomEvent } from 'Domain/Event/CreateRoomEvent'
 import type { IEventHandler } from 'Domain/EventHandler/IEventHandler'
 import type { ISocket } from 'Domain/ISocket'
@@ -7,19 +8,20 @@ import type { IPlayers } from 'Domain/Repository/IPlayers'
 import type { IRooms } from 'Domain/Repository/IRooms'
 import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { ILogger } from 'Domain/ILogger'
-import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
+import { JoinedRoomEvent } from 'Domain/Event/JoinedRoomEvent'
+import { BROADCASTER, HANDLERS, LOGGER, PLAYERS, ROOMS } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'handlers', useClass: CreateRoomHandler }])
+@registry([{ token: HANDLERS, useClass: CreateRoomHandler }])
 export class CreateRoomHandler implements IEventHandler<'createRoom'> {
   constructor(
-    @inject('players')
+    @inject(PLAYERS)
     private readonly players: IPlayers,
-    @inject('rooms')
+    @inject(ROOMS)
     private readonly rooms: IRooms,
-    @inject('players.broadcaster')
+    @inject(BROADCASTER)
     private readonly broadcaster: IPlayerBroadcaster,
-    @inject('logger')
+    @inject(LOGGER)
     private readonly logger: ILogger
   ) { }
 
@@ -27,7 +29,7 @@ export class CreateRoomHandler implements IEventHandler<'createRoom'> {
     return channel === 'createRoom'
   }
 
-  handle(_channel: 'createRoom', socket: ISocket, event: CreateRoomEvent): void {
+  async handle(_channel: 'createRoom', socket: ISocket, event: CreateRoomEvent): Promise<void> {
     const user = this.players.find(socket.id)
 
     if (!user) {
@@ -37,10 +39,12 @@ export class CreateRoomHandler implements IEventHandler<'createRoom'> {
     const room = new Room(event.roomId, socket.id)
     this.rooms.add(room)
 
-    socket.join(room)
-    socket.emit('joinedRoom', { roomId: room.roomId })
+    const joinedRoomEvent = new JoinedRoomEvent(room.roomId)
 
-    this.broadcaster.broadcast(room)
+    socket.join(room)
+    socket.emit('joinedRoom', joinedRoomEvent)
+
+    await this.broadcaster.broadcast(room)
     this.logger.info('Room created', room)
   }
 }

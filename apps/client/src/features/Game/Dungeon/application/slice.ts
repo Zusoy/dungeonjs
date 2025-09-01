@@ -21,6 +21,8 @@ export type State = {
   loots: WorldLoot[]
   playerTurn: Nullable<UserPayload['id']>
   focusedCoords: Nullable<ScalarCoords>
+  gameEnded: boolean
+  winnerPlayerId: Nullable<string>
 }
 
 export const initialState: State = {
@@ -31,7 +33,9 @@ export const initialState: State = {
   chests: [],
   loots: [],
   playerTurn: null,
-  focusedCoords: null
+  focusedCoords: null,
+  gameEnded: false,
+  winnerPlayerId: null
 }
 
 export type ChangeHeroPayload = {
@@ -85,6 +89,16 @@ export type EndTurnPayload = {
   readonly timestamp: number
 }
 
+export type GameEndedPayload = {
+  readonly timestamp: number
+  readonly combatPlayerId: string
+  readonly winnerPlayerId: string
+}
+
+export type NewGamePayload = {
+  readonly timestamp: number
+}
+
 const slice = createSlice({
   name: 'dungeon',
   initialState,
@@ -124,6 +138,19 @@ const slice = createSlice({
     }),
     endTurn: (state, _action: PayloadAction<EndTurnPayload>) => ({
       ...state,
+    }),
+    gameEnded: (state, action: PayloadAction<GameEndedPayload>) => ({
+      ...state,
+      gameEnded: true,
+      winnerPlayerId: action.payload.winnerPlayerId
+    }),
+    restartNewGame: (state, _action: PayloadAction<NewGamePayload>) => ({
+      ...state,
+    }),
+    gameRestarted: (state) => ({
+      ...state,
+      gameEnded: false,
+      winnerPlayerId: null
     })
   }
 })
@@ -138,7 +165,10 @@ export const {
   focusCoords,
   loot,
   pickChest,
-  endTurn
+  endTurn,
+  gameEnded,
+  gameRestarted,
+  restartNewGame
 } = slice.actions
 
 export const selectIsPlayerTurn: Selector<boolean> = state =>
@@ -197,6 +227,22 @@ export const selectCurrentPlayer = createSelector(
   (players, id) => players.find(p => p.id === id)!
 )
 
+export const selectGameEnded: Selector<boolean> = state =>
+  state.dungeon.gameEnded
+
+export const selectWinnerPlayerId: Selector<State['winnerPlayerId']> = state =>
+  state.dungeon.winnerPlayerId
+
+export const selectWinnerPlayer = createSelector(
+  [selectPlayers, selectWinnerPlayerId],
+  (players, winnerPlayerId) => players.find(player => player.id === winnerPlayerId)
+)
+
+export const selectPlayersWithScores = createSelector(
+  [selectPlayers],
+  (players) => [...players].sort((a, b) => b.inventory.treasures - a.inventory.treasures)
+)
+
 export const selectLootInCurrentCoords = createSelector(
   [selectCurrentPlayer, selectLoots],
   (player, loots) => loots.find(loot => loot.coords[0] === player.coords[0] && loot.coords[1] === player.coords[1])
@@ -212,6 +258,8 @@ export type GameActions =
   ReturnType<typeof slice.actions.discoverTile> |
   ReturnType<typeof slice.actions.receivedChests> |
   ReturnType<typeof slice.actions.receivedEnemies> |
-  ReturnType<typeof slice.actions.receivedLoots>
+  ReturnType<typeof slice.actions.receivedLoots> |
+  ReturnType<typeof slice.actions.gameEnded> |
+  ReturnType<typeof slice.actions.gameRestarted>
 
 export default slice

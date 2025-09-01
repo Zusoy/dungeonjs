@@ -17,9 +17,7 @@ describe('EventHandler/StartGame', () => {
     const socket = new MockedSocket('player_id', null)
     const logger = { info: () => {}, error: () => {} } as ILogger
 
-    const event: StartGameEvent = {
-      roomId: 'game'
-    }
+    const event = new StartGameEvent('game')
 
     const handler = new StartGameHandler(rooms, server, logger)
     await expect(handler.handle('startGame', socket, event)).rejects.toThrow(new PlayerNotInRoomError('player_id'))
@@ -31,9 +29,7 @@ describe('EventHandler/StartGame', () => {
     const socket = new MockedSocket('player_id', 'game')
     const logger = { info: () => {}, error: () => {} } as ILogger
 
-    const event: StartGameEvent = {
-      roomId: 'game'
-    }
+    const event = new StartGameEvent('game')
 
     const handler = new StartGameHandler(rooms, server, logger)
     await expect(handler.handle('startGame', socket, event)).rejects.toThrow(new ObjectNotFoundError("Room", "game"))
@@ -45,9 +41,7 @@ describe('EventHandler/StartGame', () => {
     const socket = new MockedSocket('player_1', 'game')
     const logger = { info: () => {}, error: () => {} } as ILogger
 
-    const event: StartGameEvent = {
-      roomId: 'game'
-    }
+    const event = new StartGameEvent('game')
 
     const handler = new StartGameHandler(rooms, server, logger)
     await handler.handle('startGame', socket, event)

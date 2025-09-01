@@ -14,6 +14,9 @@ import { EventSubscriber } from 'Infra/EventSubscriber'
 import { Player } from 'Domain/Model/Player'
 import { ITurnAllocator } from 'Domain/Notification/ITurnAllocator'
 import { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
+import { PlayersEvent } from 'Domain/Event/PlayersEvent'
+import { LeftRoomEvent } from 'Domain/Event/LeftRoomEvent'
+import * as Tokens from 'Domain/tokens'
 
 const httpServer = createServer((_, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -25,14 +28,14 @@ const httpServer = createServer((_, res) => {
 })
 
 const io = new IOServer<ClientToServer, ServerToClients, InterServer>(httpServer)
-const players = container.resolve<IPlayers>('players')
-const rooms = container.resolve<IRooms>('rooms')
-const logger = container.resolve<ILogger>('logger')
+const players = container.resolve<IPlayers>(Tokens.PLAYERS)
+const rooms = container.resolve<IRooms>(Tokens.ROOMS)
+const logger = container.resolve<ILogger>(Tokens.LOGGER)
 
 const server = new InputOutputServer(io)
-container.register<IServer>('server', { useValue: server })
-container.register<IPlayerBroadcaster>('players.broadcaster', { useClass: PlayerBroadcaster })
-container.register<ITurnAllocator>('turn_allocator', { useClass: TurnAllocator })
+container.register<IServer>(Tokens.SERVER, { useValue: server })
+container.register<IPlayerBroadcaster>(Tokens.BROADCASTER, { useClass: PlayerBroadcaster })
+container.register<ITurnAllocator>(Tokens.TURN_ALLOCATOR, { useClass: TurnAllocator })
 
 container.register<EventHandlers.ChangeHeroHandler>(EventHandlers.ChangeHeroHandler, { useClass: EventHandlers.ChangeHeroHandler })
 container.register<EventHandlers.MoveHandler>(EventHandlers.MoveHandler, { useClass: EventHandlers.MoveHandler })
@@ -44,6 +47,7 @@ container.register<EventHandlers.AttackHandler>(EventHandlers.AttackHandler, { u
 container.register<EventHandlers.LootHandler>(EventHandlers.LootHandler, { useClass: EventHandlers.LootHandler })
 container.register<EventHandlers.PickChestHandler>(EventHandlers.PickChestHandler, { useClass: EventHandlers.PickChestHandler })
 container.register<EventHandlers.EndTurnHandler>(EventHandlers.EndTurnHandler, { useClass: EventHandlers.EndTurnHandler })
+container.register<EventHandlers.NewGameHandler>(EventHandlers.NewGameHandler, { useClass: EventHandlers.NewGameHandler })
 
 const subscriber = container.resolve(EventSubscriber)
 
@@ -73,7 +77,7 @@ io.on('connect', socket => {
         .filter(p => !!p)
         .map(p => p.getRoomPayload(p.id === room.createdById))
 
-      server.emitInRoom('players', room, { players: roomsPlayers })
+      server.emitInRoom('players', room, new PlayersEvent(roomsPlayers))
     }
   })
 
@@ -82,7 +86,7 @@ io.on('connect', socket => {
 
     createdRooms.forEach(createdRoom => {
       rooms.remove(createdRoom)
-      server.emitInRoom('leftRoom', createdRoom, { reason: 'room_deleted' })
+      server.emitInRoom('leftRoom', createdRoom, new LeftRoomEvent('room_deleted'))
       io.in(createdRoom.roomId).socketsLeave(createdRoom.roomId)
       logger.info('Room author disconnec, clean room', createdRoom.roomId)
     })

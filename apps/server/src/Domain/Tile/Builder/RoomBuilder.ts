@@ -3,9 +3,10 @@ import { type Tiles, TileType, RoomTile } from 'Domain/Model/Tile'
 import type { ITileBuilder, BuildTilePayload } from 'Domain/Tile/ITileBuilder'
 import type { ScalarCoords } from 'Domain/Geometry/Coords'
 import { Direction } from 'Domain/Geometry/Direction'
+import { TILE_BUILDER } from 'Domain/tokens'
 
 @injectable()
-@registry([{ token: 'tile.builder', useClass: RoomBuilder }])
+@registry([{ token: TILE_BUILDER, useClass: RoomBuilder }])
 export class RoomBuilder implements ITileBuilder<TileType.Room> {
   supports(type: TileType.Room, _payload: BuildTilePayload): boolean {
     return type === TileType.Room
