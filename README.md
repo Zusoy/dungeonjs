@@ -53,7 +53,7 @@
 ## About The Project
 
 Dungeon'JS is a browser-based 3D multiplayer game.
-Built with Three.js and React Three Fiber, the game offers a strategic and engaging dungeon-crawling experience with friends.
+Built with Three.js and React Three Fiber, the game offers a strategic and engaging dungeon-crawling experience to play with friends.
 
 ## Features
 
@@ -63,45 +63,45 @@ Built with Three.js and React Three Fiber, the game offers a strategic and engag
 * Treasure Collection: Open locked chests using collected keys to obtain treasures.
 * Winning Objective: The game ends when a player defeats the dungeon's most powerful enemy. The player with the most collected treasures wins the game.
 
-## Built with
-The project is built with [three-js](https://threejs.org/) and React using [react-fiber](https://r3f.docs.pmnd.rs/) wrapper.
+## Built With
+The project is built with [three-js](https://threejs.org/) and React using the [react-fiber](https://r3f.docs.pmnd.rs/) wrapper.
 For the multiplayer part, [socket.io](https://socket.io/) is used.
 
 
 ## Getting Started
 
-This is a quick start to install the application locally
+This is a quick start guide to install the application locally.
 
 ## Prerequisites
 
-You need docker on your machine to get Dungeon'JS working.
+You need Docker on your machine to get Dungeon'JS working.
 
 * `docker >=20.10.14` is required
 
-## How to install
+## How to Install
 
-To install the project on your local machine, you'll need docker installed.
-Then follow those steps
+To install the project on your local machine, you'll need Docker installed.
+Then follow these steps
 
-* clone the repository
+* Clone the repository
 
 ```bash
 git clone git@github.com:Zusoy/dungeonjs.git
 ```
 
-* copy the required `.env` file
+* Copy the required `.env` file
 
 ```bash
 cp -n .env.dist .env
 ```
 
-* build the stack
+* Build the stack
 
 ```bash
 make build
 ```
 
-* start the project
+* Start the project
 
 ```bash
 make start
