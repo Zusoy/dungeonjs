@@ -17,7 +17,7 @@
   </a>
   <br />
   <p align="center">
-    An open-source multiplayer browser game !
+    An open-source multiplayer browser game!
     <br />
     <br />
     <a href="https://github.com/Zusoy/dungeonjs/issues">Report Bug</a>
@@ -81,7 +81,7 @@ You need Docker on your machine to get Dungeon'JS working.
 ## How to Install
 
 To install the project on your local machine, you'll need Docker installed.
-Then follow these steps
+Then follow these steps:
 
 * Clone the repository
 

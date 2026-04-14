@@ -1,6 +1,6 @@
 ---
 name: codebase-explorer
-description: Use this agent whenever you need to explore the codebase to realize a feature.
+description: Use this agent whenever you need to explore the codebase.
 color: yellow
 model: haiku
 ---

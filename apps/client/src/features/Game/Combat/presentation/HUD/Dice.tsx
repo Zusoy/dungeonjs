@@ -1,5 +1,4 @@
 import React from 'react'
-import clsx from 'clsx'
 import { delay } from 'utils'
 
 export type DiceFace = 1 | 2 | 3 | 4 | 5 | 6
@@ -41,7 +40,7 @@ export const Dice = React.forwardRef<DiceRef>((_, ref) => {
     <div className='w-24 h-24 perspective'>
       <div className="dice" ref={diceRef}>
         {[1, 2, 3, 4, 5, 6].map((face) => (
-          <div key={face} className={clsx("face", `face-${face}`)}>
+          <div key={face} className={`face face-${face}`}>
             {face}
           </div>
         ))}
