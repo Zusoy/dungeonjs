@@ -10,10 +10,12 @@ import roomChannel from 'features/Rooms/infrastructure/channel'
 import lobbyChannel from 'features/Lobby/infrastructure/channel'
 import gameChannel from 'features/Game/Dungeon/infrastructure/channel'
 import combatChannel from 'features/Game/Combat/infrastructure/channel'
+import { toast, ToastType } from 'services/toaster'
 
 export function* connectAndSubscribeWebsocketEffect(action: PayloadAction<ConnectPayload>): Generator {
   try {
     const socket = yield call(createWebsocketConnection, action.payload.username)
+    yield call(toast, { content: 'Authentication', description: 'Connected successfully', type: ToastType.Success })
     yield put(connected(socket.id))
 
     const rooms = yield call(roomChannel, socket)
