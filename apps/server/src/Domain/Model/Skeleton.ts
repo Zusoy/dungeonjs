@@ -1,24 +1,20 @@
-import type { ScalarCoords } from 'Domain/Geometry/Coords'
-import type { Loot } from 'Domain/Model/Loot'
+import { z } from 'zod'
+import { ScalarCoordsSchema, type ScalarCoords } from 'Domain/Geometry/Coords'
+import { LootSchema, type Loot } from 'Domain/Model/Loot'
 
-export enum SkeletonType {
-  Mage = 'mage',
-  Minion = 'minion',
-  Rogue = 'rogue',
-  Warrior = 'warrior',
-  Golem = 'golem'
-}
+export const SkeletonTypeSchema = z.literal(['mage', 'minion', 'rogue', 'warrior', 'golem'])
+export type SkeletonType = z.infer<typeof SkeletonTypeSchema>
 
-export interface Skeleton {
-  readonly id: string
-  readonly type: SkeletonType
-  readonly defense: number
-  readonly coords: ScalarCoords
-  readonly loot: Loot
-}
+export const SkeletonSchema = z.object({
+  id: z.string().nonempty(),
+  type: SkeletonTypeSchema,
+  defense: z.number(),
+  coords: ScalarCoordsSchema,
+  loot: LootSchema
+})
 
-export class MinionSkeleton implements Skeleton {
-  public readonly type: SkeletonType = SkeletonType.Minion
+export class MinionSkeleton {
+  public readonly type: SkeletonType = 'minion' as const
   public readonly defense: number = 5
 
   constructor(
@@ -28,8 +24,8 @@ export class MinionSkeleton implements Skeleton {
   ) { }
 }
 
-export class RogueSkeleton implements Skeleton {
-  public readonly type: SkeletonType = SkeletonType.Rogue
+export class RogueSkeleton {
+  public readonly type: SkeletonType = 'rogue' as const
   public readonly defense: number = 6
 
   constructor(
@@ -39,8 +35,8 @@ export class RogueSkeleton implements Skeleton {
   ) { }
 }
 
-export class MageSkeleton implements Skeleton {
-  public readonly type: SkeletonType = SkeletonType.Mage
+export class MageSkeleton {
+  public readonly type: SkeletonType = 'mage' as const
   public readonly defense: number = 7
 
   constructor(
@@ -50,8 +46,8 @@ export class MageSkeleton implements Skeleton {
   ) { }
 }
 
-export class WarriorSkeleton implements Skeleton {
-  public readonly type: SkeletonType = SkeletonType.Warrior
+export class WarriorSkeleton {
+  public readonly type: SkeletonType = 'warrior' as const
   public readonly defense: number = 8
 
   constructor(
@@ -61,8 +57,8 @@ export class WarriorSkeleton implements Skeleton {
   ) { }
 }
 
-export class Golem implements Skeleton {
-  public readonly type: SkeletonType = SkeletonType.Golem
+export class Golem {
+  public readonly type: SkeletonType = 'golem' as const
   public readonly defense: number = 15
 
   constructor(
@@ -71,3 +67,5 @@ export class Golem implements Skeleton {
     public readonly loot: Loot
   ) {}
 }
+
+export type Skeleton = z.infer<typeof SkeletonSchema>

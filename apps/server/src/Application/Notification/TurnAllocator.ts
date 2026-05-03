@@ -25,7 +25,7 @@ export class TurnAllocator implements ITurnAllocator {
   async allocateNextTurn(room: Room, currentPlayerId: PlayerPayload['id']): Promise<void> {
     const ids = await this.server.fetchSocketIds(room)
     const playerIds = Array.from(ids)
-    const user = this.players.find(currentPlayerId)
+    const user = await this.players.find(currentPlayerId)
     const index = playerIds.findIndex(id => id === currentPlayerId)
 
     if (index < 0 || !user) {
@@ -38,7 +38,7 @@ export class TurnAllocator implements ITurnAllocator {
     this.broadcaster.broadcast(room)
 
     const nextPlayerIndex = index === playerIds.length - 1 ? 0 : index + 1
-    const nextPlayer = this.players.find(playerIds[nextPlayerIndex])
+    const nextPlayer = await this.players.find(playerIds[nextPlayerIndex])
 
     if (!nextPlayer) {
       return
@@ -59,7 +59,7 @@ export class TurnAllocator implements ITurnAllocator {
   async allocateTurn(room: Room, playerId: PlayerPayload['id']): Promise<void> {
     const ids = await this.server.fetchSocketIds(room)
     const playerIds = Array.from(ids)
-    const player = this.players.find(playerId)
+    const player = await this.players.find(playerId)
 
     if (!playerIds.includes(playerId) || !player) {
       this.logger.error(`Tries to allocate turn to non existing player ID ${playerId}`)

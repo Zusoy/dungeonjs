@@ -20,11 +20,15 @@
     "vitest": "^3.1.1"
   },
   "dependencies": {
+    "@socket.io/redis-adapter": "^8.3.0",
     "express": "^4.21.2",
+    "ioredis": "^5.10.1",
     "nodemon": "^3.1.9",
+    "redis": "^5.12.1",
     "reflect-metadata": "^0.2.2",
     "socket.io": "^4.8.1",
     "tsx": "^4.19.2",
-    "tsyringe": "^4.8.0"
+    "tsyringe": "^4.8.0",
+    "zod": "^4.4.2"
   }
 }

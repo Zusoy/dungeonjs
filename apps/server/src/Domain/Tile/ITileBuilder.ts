@@ -1,4 +1,4 @@
-import type { Tile, Tiles, TileType } from 'Domain/Model/Tile'
+import type { Tile, TileType } from 'Domain/Model/Tile'
 import type { ScalarCoords } from 'Domain/Geometry/Coords'
 import type { VectorTuple } from 'Domain/Geometry/Vector'
 
@@ -11,5 +11,5 @@ export type BuildTilePayload = {
 
 export interface ITileBuilder<T extends TileType> {
   supports(type: T, payload: BuildTilePayload): boolean
-  build(type: T, payload: BuildTilePayload): Tiles
+  build(type: T, payload: BuildTilePayload): Tile
 }

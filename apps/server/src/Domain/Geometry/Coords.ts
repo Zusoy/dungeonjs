@@ -1,4 +1,7 @@
-export type ScalarCoords = [x: number, y: number]
+import { z } from 'zod'
+
+export const ScalarCoordsSchema = z.tuple([z.number(), z.number()])
+export type ScalarCoords = z.infer<typeof ScalarCoordsSchema>
 
 export class Coords {
   public static fromScalar(coords: ScalarCoords): Coords {

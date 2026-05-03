@@ -38,8 +38,8 @@ export class PickChestHandler implements IEventHandler<'pickChest'> {
       throw new PlayerNotInRoomError(socket.id)
     }
 
-    const room = this.rooms.find(roomId)
-    const player = this.players.find(socket.id)
+    const room = await this.rooms.find(roomId)
+    const player = await this.players.find(socket.id)
 
     if (!room) {
       throw new ObjectNotFoundError('Room', roomId)

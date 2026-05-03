@@ -1,16 +1,20 @@
+import { z } from 'zod'
+
 export enum WeaponType {
   Axe = 'axe',
   Sword = 'sword',
   Dagger = 'dagger'
 }
 
-export interface Weapon {
-  readonly id: string
-  readonly name: string
-  readonly icon: string
-  readonly attack: number
-  readonly type: WeaponType
-}
+export const WeaponSchema = z.object({
+  id: z.string().nonempty(),
+  name: z.string().nonempty(),
+  icon: z.string().nonempty(),
+  attack: z.number().nonnegative(),
+  type: z.enum(WeaponType)
+})
+
+export type Weapon = z.infer<typeof WeaponSchema>
 
 export class Dagger implements Weapon {
   public readonly type = WeaponType.Dagger

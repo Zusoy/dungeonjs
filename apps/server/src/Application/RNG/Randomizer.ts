@@ -15,8 +15,8 @@ export class Randomizer implements IRandomizer {
     return Math.floor(Math.random() * 6) + 1
   }
 
-  enumValue<T extends object>(enumObject: T, excludes: T[keyof T][]): T[keyof T] {
-    const values = Object.values(enumObject).filter(v => !excludes.includes(v as T[keyof T]))
-    return values[Math.floor(Math.random() * values.length)]
+  randomFrom<T>(values: T[], excludes: T[]): T {
+    const pickValues = values.filter(value => !excludes.includes(value))
+    return pickValues[Math.floor(Math.random() * pickValues.length)]
   }
 }

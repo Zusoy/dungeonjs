@@ -1,38 +1,15 @@
-import type { VectorTuple } from 'Domain/Geometry/Vector'
-import type { ScalarCoords } from 'Domain/Geometry/Coords'
+import { z } from 'zod'
+import { VectorSchema } from 'Domain/Geometry/Vector'
+import { ScalarCoordsSchema } from 'Domain/Geometry/Coords'
 
-export enum TileType {
-  Corridor = 'corridor',
-  Room = 'room'
-}
+export const TileTypeSchema = z.literal(['corridor', 'room'])
+export type TileType = z.infer<typeof TileTypeSchema>
 
-export interface Tile {
-  readonly id: string
-  readonly type: TileType
-  readonly coords: ScalarCoords
-  readonly directions: VectorTuple[]
-}
+export const TileSchema = z.object({
+  id: z.string().nonempty(),
+  type: TileTypeSchema,
+  coords: ScalarCoordsSchema,
+  directions: z.array(VectorSchema)
+})
 
-export class RoomTile implements Tile {
-  public readonly type: TileType = TileType.Room
-
-  constructor(
-    public readonly id: string,
-    public readonly coords: ScalarCoords,
-    public readonly directions: VectorTuple[]
-  ) {}
-}
-
-export class CorridorTile implements Tile {
-  public readonly type: TileType = TileType.Corridor
-
-  constructor(
-    public readonly id: string,
-    public readonly coords: ScalarCoords,
-    public readonly directions: VectorTuple[]
-  ) {}
-}
-
-export type Tiles =
-  RoomTile |
-  CorridorTile
+export type Tile = z.infer<typeof TileSchema>

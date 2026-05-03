@@ -1,9 +1,11 @@
+import { Player } from 'Domain/Model/Player'
 import type { Room } from 'Domain/Model/Room'
 import type { Nullable } from 'utils'
 
-export interface IRooms extends Iterable<Room> {
-  add(room: Room): void
-  remove(room: Room): void
-  update(room: Room): void
-  find(roomId: Room['roomId']): Nullable<Room>
+export interface IRooms {
+  add(room: Room): Promise<void>
+  remove(room: Room): Promise<void>
+  update(room: Room): Promise<void>
+  find(roomId: Room['roomId']): Promise<Nullable<Room>>
+  findByAuthorId(authorId: Player['id']): Promise<Room[]>
 }

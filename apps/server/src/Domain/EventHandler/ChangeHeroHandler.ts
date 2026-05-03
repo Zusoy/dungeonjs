@@ -33,13 +33,13 @@ export class ChangeHeroHandler implements IEventHandler<'changeHero'> {
       throw new PlayerNotInRoomError(socket.id)
     }
 
-    const room = this.rooms.find(roomId)
+    const room = await this.rooms.find(roomId)
 
     if (!room) {
       throw new ObjectNotFoundError("Room", roomId)
     }
 
-    const player = this.players.find(socket.id)
+    const player = await this.players.find(socket.id)
 
     if (!player) {
       throw new ObjectNotFoundError("Player", socket.id)

@@ -43,7 +43,7 @@ export class AttackHandler implements IEventHandler<'attack'> {
   }
 
   async handle(_channel: 'attack', socket: ISocket, event: AttackEvent): Promise<void> {
-    const player = this.players.find(socket.id)
+    const player = await this.players.find(socket.id)
     const roomId = socket.room
 
     if (!player) {
@@ -54,7 +54,7 @@ export class AttackHandler implements IEventHandler<'attack'> {
       throw new PlayerNotInRoomError(socket.id)
     }
 
-    const room = this.rooms.find(roomId)
+    const room = await this.rooms.find(roomId)
 
     if (!room) {
       throw new ObjectNotFoundError("Room", roomId)
@@ -89,16 +89,15 @@ export class AttackHandler implements IEventHandler<'attack'> {
       return
     }
 
-    if (enemy.type === SkeletonType.Golem) {
+    if (enemy.type === 'golem') {
       player.addTreasures(this.golemReward)
       this.players.update(player)
 
       const playerIds = await this.server.fetchSocketIds(room)
-      const players = Array.from(playerIds)
-        .map(id => this.players.find(id))
-        .filter(player => !!player)
+      const players = await Promise.all(Array.from(playerIds).map(id => this.players.find(id)))
+      const findPlayers = players.filter(player => !!player)
 
-      const winnerPlayer = [...players].sort((pA, pB) => pB.inventory.treasures - pA.inventory.treasures)[0]
+      const winnerPlayer = [...findPlayers].sort((pA, pB) => pB.inventory.treasures - pA.inventory.treasures)[0]
       const endGameEvent = new GameEndedEvent(
         Date.now(),
         player.id,

@@ -13,7 +13,7 @@ export class MockedRandomizer implements IRandomizer {
     return this.options?.diceResult ?? 1
   }
 
-  enumValue<T extends object>(_enumObject: T): T[keyof T] {
+  randomFrom<T>(values: T[], excludes: T[]): T {
     return this.options?.enumResult ?? null
   }
 

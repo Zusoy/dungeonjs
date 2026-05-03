@@ -8,7 +8,6 @@ import type { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import type { IServer } from 'Domain/IServer'
 import { OperationDeniedError } from 'Domain/Error/OperationDeniedError'
 import { ObjectNotFoundError } from 'Domain/Error/ObjectNotFoundError'
-import { LootType } from 'Domain/Model/Loot'
 import { Coords } from 'Domain/Geometry/Coords'
 import { PlayerNotInRoomError } from 'Domain/Error/PlayerNotInRoomError'
 import { LootsEvent } from 'Domain/Event/LootsEvent'
@@ -41,8 +40,8 @@ export class LootHandler implements IEventHandler<'loot'> {
       throw new PlayerNotInRoomError(socket.id)
     }
 
-    const room = this.rooms.find(socket.room)
-    const player = this.players.find(socket.id)
+    const room = await this.rooms.find(socket.room)
+    const player = await this.players.find(socket.id)
 
     if (!room) {
       throw new ObjectNotFoundError('Room', socket.room)
@@ -66,7 +65,7 @@ export class LootHandler implements IEventHandler<'loot'> {
     }
 
     switch (loot.itemType) {
-      case LootType.Key: {
+      case 'key': {
         if (player.inventory.keys >= this.maxPlayerInventoryKeyCount) {
           throw new OperationDeniedError()
         }
@@ -74,7 +73,7 @@ export class LootHandler implements IEventHandler<'loot'> {
         break
       }
 
-      case LootType.Weapon: {
+      case 'weapon': {
         if (player.inventory.weapons.length >= this.maxPlayerInventoryWeaponCount) {
           throw new OperationDeniedError()
         }

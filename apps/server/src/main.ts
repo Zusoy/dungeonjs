@@ -1,6 +1,7 @@
 import container from 'container'
 import { createServer } from 'http'
 import { Server as IOServer } from 'socket.io'
+import { createAdapter } from '@socket.io/redis-adapter'
 import type { ClientToServer, ServerToClients, InterServer } from 'Domain/Events'
 import * as EventHandlers from 'Domain/EventHandler'
 import { IPlayers } from 'Domain/Repository/IPlayers'
@@ -17,6 +18,13 @@ import { IPlayerBroadcaster } from 'Domain/Notification/IPlayerBroadcaster'
 import { PlayersEvent } from 'Domain/Event/PlayersEvent'
 import { LeftRoomEvent } from 'Domain/Event/LeftRoomEvent'
 import * as Tokens from 'Domain/tokens'
+import { Factory as BrokerFactory } from 'Infra/Redis/Client/Factory'
+import { Client } from 'Infra/Redis/Client/Client'
+import { createClient } from 'redis'
+import { Players } from 'Infra/Repository/Players'
+import { Rooms } from 'Infra/Repository/Rooms'
+import { PlayerSerializer } from 'Infra/Serializer/PlayerSerializer'
+import { RoomSerializer } from 'Infra/Serializer/RoomSerializer'
 
 const httpServer = createServer((_, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -27,12 +35,44 @@ const httpServer = createServer((_, res) => {
   res.end()
 })
 
-const io = new IOServer<ClientToServer, ServerToClients, InterServer>(httpServer)
-const players = container.resolve<IPlayers>(Tokens.PLAYERS)
-const rooms = container.resolve<IRooms>(Tokens.ROOMS)
 const logger = container.resolve<ILogger>(Tokens.LOGGER)
+const playerSerializer = container.resolve<PlayerSerializer>(Tokens.PLAYER_SERIALIZER)
+const roomSerializer = container.resolve<RoomSerializer>(Tokens.ROOM_SERIALIZER)
+
+// bootstrap (temp)
+const pubClient = createClient({ url: 'redis://redis:6379' })
+const subClient = pubClient.duplicate()
+
+await Promise.all([
+  pubClient.connect(),
+  subClient.connect()
+])
+
+const io = new IOServer<ClientToServer, ServerToClients, InterServer>(
+  httpServer,
+  { adapter: createAdapter(pubClient, subClient) }
+)
+
+const broker = await BrokerFactory.create('redis://redis:6379')
+const brokerClient = new Client(broker)
+await brokerClient.connect().catch(e => logger.error(e))
+
+const players = new Players(brokerClient, playerSerializer)
+const rooms = new Rooms(brokerClient, roomSerializer)
+
+// repositories
+container.register<IPlayers>(
+  Tokens.PLAYERS,
+  { useValue: players }
+)
+
+container.register<IRooms>(
+  Tokens.ROOMS,
+  { useValue: rooms }
+)
 
 const server = new InputOutputServer(io)
+container.register<Client>(Tokens.BROKER, { useValue: brokerClient })
 container.register<IServer>(Tokens.SERVER, { useValue: server })
 container.register<IPlayerBroadcaster>(Tokens.BROADCASTER, { useClass: PlayerBroadcaster })
 container.register<ITurnAllocator>(Tokens.TURN_ALLOCATOR, { useClass: TurnAllocator })
@@ -51,29 +91,26 @@ container.register<EventHandlers.NewGameHandler>(EventHandlers.NewGameHandler, {
 
 const subscriber = container.resolve(EventSubscriber)
 
-io.on('connect', socket => {
+io.on('connect', async socket => {
   const randomColor = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
   const player = Player.fromSocket(socket, randomColor, 'barbarian')
-  players.add(player)
+  await players.add(player)
 
   logger.info('User connected', player)
   subscriber.subscribe(socket)
 
   socket.on('disconnecting', async () => {
     const lastSocketRooms = socket.rooms
-    const currentRooms = Array.from(rooms)
 
     for (const lastSocketRoomId of lastSocketRooms) {
-      const room = currentRooms.find(({ roomId }) => roomId === lastSocketRoomId)
+      const room = await rooms.find(lastSocketRoomId)
 
       if (!room) {
         continue
       }
 
       const socketIds = await server.fetchSocketIds(room)
-
-      const roomsPlayers = Array.from(socketIds)
-        .map(id => Array.from(players).find(p => p.id === id) || null)
+      const roomsPlayers = (await (Promise.all(Array.from(socketIds).map(id => players.find(id)))))
         .filter(p => !!p)
         .map(p => p.getRoomPayload(p.id === room.createdById))
 
@@ -81,8 +118,8 @@ io.on('connect', socket => {
     }
   })
 
-  socket.on('disconnect', reason => {
-    const createdRooms = Array.from(rooms).filter(({ createdById }) => createdById === socket.id)
+  socket.on('disconnect', async reason => {
+    const createdRooms = await rooms.findByAuthorId(socket.id)
 
     createdRooms.forEach(createdRoom => {
       rooms.remove(createdRoom)
@@ -91,7 +128,7 @@ io.on('connect', socket => {
       logger.info('Room author disconnec, clean room', createdRoom.roomId)
     })
 
-    players.remove(player)
+    await players.remove(player)
     logger.info('User disconnected', reason)
   })
 })
