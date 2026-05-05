@@ -50,8 +50,10 @@ describe('EventHandler/LeaveRoom', () => {
     const handler = new LeaveRoomHandler(rooms, server, broadcaster, logger)
     await handler.handle('leaveRoom', socket, event)
 
+    const room = await rooms.find('room_id')
+
     expect(server.kickedRooms.includes('room_id')).toBeTruthy()
-    expect(rooms.find('room_id')).toBeNull()
+    expect(room).toBeNull()
     expect(server.roomEmittedEvents['room_id'].includes('leftRoom')).toBeTruthy()
     expect(socket.room).toBeNull()
     expect(broadcaster.broadcastedRooms.includes('room_id')).toBeTruthy()

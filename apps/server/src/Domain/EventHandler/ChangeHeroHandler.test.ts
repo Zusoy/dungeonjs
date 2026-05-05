@@ -34,7 +34,7 @@ describe('EventHandler/ChangeHero', () => {
     const handler = new ChangeHeroHandler(players, rooms, broadcaster)
     await handler.handle('changeHero', socket, event)
 
-    const player = players.find('player_1')
+    const player = await players.find('player_1')
 
     expect(player).not.toBeNull()
     expect(player?.hero).toBe('knight')

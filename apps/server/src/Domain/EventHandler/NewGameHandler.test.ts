@@ -21,7 +21,7 @@ describe('EventHandler/NewGame', () => {
     const players = new MockedPlayers([])
     const server = new MockedServer([])
     const turnAllocator = new MockedTurnAllocator()
-    const event = new NewGameEvent()
+    const event = new NewGameEvent(10)
     const socket = new MockedSocket('playerId', null)
 
     const handler = new NewGameHandler(rooms, players, server, turnAllocator)
@@ -33,7 +33,7 @@ describe('EventHandler/NewGame', () => {
     const players = new MockedPlayers([])
     const server = new MockedServer([])
     const turnAllocator = new MockedTurnAllocator()
-    const event = new NewGameEvent()
+    const event = new NewGameEvent(10)
     const socket = new MockedSocket('playerId', 'roomId')
 
     const handler = new NewGameHandler(rooms, players, server, turnAllocator)
@@ -51,15 +51,15 @@ describe('EventHandler/NewGame', () => {
     const rooms = new MockedRooms([room])
     const server = new MockedServer(['player1', 'player2'])
     const turnAllocator = new MockedTurnAllocator()
-    const event = new NewGameEvent()
+    const event = new NewGameEvent(10)
     const socket = new MockedSocket('player1', 'roomId')
 
     const handler = new NewGameHandler(rooms, players, server, turnAllocator)
     await handler.handle('newGame', socket, event)
 
-    const updatedPlayer1 = players.find('player1')
-    const updatedPlayer2 = players.find('player2')
-    const updatedRoom = rooms.find('roomId')
+    const updatedPlayer1 = await players.find('player1')
+    const updatedPlayer2 = await players.find('player2')
+    const updatedRoom = await rooms.find('roomId')
 
     expect(updatedPlayer1).not.toBeNull()
     expect(updatedPlayer2).not.toBeNull()

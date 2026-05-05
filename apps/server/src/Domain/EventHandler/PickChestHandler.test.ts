@@ -166,8 +166,8 @@ describe('EventHandler/PickChest', () => {
 
     await handler.handle('pickChest', socket, event)
 
-    const updatedRoom = rooms.find('room_id')
-    const updatedPlayer = players.find('player_id')
+    const updatedRoom = await rooms.find('room_id')
+    const updatedPlayer = await players.find('player_id')
 
     expect(updatedRoom).not.toBeNull()
     expect(updatedPlayer).not.toBeNull()

@@ -47,7 +47,7 @@ describe('EventHandler/CreateRoom', () => {
     )
 
     await handler.handle('createRoom', socket, event)
-    const room = rooms.find('test')
+    const room = await rooms.find('test')
 
     expect(room).not.toBeNull()
     expect(room?.roomId).toBe('test')

@@ -158,8 +158,8 @@ describe('EventHandler/Attack', () => {
 
     await handler.handle('attack', socket, event)
 
-    const updatedPlayer = players.find('player')
-    const updatedRoom = rooms.find('room')
+    const updatedPlayer = await players.find('player')
+    const updatedRoom = await rooms.find('room')
     const targetCoords = Coords.fromScalar([0, 0])
 
     expect(updatedPlayer).not.toBeNull()
@@ -213,8 +213,8 @@ describe('EventHandler/Attack', () => {
 
     await handler.handle('attack', socket, event)
 
-    const updatedPlayer = players.find('player')
-    const updatedRoom = rooms.find('room')
+    const updatedPlayer = await players.find('player')
+    const updatedRoom = await rooms.find('room')
     const targetCoords = Coords.fromScalar([1, 1])
 
     expect(updatedPlayer).not.toBeNull()
@@ -284,8 +284,8 @@ describe('EventHandler/Attack', () => {
 
     await handler.handle('attack', socket, event)
 
-    const updatedCombatPlayer = players.find('combat-player')
-    const updatedOtherPlayer = players.find('other-player')
+    const updatedCombatPlayer = await players.find('combat-player')
+    const updatedOtherPlayer = await players.find('other-player')
     const updatedRoom = rooms.find('room')
 
     expect(updatedCombatPlayer).not.toBeNull()
