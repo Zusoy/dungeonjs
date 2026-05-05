@@ -5,30 +5,24 @@ import type { Nullable } from 'utils'
 export class MockedPlayers implements IPlayers {
   constructor(private players: Player[] = []) { }
 
-  add(player: Player): void {
+  async add(player: Player): Promise<void> {
     this.players = [...this.players, player]
   }
 
-  remove(player: Player): void {
+  async remove(player: Player): Promise<void> {
     this.players = this.players.filter(p => p.id !== player.id)
   }
 
-  update(item: Player): void {
+  async update(item: Player): Promise<void> {
     const index = this.players.findIndex(player => player.id === item.id)
     this.players = this.players.map((player, i) => i === index ? item : player)
   }
 
-  find(playerId: PlayerPayload['id']): Nullable<Player> {
-    return this.players.find(p => p.id === playerId) || null
+  find(playerId: PlayerPayload['id']): Promise<Nullable<Player>> {
+    return Promise.resolve(this.players.find(p => p.id === playerId) || null)
   }
 
   clean(): void {
     this.players = []
-  }
-
-  *[Symbol.iterator](): IterableIterator<Player> {
-    for (const player of this.players) {
-      yield player
-    }
   }
 }

@@ -17,9 +17,8 @@ export class PlayerBroadcaster implements IPlayerBroadcaster {
 
   async broadcast(room: Room): Promise<void> {
     const ids = await this.server.fetchSocketIds(room)
-    const players = Array.from(ids)
-      .map(id => this.players.find(id))
-      .filter(p => !!p)
+    const players = (await Promise.all(Array.from(ids).map(id => this.players.find(id))))
+      .filter(player => !!player)
       .map(p => p.getRoomPayload(p.id === room.createdById))
 
     this.server.emitInRoom('players', room, new PlayersEvent(players))

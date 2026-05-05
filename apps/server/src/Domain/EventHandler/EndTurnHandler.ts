@@ -26,7 +26,7 @@ export class EndTurnHandler implements IEventHandler<'endTurn'> {
   }
 
   async handle(_channel: 'endTurn', socket: ISocket, _event: EndTurnEvent): Promise<void> {
-    const player = this.players.find(socket.id)
+    const player = await this.players.find(socket.id)
     const roomId = socket.room
 
     if (!roomId) {
@@ -37,7 +37,7 @@ export class EndTurnHandler implements IEventHandler<'endTurn'> {
       throw new ObjectNotFoundError('Player', socket.id)
     }
 
-    const room = this.rooms.find(roomId)
+    const room = await this.rooms.find(roomId)
 
     if (!room) {
       throw new ObjectNotFoundError('Room', roomId)

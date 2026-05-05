@@ -30,7 +30,7 @@ export class JoinRoomHandler implements IEventHandler<'joinRoom'> {
   }
 
   async handle(_channel: 'joinRoom', socket: ISocket, event: JoinRoomEvent): Promise<void> {
-    const room = this.rooms.find(event.roomId)
+    const room = await this.rooms.find(event.roomId)
 
     if (!room) {
       const failedEvent = new FailedToJoinRoomEvent(event.roomId, 'room_not_found')

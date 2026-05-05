@@ -1,5 +1,5 @@
 import { injectable, registry } from 'tsyringe'
-import { type Tiles, TileType, RoomTile } from 'Domain/Model/Tile'
+import type { Tile, TileType } from 'Domain/Model/Tile'
 import type { ITileBuilder, BuildTilePayload } from 'Domain/Tile/ITileBuilder'
 import type { ScalarCoords } from 'Domain/Geometry/Coords'
 import { Direction } from 'Domain/Geometry/Direction'
@@ -7,12 +7,12 @@ import { TILE_BUILDER } from 'Domain/tokens'
 
 @injectable()
 @registry([{ token: TILE_BUILDER, useClass: RoomBuilder }])
-export class RoomBuilder implements ITileBuilder<TileType.Room> {
-  supports(type: TileType.Room, _payload: BuildTilePayload): boolean {
-    return type === TileType.Room
+export class RoomBuilder implements ITileBuilder<'room'> {
+  supports(type: TileType, _payload: BuildTilePayload): boolean {
+    return type === 'room'
   }
 
-  build(_type: TileType.Room, payload: BuildTilePayload): Tiles {
+  build(_type: TileType, payload: BuildTilePayload): Tile {
     const directions = Direction.All
       .filter(dir => {
         const dirCoords: ScalarCoords = [payload.coords[0] + dir[0], payload.coords[1] + dir[2]]
@@ -26,10 +26,11 @@ export class RoomBuilder implements ITileBuilder<TileType.Room> {
         return adjacentTile.directions.some(dir => Direction.equals(opposite, dir))
       })
 
-    return new RoomTile(
-      payload.id,
-      payload.coords,
+    return {
+      id: payload.id,
+      coords: payload.coords,
+      type: 'room',
       directions
-    )
+    }
   }
 }

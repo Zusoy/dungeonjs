@@ -33,16 +33,14 @@ export class NewGameHandler implements IEventHandler<'newGame'> {
       throw new PlayerNotInRoomError(socket.id)
     }
 
-    const room = this.rooms.find(socket.room)
+    const room = await this.rooms.find(socket.room)
 
     if (!room) {
       throw new ObjectNotFoundError('Room', socket.room)
     }
 
     const ids = await this.server.fetchSocketIds(room)
-    const players = Array.from(ids)
-      .map(id => this.players.find(id))
-      .filter(player => !!player)
+    const players = (await Promise.all(Array.from(ids).map(id => this.players.find(id)))).filter(player => !!player)
 
     players.forEach(player => {
       player.reset()

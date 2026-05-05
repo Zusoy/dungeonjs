@@ -30,14 +30,14 @@ export class CreateRoomHandler implements IEventHandler<'createRoom'> {
   }
 
   async handle(_channel: 'createRoom', socket: ISocket, event: CreateRoomEvent): Promise<void> {
-    const user = this.players.find(socket.id)
+    const user = await this.players.find(socket.id)
 
     if (!user) {
       throw new ObjectNotFoundError("Player", socket.id)
     }
 
     const room = new Room(event.roomId, socket.id)
-    this.rooms.add(room)
+    await this.rooms.add(room)
 
     const joinedRoomEvent = new JoinedRoomEvent(room.roomId)
 

@@ -1,9 +1,9 @@
 import 'reflect-metadata'
+import type { Tile } from 'Domain/Model/Tile'
 import type { BuildTilePayload } from 'Domain/Tile/ITileBuilder'
 import { describe, test, expect } from 'vitest'
 import { CorridorBuilder } from 'Domain/Tile/Builder/CorridorBuilder'
 import { Direction } from 'Domain/Geometry/Direction'
-import { CorridorTile, TileType } from 'Domain/Model/Tile'
 
 describe('Domain/Tile/CorridorBuilder', () => {
   test('should supports only corridor', () => {
@@ -15,7 +15,7 @@ describe('Domain/Tile/CorridorBuilder', () => {
       adjacentTiles: []
     }
 
-    expect(builder.supports(TileType.Corridor, payload)).toBeTruthy()
+    expect(builder.supports('corridor', payload)).toBeTruthy()
   })
 
   test('should build horizontal corridor from direction', () => {
@@ -27,8 +27,8 @@ describe('Domain/Tile/CorridorBuilder', () => {
       adjacentTiles: []
     }
 
-    const actualTile = builder.build(TileType.Corridor, payload)
-    const expectedTile = new CorridorTile('id', [0, 0], [Direction.Left, Direction.Right])
+    const actualTile = builder.build('corridor', payload)
+    const expectedTile: Tile = { id: 'id', type: 'corridor', coords: [0, 0], directions: [Direction.Left, Direction.Right] }
 
     expect(actualTile).toStrictEqual(expectedTile)
   })
@@ -42,10 +42,9 @@ describe('Domain/Tile/CorridorBuilder', () => {
       adjacentTiles: []
     }
 
-    const actualTile = builder.build(TileType.Corridor, payload)
-    const expectedTile = new CorridorTile('id', [0, 0], [Direction.Up, Direction.Down])
+    const actualTile = builder.build('corridor', payload)
+    const expectedTile: Tile = { id: 'id', type: 'corridor', coords: [0, 0], directions: [Direction.Up, Direction.Down] }
 
     expect(actualTile).toStrictEqual(expectedTile)
   })
-
 })

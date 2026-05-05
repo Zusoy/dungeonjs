@@ -34,7 +34,7 @@ export class StartGameHandler implements IEventHandler<'startGame'> {
       throw new PlayerNotInRoomError(socket.id)
     }
 
-    const room = this.rooms.find(event.roomId)
+    const room = await this.rooms.find(event.roomId)
 
     if (!room) {
       throw new ObjectNotFoundError("Room", event.roomId)

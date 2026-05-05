@@ -1,29 +1,35 @@
+import { z } from 'zod'
 import type { AppSocket } from 'Infra/Websocket/InputOutputSocket'
-import type { Weapon } from 'Domain/Model/Weapon'
-import type { VectorTuple } from 'Domain/Geometry/Vector'
-import type { ScalarCoords } from 'Domain/Geometry/Coords'
+import { WeaponSchema, type Weapon } from 'Domain/Model/Weapon'
+import { VectorSchema, type VectorTuple } from 'Domain/Geometry/Vector'
+import { ScalarCoordsSchema, type ScalarCoords } from 'Domain/Geometry/Coords'
 
-export type Hero = 'rogue' | 'knight' | 'mage' | 'barbarian'
+export const HeroSchema = z.literal(['rogue', 'knight', 'mage', 'barbarian'])
+export type Hero = z.infer<typeof HeroSchema>
 
-export type Inventory = {
-  readonly treasures: number
-  readonly keys: number
-  readonly weapons: Weapon[]
-}
+export const InventorySchema = z.object({
+  treasures: z.number(),
+  keys: z.number(),
+  weapons: z.array(WeaponSchema)
+})
 
-export type PlayerPayload = {
-  readonly id: string
-  readonly username: string
-  readonly color: string
-  readonly health: number
-  readonly hero: Hero
-  readonly position: VectorTuple
-  readonly rotation: VectorTuple
-  readonly coords: ScalarCoords
-  readonly movesCount: number
-  readonly inventory: Inventory
-  readonly host?: boolean
-}
+export type Inventory = z.infer<typeof InventorySchema>
+
+export const PlayerPayloadSchema = z.object({
+  id: z.string().nonempty(),
+  username: z.string().nonempty(),
+  color: z.string().nonempty(),
+  health: z.number(),
+  hero: HeroSchema,
+  position: VectorSchema,
+  rotation: VectorSchema,
+  coords: ScalarCoordsSchema,
+  movesCount: z.number(),
+  inventory: InventorySchema,
+  host: z.boolean().optional()
+})
+
+export type PlayerPayload = z.infer<typeof PlayerPayloadSchema>
 
 export class Player {
   public health: number = 5

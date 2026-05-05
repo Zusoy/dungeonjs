@@ -7,19 +7,19 @@ import { Golem, MageSkeleton, MinionSkeleton, RogueSkeleton, type Skeleton, Skel
 export class Factory {
   build(type: SkeletonType, id: string, coords: ScalarCoords, loot: Loot): Skeleton {
     switch (type) {
-      case SkeletonType.Minion:
+      case 'minion':
         return new MinionSkeleton(id, coords, loot)
 
-      case SkeletonType.Mage:
+      case 'mage':
         return new MageSkeleton(id, coords, loot)
 
-      case SkeletonType.Rogue:
+      case 'rogue':
         return new RogueSkeleton(id, coords, loot)
 
-      case SkeletonType.Warrior:
+      case 'warrior':
         return new WarriorSkeleton(id, coords, loot)
 
-      case SkeletonType.Golem:
+      case 'golem':
         return new Golem(id, coords, loot)
     }
   }

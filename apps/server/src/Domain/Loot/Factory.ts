@@ -1,6 +1,6 @@
 import { injectable, injectAll } from 'tsyringe'
 import type { ILootBuilder } from 'Domain/Loot/ILootBuilder'
-import { Loot, LootableKey, LootableWeapon, LootType, WorldLoot } from 'Domain/Model/Loot'
+import { Loot, LootableKey, LootableWeapon, LootType } from 'Domain/Model/Loot'
 import { ScalarCoords } from 'Domain/Geometry/Coords'
 import { LOOT_BUILDER } from 'Domain/tokens'
 
@@ -21,11 +21,11 @@ export class Factory {
     return builder.build(type, item)
   }
 
-  buildLootable(loot: Loot, coords: ScalarCoords): WorldLoot {
+  buildLootable(loot: Loot, coords: ScalarCoords): LootableWeapon | LootableKey {
     switch (loot.itemType) {
-      case LootType.Weapon:
+      case 'weapon':
         return new LootableWeapon(loot.item, coords)
-      case LootType.Key:
+      case 'key':
         return new LootableKey(loot.item, coords)
     }
   }

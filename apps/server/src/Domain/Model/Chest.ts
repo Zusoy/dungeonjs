@@ -1,6 +1,9 @@
-import { ScalarCoords } from 'Domain/Geometry/Coords'
+import { z } from 'zod'
+import { ScalarCoordsSchema } from 'Domain/Geometry/Coords'
 
-export type Chest = {
-  readonly id: string
-  readonly coords: ScalarCoords
-}
+export const ChestSchema = z.object({
+  id: z.string().nonempty(),
+  coords: ScalarCoordsSchema
+})
+
+export type Chest = z.infer<typeof ChestSchema>

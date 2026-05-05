@@ -1,7 +1,5 @@
 import 'reflect-metadata'
 import type { ILogger } from 'Domain/ILogger'
-import type { IPlayers } from 'Domain/Repository/IPlayers'
-import type { IRooms } from 'Domain/Repository/IRooms'
 import { container, Lifecycle } from 'tsyringe'
 import { ConsoleLogger } from 'Application/Logger/ConsoleLogger'
 import { CorridorBuilder } from 'Domain/Tile/Builder/CorridorBuilder'
@@ -9,14 +7,14 @@ import { RoomBuilder } from 'Domain/Tile/Builder/RoomBuilder'
 import { Factory as TileFactory } from 'Domain/Tile/Factory'
 import { Factory as SkeletonFactory } from 'Domain/Skeleton/Factory'
 import { Factory as LootFactory } from 'Domain/Loot/Factory'
-import { Players } from 'Application/Repository/Players'
-import { Rooms } from 'Application/Repository/Rooms'
 import { IRandomizer } from 'Domain/RNG/IRandomizer'
 import { Randomizer } from 'Application/RNG/Randomizer'
 import { WeaponLootBuilder } from 'Domain/Loot/Builder/WeaponLootBuilder'
 import { KeyLootBuilder } from 'Domain/Loot/Builder/KeyLootBuilder'
 import { WeaponRandomizer } from 'Domain/Loot/WeaponRandomizer'
 import * as Tokens from 'Domain/tokens'
+import { PlayerSerializer } from 'Infra/Serializer/PlayerSerializer'
+import { RoomSerializer } from 'Infra/Serializer/RoomSerializer'
 
 // parameters
 container.register(Tokens.MAX_PLAYER_PARAMETER, { useValue: 4 })
@@ -30,6 +28,19 @@ container.register(Tokens.INVENTORY_MAX_KEY_PARAMETER, { useValue: 1 })
 container.register(Tokens.INVENTORY_MAX_WEAPON_PARAMETER, { useValue: 2 })
 container.register(Tokens.GOLEM_REWARD_PARAMETER, { useValue: 2 })
 
+// Serializers
+container.register<PlayerSerializer>(
+  Tokens.PLAYER_SERIALIZER,
+  { useClass: PlayerSerializer },
+  { lifecycle: Lifecycle.Singleton }
+)
+
+container.register<RoomSerializer>(
+  Tokens.ROOM_SERIALIZER,
+  { useClass: RoomSerializer },
+  { lifecycle: Lifecycle.Singleton }
+)
+
 // RNG
 container.register<IRandomizer>(
   Tokens.RNG,
@@ -40,18 +51,6 @@ container.register<IRandomizer>(
 container.register<WeaponRandomizer>(
   Tokens.WEAPON_RANDOMIZER,
   { useClass: WeaponRandomizer },
-  { lifecycle: Lifecycle.Singleton }
-)
-
-// repositories
-container.register<IPlayers>(
-  Tokens.PLAYERS,
-  { useClass: Players },
-  { lifecycle: Lifecycle.Singleton }
-)
-container.register<IRooms>(
-  Tokens.ROOMS,
-  { useClass: Rooms },
   { lifecycle: Lifecycle.Singleton }
 )
 

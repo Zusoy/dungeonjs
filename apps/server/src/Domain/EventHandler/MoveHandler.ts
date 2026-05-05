@@ -69,13 +69,13 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
       throw new OperationDeniedError()
     }
 
-    const player = this.players.find(socket.id)
+    const player = await this.players.find(socket.id)
 
     if (!player) {
       throw new ObjectNotFoundError("Player", socket.id)
     }
 
-    const room = this.rooms.find(roomId)
+    const room = await this.rooms.find(roomId)
     const originCoords = player.coords
 
     if (!room) {
@@ -84,10 +84,10 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
 
     if (event.uncharted) {
       const roomDiscovery = this.rng.boolean(this.roomDiscoveryChance)
-      const randomTileType = roomDiscovery ? TileType.Room : TileType.Corridor
+      const randomTileType: TileType = roomDiscovery ? 'room' : 'corridor'
 
-      const type = event.neighborTiles.length > 1
-        ? TileType.Room
+      const type: TileType = event.neighborTiles.length > 1
+        ? 'room'
         : randomTileType
 
       const tile = this.tiles.build(
@@ -103,21 +103,21 @@ export class MoveHandler implements IEventHandler<'moveToCoords'> {
       this.server.emitInRoom('discoverTile', room, new DiscoverTileEvent(tile))
       this.logger.info('Discover tile', tile)
 
-      if (tile.type === TileType.Room) {
+      if (tile.type === 'room') {
         const hasEnemy = this.rng.boolean(this.enemyDiscoveryChance)
 
         if (hasEnemy) {
           const lootKey = this.rng.boolean(this.keyLootChance)
           const lootId: string = Date.now().toString()
 
-          const lootType = lootKey ? LootType.Key : LootType.Weapon
+          const lootType: LootType = lootKey ? 'key' : 'weapon'
           const lootItem: LootObject = lootKey
             ? { id: lootId }
             : this.weaponRandomizer.randomWeapon(lootId)
 
           const loot = this.loots.build(lootType, lootItem)
           const isGolem = this.rng.boolean(this.golemDiscoveryChance) && !room.hasGolem()
-          const skeletonType = isGolem ? SkeletonType.Golem : this.rng.enumValue(SkeletonType, [SkeletonType.Golem])
+          const skeletonType: SkeletonType = isGolem ? 'golem' : this.rng.randomFrom<SkeletonType>(['golem', 'mage', 'minion', 'rogue', 'warrior'], ['golem'])
           const skeleton = this.skeletons.build(skeletonType, Date.now().toString(), event.coords, loot)
 
           room.addEnemy(skeleton)

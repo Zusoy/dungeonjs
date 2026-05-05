@@ -1,17 +1,27 @@
-import { Coords, type ScalarCoords } from 'Domain/Geometry/Coords'
-import { SkeletonType, type Skeleton } from 'Domain/Model/Skeleton'
+import { z } from 'zod'
 import type { Nullable } from 'utils'
-import type { WorldLoot } from 'Domain/Model/Loot'
-import type { Chest } from 'Domain/Model/Chest'
+import { Coords, type ScalarCoords } from 'Domain/Geometry/Coords'
+import { SkeletonSchema, type Skeleton } from 'Domain/Model/Skeleton'
+import { WorldLootSchema, type WorldLoot } from 'Domain/Model/Loot'
+import { ChestSchema, type Chest } from 'Domain/Model/Chest'
+
+export const RoomPayloadSchema = z.object({
+  roomId: z.string().nonempty(),
+  createdById: z.string().nonempty(),
+  enemies: z.array(SkeletonSchema),
+  loots: z.array(WorldLootSchema),
+  chests: z.array(ChestSchema)
+})
+
+export type RoomPayload = z.infer<typeof RoomPayloadSchema>
 
 export class Room {
-  private enemies: Skeleton[] = []
-  private loots: WorldLoot[] = []
-  private chests: Chest[] = []
-
   constructor(
     public readonly roomId: string,
-    public readonly createdById: string
+    public readonly createdById: string,
+    private enemies: Skeleton[] = [],
+    private loots: WorldLoot[] = [],
+    private chests: Chest[] = []
   ) {
   }
 
@@ -38,7 +48,7 @@ export class Room {
   }
 
   public hasGolem(): boolean {
-    return !!this.enemies.find(enemy => enemy.type === SkeletonType.Golem)
+    return !!this.enemies.find(enemy => enemy.type === 'golem')
   }
 
   public addLoot(loot: WorldLoot): void {

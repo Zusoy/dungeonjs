@@ -8,7 +8,7 @@ import { LOOT_BUILDER } from 'Domain/tokens'
 @registry([{ token: LOOT_BUILDER, useClass: KeyLootBuilder }])
 export class KeyLootBuilder implements ILootBuilder<Key> {
   supports(type: LootType, _item: Key): boolean {
-    return type === LootType.Key
+    return type === 'key'
   }
 
   build(_type: LootType, item: Key): Loot {

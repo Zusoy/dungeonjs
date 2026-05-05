@@ -202,8 +202,8 @@ describe('EventHandler/Loot', () => {
 
     await handler.handle('loot', socket, event)
 
-    const updatedPlayer = players.find('playerId')
-    const updatedRoom = rooms.find('roomId')
+    const updatedPlayer = await players.find('playerId')
+    const updatedRoom = await rooms.find('roomId')
 
     expect(updatedPlayer).not.toBeNull()
     expect(updatedRoom).not.toBeNull()

@@ -30,7 +30,7 @@ export class LeaveRoomHandler implements IEventHandler<'leaveRoom'> {
   }
 
   async handle(_channel: 'leaveRoom', socket: ISocket, event: LeaveRoomEvent): Promise<void> {
-    const room = this.rooms.find(event.roomId)
+    const room = await this.rooms.find(event.roomId)
 
     if (socket.room !== event.roomId) {
       throw new OperationDeniedError()

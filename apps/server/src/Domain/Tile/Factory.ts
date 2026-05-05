@@ -1,5 +1,5 @@
 import { injectable, injectAll } from 'tsyringe'
-import type { Tiles, TileType } from 'Domain/Model/Tile'
+import type { Tile, TileType } from 'Domain/Model/Tile'
 import type { ITileBuilder, BuildTilePayload } from 'Domain/Tile/ITileBuilder'
 import { TILE_BUILDER } from 'Domain/tokens'
 
@@ -11,7 +11,7 @@ export class Factory {
   ) {
   }
 
-  build(type: TileType, payload: BuildTilePayload): Tiles {
+  build(type: TileType, payload: BuildTilePayload): Tile {
     const builder = this.builders.find(b => b.supports(type, payload))
 
     if (!builder) {

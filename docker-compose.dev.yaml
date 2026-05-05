@@ -13,7 +13,8 @@ services:
       - .env
     ports:
       - 3000:3000
-    network_mode: bridge
+    networks:
+      - dungeon
     volumes:
       - ./apps/client:/usr/src/app
 
@@ -25,7 +26,29 @@ services:
       - .env
     ports:
       - 8080:8080
-    network_mode: bridge
+    networks:
+      - dungeon
+    depends_on:
+      - redis
     tty: true
     volumes:
       - ./apps/server:/usr/src/app
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    networks:
+      - dungeon
+    tty: true
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:
+    driver: local
+
+networks:
+  dungeon:
+    driver: bridge
